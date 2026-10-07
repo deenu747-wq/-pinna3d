@@ -19,10 +19,9 @@ export default function Page(){
   return (
     <div style={{background:'#0B0A14',color:'#fff',fontFamily:'Inter,system-ui,sans-serif',minHeight:'100vh'}}>
       <header style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'14px 36px',borderBottom:'1px solid #1e1c32',background:'#0B0A14',position:'sticky',top:0,zIndex:50}}>
-        <div style={{display:'flex',alignItems:'center',gap:'10px',fontWeight:800,fontSize:'26px'}}>
-          <div style={{width:'36px',height:'36px',background:'#A020F0',borderRadius:'8px',display:'grid',placeItems:'center'}}>◈</div>
-          Pinna3d<span style={{fontSize:'12px',opacity:.5}}>.com</span>
-        </div>
+        <div style={{display:'flex',alignItems:'center',gap:'10px'}}>
+  <img src="/logo.png" alt="Pinna3d.com" style={{height:'38px',width:'auto',objectFit:'contain'}} />
+</div>
         <div style={{display:'flex',gap:'24px',alignItems:'center',fontSize:'14px'}}>
           <span style={{opacity:.6}}>Features</span>
           <span style={{color:'#A020F0',fontWeight:700}}>Pricing</span>
