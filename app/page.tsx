@@ -12,10 +12,9 @@ export default function Page(){
   }
 
   return (
-    <div style={{background:'#0B0A14',color:'#fff',fontFamily:'Inter, system-ui',minHeight:'100vh'}}>
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap'); *{font-family:Inter,system-ui} body{margin:0}`}</style>
+    <div style={{background:'#0B0A14',color:'#fff',fontFamily:'Inter, system-ui, sans-serif',minHeight:'100vh'}}>
 
-      {/* HEADER - FIXED FOR YOUR LOGO */}
+      {/* HEADER */}
       <header style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'14px 32px',borderBottom:'1px solid #1e1c32',background:'#0B0A14',position:'sticky',top:0,zIndex:50}}>
         <div style={{display:'flex',alignItems:'center'}}>
          <img src="/logo.png" alt="Pinna3d.com" style={{height:'100px',width:'auto',display:'block',filter:'drop-shadow(0 0 10px rgba(160,32,240,0.3))'}} />
@@ -46,20 +45,20 @@ export default function Page(){
           </div>
         </div>
 
-        <div onDragOver={e=>e.preventDefault()} onDrop={onFile} style={{border:'1.5px dashed #A020F0',borderRadius:'18px',background:'#13111F',padding:'24px',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',textAlign:'center'}}>
+        <div onDragOver={e=>e.preventDefault()} onDrop={onFile} style={{border:'1.5px dashed #A020F0',borderRadius:'18px',background:'#13111F',padding:'24px',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',textAlign:'center',cursor:'pointer'}}>
           <div style={{width:'56px',height:'56px',background:'#1e1b33',borderRadius:'12px',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'26px',color:'#A020F0',marginBottom:'14px'}}>☁️</div>
           <b style={{fontSize:'15px'}}>Drag & drop your image here</b>
           <span style={{opacity:.5,fontSize:'12px',marginTop:'6px'}}>or browse files to upload</span>
           <span style={{opacity:.35,fontSize:'10px',marginTop:'18px'}}>Supports PNG, JPG, WEBP • Max 20MB</span>
           <div style={{marginTop:'14px',background:'#1a1830',border:'1px solid #2a2840',padding:'6px 12px',borderRadius:'20px',fontSize:'10px',opacity:.7}}>Instant preview • Background removal included</div>
           <label style={{marginTop:'16px',cursor:'pointer',color:'#A020F0',fontSize:'13px',fontWeight:600}}><input type="file" hidden onChange={onFile}/>Browse Files</label>
-          {preview && <img src={preview} style={{width:'90px',borderRadius:'8px',marginTop:'12px',border:'1px solid #2a2840'}}/>}
+          {preview && <img src={preview} alt="preview" style={{width:'90px',borderRadius:'8px',marginTop:'12px',border:'1px solid #2a2840'}}/>}
         </div>
 
         <div style={{background:'#13111F',border:'1px solid #201e33',borderRadius:'18px',padding:'12px'}}>
           <div style={{display:'flex',justifyContent:'space-between',fontSize:'11px',opacity:.5,padding:'6px'}}><span>3D Viewer Preview</span><span>↻ ⛶</span></div>
           <div style={{background:'radial-gradient(ellipse at center,#2a1a4a,#0f0e1a)',borderRadius:'12px',height:'230px',marginTop:'8px',display:'flex',alignItems:'center',justifyContent:'center',position:'relative',overflow:'hidden'}}>
-            {done && preview? <img src={preview} style={{height:'150px',filter:'drop-shadow(0 20px 30px #A020F0)',borderRadius:'8px'}}/> : <div style={{fontSize:'64px',opacity:.8}}>👟</div>}
+            {done && preview? <img src={preview} alt="3d" style={{height:'150px',filter:'drop-shadow(0 20px 30px #A020F0)',borderRadius:'8px'}}/> : <div style={{fontSize:'64px',opacity:.8}}>👟</div>}
             <div style={{position:'absolute',bottom:'10px',left:'10px',background:'rgba(0,0,0,0.6)',padding:'5px 10px',borderRadius:'6px',fontSize:'10px'}}>Model: Sneaker_v01.glb</div>
             {done && <div style={{position:'absolute',top:'10px',right:'10px',background:'#00c950',padding:'3px 8px',borderRadius:'6px',fontSize:'10px',fontWeight:700}}>Ready ✓</div>}
           </div>
