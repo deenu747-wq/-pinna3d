@@ -24,21 +24,21 @@ export default function Page(){
         </div>
         <div style={{display:'flex',gap:'24px',alignItems:'center',fontSize:'15px',fontWeight:500}}>
           <span style={{opacity:.6}}>Features</span>
-          <a href="/image-to-vector" style={{background:'#1a1830',border:'1px solid #A020F0',padding:'7px 14px',borderRadius:'20px',color:'#A020F0',textDecoration:'none',fontSize:'13px',fontWeight:600}}>Image to Vector ★ NEW</a>
           <span style={{color:'#A020F0',fontWeight:600}}>Pricing</span>
           <span style={{opacity:.6}}>Docs</span>
+          <span style={{opacity:.6}}>Blog</span>
           <button style={{background:'#2a2840',padding:'10px 18px',borderRadius:'8px',border:'none',color:'#fff',cursor:'pointer',fontSize:'14px',fontWeight:500}}>Sign In</button>
           <button style={{background:'#A020F0',padding:'10px 20px',borderRadius:'8px',border:'none',color:'#fff',fontWeight:600,cursor:'pointer',fontSize:'14px'}}>Get Started</button>
         </div>
       </header>
 
       <div style={{display:'flex',gap:'10px',padding:'14px 40px',background:'#0f0e1a',borderBottom:'1px solid #1e1c32',overflowX:'auto'}}>
-        <button onClick={()=>setTab("text3d")} style={{padding:'9px 16px',borderRadius:'20px',fontSize:'13px',fontWeight:500,border:tab==="text3d"?'1px solid #A020F0':'1px solid #2a2840',background:tab==="text3d"?'#A020F0':'transparent',color:'#fff',cursor:'pointer'}}>Text to 3D</button>
         <button onClick={()=>setTab("image3d")} style={{padding:'9px 16px',borderRadius:'20px',fontSize:'13px',fontWeight:500,border:tab==="image3d"?'1px solid #A020F0':'1px solid #2a2840',background:tab==="image3d"?'#A020F0':'transparent',color:'#fff',cursor:'pointer'}}>Image to 3D</button>
         <button onClick={()=>setTab("multi")} style={{padding:'9px 16px',borderRadius:'20px',fontSize:'13px',fontWeight:500,border:tab==="multi"?'1px solid #A020F0':'1px solid #2a2840',background:tab==="multi"?'#A020F0':'transparent',color:'#fff',cursor:'pointer'}}>Multi-Image to 3D</button>
+        <button onClick={()=>setTab("text3d")} style={{padding:'9px 16px',borderRadius:'20px',fontSize:'13px',fontWeight:500,border:tab==="text3d"?'1px solid #A020F0':'1px solid #2a2840',background:tab==="text3d"?'#A020F0':'transparent',color:'#fff',cursor:'pointer'}}>Text to 3D</button>
         <button onClick={()=>setTab("texture")} style={{padding:'9px 16px',borderRadius:'20px',fontSize:'13px',fontWeight:500,border:tab==="texture"?'1px solid #A020F0':'1px solid #2a2840',background:tab==="texture"?'#A020F0':'transparent',color:'#fff',cursor:'pointer'}}>Text to Texture</button>
-        <a href="/image-to-vector" style={{padding:'9px 16px',borderRadius:'20px',fontSize:'13px',fontWeight:600,border:'1px solid #A020F0',background:'#A020F0',color:'#fff',textDecoration:'none',cursor:'pointer'}}>Image to Vector ★ NEW</a>
         <button onClick={()=>setTab("template")} style={{padding:'9px 16px',borderRadius:'20px',fontSize:'13px',fontWeight:500,border:tab==="template"?'1px solid #A020F0':'1px solid #2a2840',background:tab==="template"?'#A020F0':'transparent',color:'#fff',cursor:'pointer'}}>Template Studio ★ NEW</button>
+        <a href="/image-to-vector" style={{padding:'9px 16px',borderRadius:'20px',fontSize:'13px',fontWeight:600,border:'1px solid #A020F0',background:'#13111F',color:'#A020F0',textDecoration:'none',cursor:'pointer'}}>Image to Vector ★ NEW</a>
       </div>
 
       <div style={{display:'grid',gridTemplateColumns:'1.1fr 0.9fr 0.9fr',gap:'24px',padding:'40px',maxWidth:'1440px',margin:'0 auto'}}>
@@ -46,25 +46,24 @@ export default function Page(){
           {tab==="image3d" && (
             <div>
               <h1 style={{fontSize:'48px',lineHeight:'1.08',fontWeight:600,letterSpacing:'-0.02em',margin:0}}>Every Image to 3D<br/>in 60 Seconds</h1>
-              <p style={{opacity:.6,marginTop:'16px',fontSize:'16px',lineHeight:'1.6',fontWeight:400}}>Transform photos into production-ready 3D models & scalable vectors instantly. Built for designers, e-commerce, and creators worldwide.</p>
+              <p style={{opacity:.6,marginTop:'16px',fontSize:'16px',lineHeight:'1.6',fontWeight:400}}>Transform photos into production-ready 3D models instantly. Built for designers, e-commerce, and creators worldwide.</p>
             </div>
           )}
+          {tab==="multi" && <div><h1 style={{fontSize:'48px',fontWeight:600,letterSpacing:'-0.02em',margin:0}}>Multi-Image to 3D</h1><p style={{opacity:.6,marginTop:'16px',fontSize:'16px'}}>Upload 3-4 angles for perfect geometry.</p></div>}
           {tab==="text3d" && (
             <div>
               <h1 style={{fontSize:'48px',lineHeight:'1.08',fontWeight:600,letterSpacing:'-0.02em',margin:0}}>Your Text Just Got<br/>a Promotion.</h1>
-              <p style={{opacity:.6,marginTop:'16px',fontSize:'16px',lineHeight:'1.6'}}>Type prompt → 30s preview → 60s textured PBR 4K. Same as Meshy, plus Vector & Banner.</p>
+              <p style={{opacity:.6,marginTop:'16px',fontSize:'16px',lineHeight:'1.6'}}>Type prompt → 30s preview → 60s textured PBR 4K.</p>
               <textarea placeholder="A cute dragon wearing sneakers, PBR, ultra detailed..." style={{width:'100%',height:'100px',marginTop:'18px',background:'#13111F',border:'1px solid #2a2840',borderRadius:'12px',padding:'14px',color:'#fff',fontSize:'14px',outline:'none'}}></textarea>
               <button style={{marginTop:'14px',width:'100%',background:'#A020F0',padding:'13px',borderRadius:'10px',fontWeight:600,border:'none',color:'#fff',cursor:'pointer',fontSize:'14px'}}>Generate 3D — 20 Credits</button>
             </div>
           )}
-          {tab==="multi" && <div><h1 style={{fontSize:'48px',fontWeight:600,letterSpacing:'-0.02em',margin:0}}>Multi-Image to 3D</h1><p style={{opacity:.6,marginTop:'16px',fontSize:'16px'}}>Upload 3-4 angles for perfect geometry.</p></div>}
           {tab==="texture" && <div><h1 style={{fontSize:'48px',fontWeight:600,letterSpacing:'-0.02em',margin:0}}>Text to Texture</h1><p style={{opacity:.6,marginTop:'16px',fontSize:'16px'}}>Retexture any mesh with PBR 4K.</p></div>}
           {tab==="template" && <div><h1 style={{fontSize:'48px',fontWeight:600,letterSpacing:'-0.02em',margin:0}}>Prompt to Banner<br/>Any Size ★</h1><p style={{opacity:.6,marginTop:'16px',fontSize:'16px'}}>Type prompt → Instagram, YouTube, Shopify Banner of any size.</p></div>}
 
-          <div style={{display:'flex',gap:'12px',marginTop:'24px',flexWrap:'wrap'}}>
+          <div style={{display:'flex',gap:'12px',marginTop:'24px'}}>
             <button style={{background:'#A020F0',padding:'14px 22px',borderRadius:'10px',fontWeight:600,border:'none',color:'#fff',cursor:'pointer',fontSize:'14px'}}>✦ Start Creating — Free</button>
             <button style={{border:'1px solid #2a2840',background:'transparent',padding:'14px 22px',borderRadius:'10px',color:'#fff',cursor:'pointer',fontSize:'14px',fontWeight:500}}>◉ Watch Demo</button>
-            <a href="/image-to-vector" style={{border:'1px solid #A020F0',background:'#1a1830',padding:'14px 22px',borderRadius:'10px',color:'#A020F0',textDecoration:'none',cursor:'pointer',fontSize:'14px',fontWeight:600}}>↗ Image to Vector — 1 Click</a>
           </div>
           <div style={{display:'flex',gap:'8px',marginTop:'20px',flexWrap:'wrap',fontSize:'13px'}}>
             <span style={{background:'#13111F',border:'1px solid #201e33',padding:'6px 14px',borderRadius:'20px'}}>⚡ 60s Turnaround</span>
@@ -117,20 +116,20 @@ export default function Page(){
           <div style={{background:'#13111F',border:'1px solid #201e33',borderRadius:'16px',padding:'24px'}}>
             <div style={{textAlign:'center',fontSize:'13px',opacity:.7,fontWeight:500}}>Free • 100 credits • ~5 models</div>
             <div style={{textAlign:'center',fontSize:'34px',fontWeight:600,marginTop:'10px',letterSpacing:'-0.02em'}}>₹0<span style={{fontSize:'14px',opacity:.5,fontWeight:400}}> /mo</span></div>
-            <div style={{marginTop:'18px',fontSize:'14px',opacity:.8}}><div>✓ 5 exports per month</div><div style={{marginTop:'8px'}}>✓ 3D preview only</div><div style={{marginTop:'8px'}}>✓ Standard resolution</div><div style={{marginTop:'8px'}}>✓ Community support</div></div>
+            <div style={{marginTop:'18px',fontSize:'14px',opacity:.8}}><div>✓ 5 exports per month</div><div style={{marginTop:'8px'}}>✓ 3D preview only</div><div style={{marginTop:'8px'}}>✓ Standard resolution</div></div>
             <button style={{marginTop:'22px',width:'100%',background:'transparent',border:'1px solid #2a2840',padding:'12px',borderRadius:'10px',color:'#fff',cursor:'pointer',fontSize:'14px',fontWeight:600}}>Get Started Free</button>
           </div>
           <div style={{background:'#13111F',border:'1.5px solid #A020F0',borderRadius:'16px',padding:'24px',position:'relative'}}>
             <div style={{position:'absolute',top:'-12px',left:'50%',transform:'translateX(-50%)',background:'#A020F0',padding:'4px 14px',borderRadius:'20px',fontSize:'12px',fontWeight:600}}>☆ Most Popular</div>
             <div style={{textAlign:'center',fontSize:'13px',opacity:.7,fontWeight:500}}>Pro • 1000 credits • ~50 models</div>
             <div style={{textAlign:'center',fontSize:'34px',fontWeight:600,marginTop:'10px',letterSpacing:'-0.02em'}}>₹999<span style={{fontSize:'14px',opacity:.5,fontWeight:400}}> /mo</span></div>
-            <div style={{marginTop:'18px',fontSize:'14px',opacity:.8}}><div>✓ 200 exports per month</div><div style={{marginTop:'8px'}}>✓ Full 3D + Vector export</div><div style={{marginTop:'8px'}}>✓ HD & 4K exports</div><div style={{marginTop:'8px'}}>✓ Priority ~60s</div><div style={{marginTop:'8px'}}>✓ Commercial license</div></div>
+            <div style={{marginTop:'18px',fontSize:'14px',opacity:.8}}><div>✓ 200 exports per month</div><div style={{marginTop:'8px'}}>✓ Full 3D + Vector export</div><div style={{marginTop:'8px'}}>✓ HD & 4K exports</div></div>
             <button style={{marginTop:'22px',width:'100%',background:'#A020F0',border:'none',padding:'12px',borderRadius:'10px',color:'#fff',cursor:'pointer',fontSize:'14px',fontWeight:600}}>Start Pro Trial</button>
           </div>
           <div style={{background:'#13111F',border:'1px solid #201e33',borderRadius:'16px',padding:'24px'}}>
             <div style={{textAlign:'center',fontSize:'13px',opacity:.7,fontWeight:500}}>Business • 4000 credits • ~200 models</div>
             <div style={{textAlign:'center',fontSize:'34px',fontWeight:600,marginTop:'10px',letterSpacing:'-0.02em'}}>₹2499<span style={{fontSize:'14px',opacity:.5,fontWeight:400}}> /mo</span></div>
-            <div style={{marginTop:'18px',fontSize:'14px',opacity:.8}}><div>✓ 1000 exports per month</div><div style={{marginTop:'8px'}}>✓ API access + bulk</div><div style={{marginTop:'8px'}}>✓ Team workspaces (5 seats)</div><div style={{marginTop:'8px'}}>✓ Custom vector styles</div><div style={{marginTop:'8px'}}>✓ Priority support</div></div>
+            <div style={{marginTop:'18px',fontSize:'14px',opacity:.8}}><div>✓ 1000 exports per month</div><div style={{marginTop:'8px'}}>✓ API access + bulk</div><div style={{marginTop:'8px'}}>✓ Team workspaces</div></div>
             <button style={{marginTop:'22px',width:'100%',background:'transparent',border:'1px solid #2a2840',padding:'12px',borderRadius:'10px',color:'#fff',cursor:'pointer',fontSize:'14px',fontWeight:600}}>Contact Sales</button>
           </div>
         </div>
