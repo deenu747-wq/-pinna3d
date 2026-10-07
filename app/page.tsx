@@ -18,7 +18,7 @@ export default function Page(){
       {/* HEADER - FIXED FOR YOUR LOGO */}
       <header style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'14px 32px',borderBottom:'1px solid #1e1c32',background:'#0B0A14',position:'sticky',top:0,zIndex:50}}>
         <div style={{display:'flex',alignItems:'center'}}>
-         <img src="/logo.png" alt="Pinna3d.com" style={{height:'112px',width:'auto',display:'block',filter:'drop-shadow(0 0 10px rgba(160,32,240,0.3))'}} />
+         <img src="/logo.png" alt="Pinna3d.com" style={{height:'100px',width:'auto',display:'block',filter:'drop-shadow(0 0 10px rgba(160,32,240,0.3))'}} />
         </div>
         <div style={{display:'flex',gap:'24px',alignItems:'center',fontSize:'14px'}}>
           <span style={{opacity:.6,cursor:'pointer'}}>Features</span>
