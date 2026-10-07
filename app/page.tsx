@@ -1,143 +1,123 @@
 "use client"
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 
-export default function Page(){
+export default function ImageToVector(){
   const [preview,setPreview]=useState("")
-  const [done,setDone]=useState(false)
-  const [tab,setTab]=useState("image3d")
+  const [svgCode,setSvgCode]=useState("")
+  const [busy,setBusy]=useState(false)
+  const [mode,setMode]=useState("2")
   const fileRef = useRef<HTMLInputElement>(null)
+  const imgRef = useRef<HTMLImageElement>(null)
+
+  useEffect(()=>{
+    // Load ImageTracer for real vectorization
+    const s = document.createElement("script")
+    s.src = "https://cdn.jsdelivr.net/npm/imagetracerjs@1.2.6/imagetracer_v1.2.6.js"
+    // @ts-ignore
+    s.onload = ()=>{ window.ImageTracer = window.ImageTracer }
+    document.head.appendChild(s)
+  },[])
 
   const onFile = (e:any)=>{
     const f = e.dataTransfer?.files?.[0] || e.target?.files?.[0]
     if(!f) return
-    setPreview(URL.createObjectURL(f))
-    setDone(false)
-    setTimeout(()=>setDone(true),1000)
+    const url = URL.createObjectURL(f)
+    setPreview(url)
+    setSvgCode("")
+    setBusy(true)
+    setTimeout(()=>doTrace(url),300)
   }
-  const openPicker = () => fileRef.current?.click()
+
+  const doTrace = (url:string)=>{
+    // @ts-ignore
+    const tracer = (window as any).ImageTracer
+    if(!tracer){
+      setBusy(false)
+      return
+    }
+    tracer.loadImage(url, (canvas:any)=>{
+      const options:any = {
+        ltres:1, qtres:1, pathomit:8, rightangleenhance:false,
+        colorsampling:2, numberofcolors: mode==="2"?2 : mode==="16"?16:64,
+        mincolorratio:0, colorquantcycles:3,
+        layering:0, strokewidth:1, linefilter:false, scale:1,
+        roundcoords:1, viewbox:false, desc:false,
+      }
+      const svg = tracer.imagedataToSVG(tracer.getImgdata(canvas), options)
+      setSvgCode(svg)
+      setBusy(false)
+    })
+  }
+
+  const download = (ext:string)=>{
+    if(!svgCode) return
+    const blob = new Blob([svgCode], {type:"image/svg+xml"})
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement("a")
+    a.href = url
+    a.download = `pinna3d-vector-${Date.now()}.svg`
+    if(ext!=="svg"){
+      // For EPS/PDF/AI - we give SVG, user can open in Illustrator. True EPS conversion needs server.
+      alert(`Downloading SVG now. Open in Illustrator → Save as ${ext.toUpperCase()} — 1 click. Server EPS/PDF coming next.`)
+    }
+    a.click()
+  }
 
   return (
     <div style={{background:'#0B0A14',color:'#fff',fontFamily:'Inter, system-ui, sans-serif',minHeight:'100vh'}}>
-      <header style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'16px 40px',borderBottom:'1px solid #1e1c32',background:'#0B0A14',position:'sticky',top:0,zIndex:50}}>
-        <div style={{display:'flex',alignItems:'center',gap:'10px'}}>
-          <img src="/logo.png" alt="Pinna3d.com" style={{height:'100px',width:'auto',objectFit:'contain'}} />
-        </div>
+      <header style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'16px 40px',borderBottom:'1px solid #1e1c32',background:'#0B0A14',position:'sticky',top:0,zIndex:40}}>
+        <a href="/"><img src="/logo.png" alt="Pinna3d.com" style={{height:'100px',width:'auto',objectFit:'contain'}}/></a>
         <div style={{display:'flex',gap:'28px',alignItems:'center',fontSize:'15px',fontWeight:500}}>
-          <span style={{opacity:.6}}>Features</span>
-          <span style={{color:'#A020F0',fontWeight:600}}>Pricing</span>
-          <span style={{opacity:.6}}>Docs</span>
-          <span style={{opacity:.6}}>Blog</span>
-          <button style={{background:'#2a2840',padding:'10px 18px',borderRadius:'8px',border:'none',color:'#fff',cursor:'pointer',fontSize:'14px',fontWeight:500}}>Sign In</button>
+          <a href="/" style={{opacity:.6,textDecoration:'none',color:'#fff'}}>Image to 3D</a>
+          <span style={{color:'#A020F0',fontWeight:600}}>Image to Vector</span>
+          <a href="/#pricing" style={{opacity:.6,textDecoration:'none',color:'#fff'}}>Pricing</a>
           <button style={{background:'#A020F0',padding:'10px 20px',borderRadius:'8px',border:'none',color:'#fff',fontWeight:600,cursor:'pointer',fontSize:'14px'}}>Get Started</button>
         </div>
       </header>
 
-      <div style={{display:'flex',gap:'10px',padding:'14px 40px',background:'#0f0e1a',borderBottom:'1px solid #1e1c32',overflowX:'auto'}}>
-        <button onClick={()=>setTab("text3d")} style={{padding:'9px 16px',borderRadius:'20px',fontSize:'13px',fontWeight:500,border:tab==="text3d"?'1px solid #A020F0':'1px solid #2a2840',background:tab==="text3d"?'#A020F0':'transparent',color:'#fff',cursor:'pointer'}}>Text to 3D</button>
-        <button onClick={()=>setTab("image3d")} style={{padding:'9px 16px',borderRadius:'20px',fontSize:'13px',fontWeight:500,border:tab==="image3d"?'1px solid #A020F0':'1px solid #2a2840',background:tab==="image3d"?'#A020F0':'transparent',color:'#fff',cursor:'pointer'}}>Image to 3D</button>
-        <button onClick={()=>setTab("multi")} style={{padding:'9px 16px',borderRadius:'20px',fontSize:'13px',fontWeight:500,border:tab==="multi"?'1px solid #A020F0':'1px solid #2a2840',background:tab==="multi"?'#A020F0':'transparent',color:'#fff',cursor:'pointer'}}>Multi-Image to 3D</button>
-        <button onClick={()=>setTab("texture")} style={{padding:'9px 16px',borderRadius:'20px',fontSize:'13px',fontWeight:500,border:tab==="texture"?'1px solid #A020F0':'1px solid #2a2840',background:tab==="texture"?'#A020F0':'transparent',color:'#fff',cursor:'pointer'}}>Text to Texture</button>
-        <button onClick={()=>setTab("vector")} style={{padding:'9px 16px',borderRadius:'20px',fontSize:'13px',fontWeight:500,border:tab==="vector"?'1px solid #A020F0':'1px solid #2a2840',background:tab==="vector"?'#A020F0':'transparent',color:'#fff',cursor:'pointer'}}>Image to Vector ★ NEW</button>
-        <button onClick={()=>setTab("template")} style={{padding:'9px 16px',borderRadius:'20px',fontSize:'13px',fontWeight:500,border:tab==="template"?'1px solid #A020F0':'1px solid #2a2840',background:tab==="template"?'#A020F0':'transparent',color:'#fff',cursor:'pointer'}}>Template Studio ★ NEW</button>
-      </div>
-
-      <div style={{display:'grid',gridTemplateColumns:'1.1fr 0.9fr 0.9fr',gap:'24px',padding:'40px',maxWidth:'1440px',margin:'0 auto'}}>
+      <div style={{maxWidth:'1440px',margin:'0 auto',padding:'40px',display:'grid',gridTemplateColumns:'1.15fr 0.85fr',gap:'28px'}}>
         <div>
-          {tab==="image3d" && (
-            <div>
-              <h1 style={{fontSize:'48px',lineHeight:'1.08',fontWeight:600,letterSpacing:'-0.02em',margin:0}}>Every Image to 3D<br/>or Vector in 60 Seconds</h1>
-              <p style={{opacity:.6,marginTop:'16px',fontSize:'16px',lineHeight:'1.6',fontWeight:400}}>Transform photos into production-ready 3D models & scalable vectors instantly. Built for designers, e-commerce, and creators worldwide.</p>
-            </div>
-          )}
-          {tab==="text3d" && (
-            <div>
-              <h1 style={{fontSize:'48px',lineHeight:'1.08',fontWeight:600,letterSpacing:'-0.02em',margin:0}}>Your Text Just Got<br/>a Promotion.</h1>
-              <p style={{opacity:.6,marginTop:'16px',fontSize:'16px',lineHeight:'1.6'}}>Type prompt → 30s preview → 60s textured PBR 4K. Same as Meshy, plus Vector & Banner.</p>
-              <textarea placeholder="A cute dragon wearing sneakers, PBR, ultra detailed..." style={{width:'100%',height:'100px',marginTop:'18px',background:'#13111F',border:'1px solid #2a2840',borderRadius:'12px',padding:'14px',color:'#fff',fontSize:'14px',outline:'none'}}></textarea>
-              <button style={{marginTop:'14px',width:'100%',background:'#A020F0',padding:'13px',borderRadius:'10px',fontWeight:600,border:'none',color:'#fff',cursor:'pointer',fontSize:'14px'}}>Generate 3D — 20 Credits</button>
-            </div>
-          )}
-          {tab==="vector" && (
-            <div>
-              <h1 style={{fontSize:'48px',lineHeight:'1.08',fontWeight:600,letterSpacing:'-0.02em',margin:0}}>JPG to SVG<br/>in 2 Seconds ★</h1>
-              <p style={{opacity:.6,marginTop:'16px',fontSize:'16px',lineHeight:'1.6'}}>Extra power over Meshy — Instant browser vectorization. SVG, EPS, PDF, AI. Infinite scale.</p>
-            </div>
-          )}
-          {tab==="template" && (
-            <div>
-              <h1 style={{fontSize:'48px',lineHeight:'1.08',fontWeight:600,letterSpacing:'-0.02em',margin:0}}>Prompt to Banner<br/>Any Size ★</h1>
-              <p style={{opacity:.6,marginTop:'16px',fontSize:'16px',lineHeight:'1.6'}}>Type prompt → Instagram, YouTube, Shopify Banner of any size.</p>
-            </div>
-          )}
-          {tab==="multi" && <div><h1 style={{fontSize:'48px',fontWeight:600,letterSpacing:'-0.02em',margin:0}}>Multi-Image to 3D</h1><p style={{opacity:.6,marginTop:'16px',fontSize:'16px'}}>Upload 3-4 angles for perfect geometry.</p></div>}
-          {tab==="texture" && <div><h1 style={{fontSize:'48px',fontWeight:600,letterSpacing:'-0.02em',margin:0}}>Text to Texture</h1><p style={{opacity:.6,marginTop:'16px',fontSize:'16px'}}>Retexture any mesh with PBR 4K.</p></div>}
+          <h1 style={{fontSize:'48px',lineHeight:'1.08',fontWeight:600,letterSpacing:'-0.02em',margin:0}}>Image to Vector<br/>in 2 Seconds</h1>
+          <p style={{opacity:.6,marginTop:'16px',fontSize:'16px',lineHeight:'1.6',fontWeight:400}}>Upload JPG, PNG, WEBP → True editable SVG vector. Infinite scale, no pixelation. Private, browser-based, 1 credit.</p>
 
-          <div style={{display:'flex',gap:'12px',marginTop:'24px'}}>
-            <button style={{background:'#A020F0',padding:'14px 22px',borderRadius:'10px',fontWeight:600,border:'none',color:'#fff',cursor:'pointer',fontSize:'14px'}}>✦ Start Creating — Free</button>
-            <button style={{border:'1px solid #2a2840',background:'transparent',padding:'14px 22px',borderRadius:'10px',color:'#fff',cursor:'pointer',fontSize:'14px',fontWeight:500}}>◉ Watch Demo</button>
+          <div style={{marginTop:'22px',display:'flex',gap:'8px',flexWrap:'wrap',fontSize:'13px'}}>
+            <span style={{background:'#13111F',border:'1px solid #201e33',padding:'6px 14px',borderRadius:'20px'}}>✓ True Vector Paths</span>
+            <span style={{background:'#13111F',border:'1px solid #201e33',padding:'6px 14px',borderRadius:'20px'}}>✓ Infinite Zoom</span>
+            <span style={{background:'#13111F',border:'1px solid #201e33',padding:'6px 14px',borderRadius:'20px'}}>✓ Figma / AI / Corel Ready</span>
           </div>
-          <div style={{display:'flex',gap:'8px',marginTop:'20px',flexWrap:'wrap',fontSize:'13px'}}>
-            <span style={{background:'#13111F',border:'1px solid #201e33',padding:'6px 14px',borderRadius:'20px'}}>⚡ 60s Turnaround</span>
-            <span style={{background:'#13111F',border:'1px solid #201e33',padding:'6px 14px',borderRadius:'20px'}}>• 100k+ assets generated</span>
-            <span style={{background:'#13111F',border:'1px solid #201e33',padding:'6px 14px',borderRadius:'20px'}}>• No credit card required</span>
-            <span style={{background:'#13111F',border:'1px solid #201e33',padding:'6px 14px',borderRadius:'20px'}}>♾️ 7 Formats</span>
+
+          <div style={{marginTop:'26px',background:'#13111F',border:'1px solid #201e33',borderRadius:'16px',padding:'20px'}}>
+            <div style={{fontSize:'14px',fontWeight:600,marginBottom:'14px',letterSpacing:'-0.01em'}}>Vector Settings</div>
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'12px'}}>
+              <div><div style={{fontSize:'11px',opacity:.6,marginBottom:'6px'}}>COLOR MODE</div><select value={mode} onChange={e=>setMode(e.target.value)} style={{width:'100%',background:'#0B0A14',border:'1px solid #2a2840',borderRadius:'8px',padding:'11px',color:'#fff',fontSize:'13px'}}><option value="2">2 colors — Logo / B&W (Recommended)</option><option value="16">16 colors — Illustration</option><option value="64">64 colors — Photo</option></select></div>
+              <div><div style={{fontSize:'11px',opacity:.6,marginBottom:'6px'}}>BACKGROUND</div><select style={{width:'100%',background:'#0B0A14',border:'1px solid #2a2840',borderRadius:'8px',padding:'11px',color:'#fff',fontSize:'13px'}}><option>Transparent (Recommended)</option><option>Keep White</option><option>Remove Background</option></select></div>
+            </div>
           </div>
+
+          <div style={{marginTop:'18px',display:'grid',gridTemplateColumns:'1fr 1fr 1fr 1fr',gap:'8px'}}>
+            <button onClick={()=>download("svg")} disabled={!svgCode} style={{background:svgCode?'#A020F0':'#2a2840',padding:'13px',borderRadius:'10px',border:'none',color:'#fff',fontWeight:600,cursor:'pointer',fontSize:'13px',opacity:svgCode?1:.6}}>{busy?'Tracing...':'Download SVG'}</button>
+            <button onClick={()=>download("eps")} disabled={!svgCode} style={{background:'#1a1830',border:'1px solid #2a2840',padding:'13px',borderRadius:'10px',color:'#fff',cursor:'pointer',fontSize:'13px',opacity:svgCode?1:.6}}>EPS</button>
+            <button onClick={()=>download("pdf")} disabled={!svgCode} style={{background:'#1a1830',border:'1px solid #2a2840',padding:'13px',borderRadius:'10px',color:'#fff',cursor:'pointer',fontSize:'13px',opacity:svgCode?1:.6}}>PDF</button>
+            <button onClick={()=>download("ai")} disabled={!svgCode} style={{background:'#1a1830',border:'1px solid #2a2840',padding:'13px',borderRadius:'10px',color:'#fff',cursor:'pointer',fontSize:'13px',opacity:svgCode?1:.6}}>AI</button>
+          </div>
+          <div style={{marginTop:'10px',fontSize:'11px',opacity:.4}}>1 credit per vector • Unlimited on Pro ₹999 • Private — never uploaded to server</div>
         </div>
 
-        <div onClick={openPicker} onDragOver={e=>e.preventDefault()} onDrop={onFile} style={{border:'1.5px dashed #A020F0',borderRadius:'18px',background:'#13111F',padding:'24px',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',textAlign:'center',cursor:'pointer'}}>
-          <input ref={fileRef} type="file" hidden accept="image/*" onChange={onFile} />
-          <div style={{width:'60px',height:'60px',background:'#1e1b33',borderRadius:'12px',display:'grid',placeItems:'center',fontSize:'28px',color:'#A020F0',marginBottom:'14px'}}>☁️</div>
-          <b style={{fontSize:'16px',fontWeight:600}}>Drag & drop your image here</b>
-          <span style={{opacity:.5,fontSize:'13px',marginTop:'6px'}}>or browse files to upload</span>
-          <span style={{opacity:.35,fontSize:'11px',marginTop:'18px'}}>Supports PNG, JPG, WEBP • Max 20MB</span>
-          <div style={{marginTop:'16px',background:'#A020F0',color:'#fff',padding:'11px 22px',borderRadius:'8px',fontSize:'13px',fontWeight:600}}>Browse Files</div>
-          {preview && <img src={preview} alt="preview" style={{width:'100px',borderRadius:'8px',marginTop:'12px',border:'1px solid #2a2840'}}/>}
-        </div>
+        <div>
+          <div onClick={()=>fileRef.current?.click()} onDragOver={e=>e.preventDefault()} onDrop={onFile} style={{border:'1.5px dashed #A020F0',borderRadius:'18px',background:'#13111F',padding:'24px',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',textAlign:'center',cursor:'pointer',minHeight:'300px'}}>
+            <input ref={fileRef} type="file" hidden accept="image/*" onChange={onFile}/>
+            <div style={{width:'60px',height:'60px',background:'#1e1b33',borderRadius:'12px',display:'grid',placeItems:'center',fontSize:'28px',color:'#A020F0',marginBottom:'14px'}}>☁️</div>
+            <b style={{fontSize:'16px',fontWeight:600}}>Drop image here — JPG, PNG, WEBP</b>
+            <span style={{opacity:.5,fontSize:'13px',marginTop:'6px'}}>or browse files</span>
+            <div style={{marginTop:'16px',background:'#A020F0',color:'#fff',padding:'11px 22px',borderRadius:'8px',fontSize:'13px',fontWeight:600}}>Browse Files</div>
+            {preview && <img ref={imgRef} src={preview} alt="preview" style={{width:'110px',borderRadius:'8px',marginTop:'16px',border:'1px solid #2a2840'}}/>}
+          </div>
 
-        <div style={{background:'#13111F',border:'1px solid #201e33',borderRadius:'18px',padding:'14px'}}>
-          <div style={{display:'flex',justifyContent:'space-between',fontSize:'12px',opacity:.5,padding:'6px'}}><span>3D Viewer Preview</span><span>↻ ⛶</span></div>
-          <div style={{background:'radial-gradient(ellipse at center,#2a1a4a,#0f0e1a)',borderRadius:'12px',height:'240px',marginTop:'8px',display:'grid',placeItems:'center',position:'relative',overflow:'hidden'}}>
-            {done && preview? <img src={preview} alt="3d" style={{height:'160px',borderRadius:'8px'}}/> : <div style={{fontSize:'68px'}}>👟</div>}
-            <div style={{position:'absolute',bottom:'10px',left:'10px',background:'rgba(0,0,0,0.6)',padding:'6px 10px',borderRadius:'6px',fontSize:'11px'}}>Model: Sneaker_v01.glb</div>
-          </div>
-          <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:'6px',marginTop:'12px'}}>
-            <button style={{background:'#1a1830',border:'1px solid #2a2840',padding:'9px',borderRadius:'8px',color:'#fff',cursor:'pointer',fontSize:'11px',fontWeight:500}}>GLB</button>
-            <button style={{background:'#1a1830',border:'1px solid #2a2840',padding:'9px',borderRadius:'8px',color:'#fff',cursor:'pointer',fontSize:'11px',fontWeight:500}}>FBX</button>
-            <button style={{background:'#1a1830',border:'1px solid #2a2840',padding:'9px',borderRadius:'8px',color:'#fff',cursor:'pointer',fontSize:'11px',fontWeight:500}}>OBJ</button>
-            <button style={{background:'#1a1830',border:'1px solid #2a2840',padding:'9px',borderRadius:'8px',color:'#fff',cursor:'pointer',fontSize:'11px',fontWeight:500}}>STL</button>
-            <button style={{background:'#1a1830',border:'1px solid #2a2840',padding:'9px',borderRadius:'8px',color:'#fff',cursor:'pointer',fontSize:'11px',fontWeight:500}}>3MF</button>
-            <button style={{background:'#1a1830',border:'1px solid #2a2840',padding:'9px',borderRadius:'8px',color:'#fff',cursor:'pointer',fontSize:'11px',fontWeight:500}}>USDZ</button>
-            <button style={{background:'#1a1830',border:'1px solid #2a2840',padding:'9px',borderRadius:'8px',color:'#fff',cursor:'pointer',fontSize:'11px',fontWeight:500}}>BLEND</button>
-          </div>
-          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'8px',marginTop:'10px'}}>
-            <button style={{background:'#1a1830',border:'1px solid #2a2840',padding:'11px',borderRadius:'8px',color:'#fff',cursor:'pointer',fontSize:'13px',fontWeight:500}}>Download GLB</button>
-            <button style={{background:'#A020F0',padding:'11px',borderRadius:'8px',color:'#fff',border:'none',cursor:'pointer',fontSize:'13px',fontWeight:600}}>Export SVG</button>
-          </div>
-        </div>
-      </div>
-
-      <div style={{padding:'28px 40px 60px',maxWidth:'1440px',margin:'0 auto',borderTop:'1px solid #161426'}}>
-        <h2 style={{textAlign:'center',fontSize:'32px',fontWeight:600,letterSpacing:'-0.015em',margin:'12px 0 6px'}}>Simple, transparent pricing</h2>
-        <p style={{textAlign:'center',opacity:.5,fontSize:'15px',marginBottom:'28px'}}>Start free. Upgrade when you need more. Credits like Meshy.</p>
-        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:'20px'}}>
-          <div style={{background:'#13111F',border:'1px solid #201e33',borderRadius:'16px',padding:'24px'}}>
-            <div style={{textAlign:'center',fontSize:'13px',opacity:.7,fontWeight:500}}>Free • 100 credits • ~5 models</div>
-            <div style={{textAlign:'center',fontSize:'34px',fontWeight:600,marginTop:'10px',letterSpacing:'-0.02em'}}>₹0<span style={{fontSize:'14px',opacity:.5,fontWeight:400}}> /mo</span></div>
-            <div style={{marginTop:'18px',fontSize:'14px',opacity:.8}}><div>✓ 5 exports per month</div><div style={{marginTop:'8px'}}>✓ 3D preview only</div><div style={{marginTop:'8px'}}>✓ Standard resolution</div><div style={{marginTop:'8px'}}>✓ Community support</div></div>
-            <button style={{marginTop:'22px',width:'100%',background:'transparent',border:'1px solid #2a2840',padding:'12px',borderRadius:'10px',color:'#fff',cursor:'pointer',fontSize:'14px',fontWeight:600}}>Get Started Free</button>
-          </div>
-          <div style={{background:'#13111F',border:'1.5px solid #A020F0',borderRadius:'16px',padding:'24px',position:'relative'}}>
-            <div style={{position:'absolute',top:'-12px',left:'50%',transform:'translateX(-50%)',background:'#A020F0',padding:'4px 14px',borderRadius:'20px',fontSize:'12px',fontWeight:600}}>☆ Most Popular</div>
-            <div style={{textAlign:'center',fontSize:'13px',opacity:.7,fontWeight:500}}>Pro • 1000 credits • ~50 models</div>
-            <div style={{textAlign:'center',fontSize:'34px',fontWeight:600,marginTop:'10px',letterSpacing:'-0.02em'}}>₹999<span style={{fontSize:'14px',opacity:.5,fontWeight:400}}> /mo</span></div>
-            <div style={{marginTop:'18px',fontSize:'14px',opacity:.8}}><div>✓ 200 exports per month</div><div style={{marginTop:'8px'}}>✓ Full 3D + Vector export</div><div style={{marginTop:'8px'}}>✓ HD & 4K exports</div><div style={{marginTop:'8px'}}>✓ Priority ~60s</div><div style={{marginTop:'8px'}}>✓ Commercial license</div></div>
-            <button style={{marginTop:'22px',width:'100%',background:'#A020F0',border:'none',padding:'12px',borderRadius:'10px',color:'#fff',cursor:'pointer',fontSize:'14px',fontWeight:600}}>Start Pro Trial</button>
-          </div>
-          <div style={{background:'#13111F',border:'1px solid #201e33',borderRadius:'16px',padding:'24px'}}>
-            <div style={{textAlign:'center',fontSize:'13px',opacity:.7,fontWeight:500}}>Business • 4000 credits • ~200 models</div>
-            <div style={{textAlign:'center',fontSize:'34px',fontWeight:600,marginTop:'10px',letterSpacing:'-0.02em'}}>₹2499<span style={{fontSize:'14px',opacity:.5,fontWeight:400}}> /mo</span></div>
-            <div style={{marginTop:'18px',fontSize:'14px',opacity:.8}}><div>✓ 1000 exports per month</div><div style={{marginTop:'8px'}}>✓ API access + bulk</div><div style={{marginTop:'8px'}}>✓ Team workspaces (5 seats)</div><div style={{marginTop:'8px'}}>✓ Custom vector styles</div><div style={{marginTop:'8px'}}>✓ Priority support</div></div>
-            <button style={{marginTop:'22px',width:'100%',background:'transparent',border:'1px solid #2a2840',padding:'12px',borderRadius:'10px',color:'#fff',cursor:'pointer',fontSize:'14px',fontWeight:600}}>Contact Sales</button>
+          <div style={{marginTop:'16px',background:'#13111F',border:'1px solid #201e33',borderRadius:'18px',padding:'14px'}}>
+            <div style={{display:'flex',justifyContent:'space-between',fontSize:'12px',opacity:.6,padding:'2px 2px 8px'}}><span>Vector Preview — Zoom ∞</span><span>{busy?'⏳ Tracing...':'✓ Real SVG'}</span></div>
+            <div style={{background:'#fff',borderRadius:'12px',height:'280px',display:'grid',placeItems:'center',overflow:'auto',padding:'10px'}}>
+              {svgCode? <div dangerouslySetInnerHTML={{__html:svgCode}} style={{width:'100%',height:'100%',display:'grid',placeItems:'center'}}/> : preview? <div style={{color:'#999',fontSize:'13px'}}>Generating vector...</div> : <div style={{color:'#999',fontSize:'13px'}}>No image yet</div>}
+            </div>
           </div>
         </div>
       </div>
