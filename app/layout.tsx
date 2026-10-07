@@ -1,10 +1,18 @@
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+import "./globals.css";
+
+export const metadata = {
+  title: "Pinna3d - Text to 3D, Image to 3D, Vector, Template",
+  description: "Meshy.ai alternative + Vector + Banner generator",
+};
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="en">
-      <head>
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet" />
-      </head>
-      <body style={{margin:0,background:'#0B0A14',fontFamily:'Inter, system-ui, sans-serif'}}>{children}</body>
+      <body>{children}</body>
     </html>
-  )
+  );
 }
