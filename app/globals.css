@@ -1,2 +1,5 @@
-* { box-sizing: border-box; }
-html,body { margin:0; padding:0; background:#0B0A14; }
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body { background: #0A0A0F; color: white; }
