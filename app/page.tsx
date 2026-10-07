@@ -20,7 +20,7 @@ export default function Page(){
     <div style={{background:'#0B0A14',color:'#fff',fontFamily:'Inter,system-ui,sans-serif',minHeight:'100vh'}}>
       <header style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'14px 36px',borderBottom:'1px solid #1e1c32',background:'#0B0A14',position:'sticky',top:0,zIndex:50}}>
         <div style={{display:'flex',alignItems:'center',gap:'10px'}}>
-  <img src="/logo.png" alt="Pinna3d.com" style={{height:'38px',width:'auto',objectFit:'contain'}} />
+  <img src="/logo.png" alt="Pinna3d.com" style={{height:'110px',width:'auto',objectFit:'contain'}} />
 </div>
         <div style={{display:'flex',gap:'24px',alignItems:'center',fontSize:'14px'}}>
           <span style={{opacity:.6}}>Features</span>
