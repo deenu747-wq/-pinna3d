@@ -1,96 +1,94 @@
 "use client"
-import { useState, useRef } from "react"
+import { useState } from 'react'
 
 export default function Page(){
-  const [preview,setPreview]=useState("")
-  const [done,setDone]=useState(false)
-  const fileRef = useRef<HTMLInputElement>(null)
-
-  const onFile = (e:any)=>{
-    const f = e.dataTransfer?.files?.[0] || e.target?.files?.[0]
-    if(!f) return
-    setPreview(URL.createObjectURL(f))
-    setDone(false)
-    setTimeout(()=>setDone(true),1000)
-  }
-
-  const openPicker = () => fileRef.current?.click()
-
+  const [tab, setTab] = useState('text3d')
+  const tabs = [
+    {id:'text3d', label:'Text to 3D'},
+    {id:'image3d', label:'Image to 3D'},
+    {id:'multi', label:'Multi-Image'},
+    {id:'texture', label:'Text to Texture'},
+    {id:'vector', label:'Image to Vector ★ New'},
+    {id:'template', label:'Template Studio ★ New'},
+  ]
   return (
-    <div style={{background:'#0B0A14',color:'#fff',fontFamily:'Inter,system-ui,sans-serif',minHeight:'100vh'}}>
-      <header style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'14px 36px',borderBottom:'1px solid #1e1c32',background:'#0B0A14',position:'sticky',top:0,zIndex:50}}>
-        <div style={{display:'flex',alignItems:'center',gap:'10px'}}>
-  <img src="/logo.png" alt="Pinna3d.com" style={{height:'110px',width:'auto',objectFit:'contain'}} />
-</div>
-        <div style={{display:'flex',gap:'24px',alignItems:'center',fontSize:'14px'}}>
-          <span style={{opacity:.6}}>Features</span>
-          <span style={{color:'#A020F0',fontWeight:700}}>Pricing</span>
-          <span style={{opacity:.6}}>Docs</span>
-          <span style={{opacity:.6}}>Blog</span>
-          <button style={{background:'#2a2840',padding:'8px 16px',borderRadius:'8px',border:'none',color:'#fff',cursor:'pointer'}}>Sign In</button>
-          <button style={{background:'#A020F0',padding:'8px 18px',borderRadius:'8px',border:'none',color:'#fff',fontWeight:700,cursor:'pointer'}}>Get Started</button>
+    <div className="min-h-screen bg-[#0A0A0F] text-white selection:bg-purple-500/30">
+      {/* NAV LIKE MESHY */}
+      <nav className="sticky top-0 z-50 backdrop-blur-xl bg-[#0A0A0F]/80 border-b border-white/[0.06] px-6 md:px-10 h-[64px] flex items-center justify-between">
+        <div className="flex items-center gap-8">
+          <div className="flex items-center gap-2 font-bold text-[18px]"><div className="w-7 h-7 bg-white text-black rounded-md flex items-center justify-center">◈</div> Pinna3d</div>
+          <div className="hidden lg:flex gap-6 text-[13px] text-white/50"><span className="text-white">Create</span><span>Explore</span><span>API</span><span>Pricing</span></div>
         </div>
-      </header>
+        <div className="flex items-center gap-3"><button className="text-[13px] text-white/60">Sign in</button><button className="px-5 h-8 bg-white text-black rounded-full text-[13px] font-semibold">Get Started Free</button></div>
+      </nav>
 
-      <div style={{display:'grid',gridTemplateColumns:'1.1fr 0.9fr 0.9fr',gap:'20px',padding:'36px',maxWidth:'1400px',margin:'0 auto'}}>
-        <div>
-          <h1 style={{fontSize:'42px',lineHeight:'1.05',fontWeight:800,margin:0}}>Every Image to 3D or Vector<br/>in 60 Seconds</h1>
-          <p style={{opacity:.6,marginTop:'14px',fontSize:'14px',lineHeight:'1.6'}}>Transform photos into production-ready 3D models & scalable vectors instantly. Built for designers, e-commerce, and creators in Delhi.</p>
-          <div style={{display:'flex',gap:'12px',marginTop:'22px'}}>
-            <button style={{background:'#A020F0',padding:'12px 20px',borderRadius:'10px',fontWeight:700,border:'none',color:'#fff',cursor:'pointer'}}>✦ Start Creating — Free</button>
-            <button style={{border:'1px solid #2a2840',background:'transparent',padding:'12px 20px',borderRadius:'10px',color:'#fff',cursor:'pointer'}}>◉ Watch Demo</button>
+      {/* MAIN CREATOR LIKE MESHY */}
+      <div className="grid lg:grid-cols-[420px_1fr_340px] min-h-[calc(100vh-64px)]">
+        {/* LEFT - PROMPT */}
+        <div className="border-r border-white/[0.06] p-5 flex flex-col gap-5 bg-[#101015]">
+          <div className="flex flex-wrap gap-1.5 p-1 bg-black/40 rounded-full border border-white/5">
+            {tabs.map(t=> <button key={t.id} onClick={()=>setTab(t.id)} className={`px-3 py-1.5 rounded-full text-[11px] transition ${tab===t.id?'bg-white text-black font-semibold':'text-white/50 hover:text-white'}`}>{t.label}</button>)}
           </div>
-          <div style={{display:'flex',gap:'8px',marginTop:'20px',flexWrap:'wrap',fontSize:'11px'}}>
-            {['⚡ 60s Turnaround','• 100k+ assets generated','• No credit card required','📍 Made in Delhi, India 🇮🇳'].map(t=>(
-              <span key={t} style={{background:'#13111F',border:'1px solid #201e33',padding:'5px 12px',borderRadius:'20px'}}>{t}</span>
-            ))}
-          </div>
+
+          {tab==='text3d' && <>
+            <div className="space-y-3"><label className="text-[11px] text-white/40 uppercase tracking-widest">Prompt</label><textarea className="w-full h-32 bg-black/50 border border-white/10 rounded-xl p-3 text-[13px] outline-none focus:border-purple-500/50" placeholder="A cute dragon wearing sneakers, high detail, PBR textures..."></textarea></div>
+            <div className="grid grid-cols-2 gap-3"><div><label className="text-[10px] text-white/30">Style</label><select className="w-full mt-1 bg-black/50 border border-white/10 rounded-lg h-9 text-[12px] px-2"><option>Realistic</option><option>Cartoon</option><option>Cyberpunk</option><option>Low Poly</option></select></div><div><label className="text-[10px] text-white/30">Polycount</label><select className="w-full mt-1 bg-black/50 border border-white/10 rounded-lg h-9 text-[12px] px-2"><option>30K (Recommended)</option><option>10K</option><option>100K</option></select></div></div>
+            <button className="w-full h-11 bg-white text-black rounded-full font-semibold text-[13px] mt-2">Generate 3D — 20 Credits ✦</button>
+            <p className="text-[10px] text-white/20 text-center">Preview in ~30s • Textured in ~60s</p>
+          </>}
+
+          {tab==='image3d' && <>
+            <div className="border border-dashed border-purple-500/40 bg-purple-500/5 rounded-xl h-40 flex flex-col items-center justify-center gap-2"><span className="text-xl">🖼️</span><span className="text-[12px]">Drop image or click</span><span className="text-[10px] text-white/30">PNG/JPG/WEBP • Auto background removal</span></div>
+            <button className="w-full h-11 bg-white text-black rounded-full font-semibold text-[13px]">Generate from Image — 20 Credits</button>
+          </>}
+
+          {tab==='vector' && <>
+            <div className="bg-gradient-to-br from-violet-500/10 to-fuchsia-500/10 border border-violet-500/20 rounded-xl p-4"><p className="text-[12px] font-semibold">Image to Vector — Extra Power over Meshy</p><p className="text-[11px] text-white/40 mt-1">Instant browser conversion. No credits for preview, 1 credit for export.</p></div>
+            <div className="border border-dashed border-white/10 rounded-xl h-32 flex items-center justify-center text-[12px] text-white/40">Drop JPG/PNG → Get SVG/EPS/PDF/AI</div>
+            <div className="grid grid-cols-4 gap-2 text-[10px]">{['SVG','EPS','PDF','AI'].map(f=><div key={f} className="h-8 bg-white/5 border border-white/10 rounded-lg flex items-center justify-center">{f}</div>)}</div>
+            <button className="w-full h-11 bg-violet-600 rounded-full font-semibold text-[13px]">Vectorize — 1 Credit</button>
+          </>}
+
+          {tab==='template' && <>
+            <div className="bg-gradient-to-br from-emerald-500/10 to-teal-500/10 border border-emerald-500/20 rounded-xl p-4"><p className="text-[12px] font-semibold">Prompt to Banner/Template — NEW REVENUE</p><p className="text-[11px] text-white/40 mt-1">Any size. One prompt.</p></div>
+            <textarea className="w-full h-24 bg-black/50 border border-white/10 rounded-xl p-3 text-[13px]" placeholder="Diwali Sale 50% OFF, modern, neon, bold text..."></textarea>
+            <div className="grid grid-cols-3 gap-2 text-[10px]">{['Insta Post 1080x1080','Story 1080x1920','YT Thumb 1280x720','Shopify 1920x600','Logo 1024x1024','PPT 16:9'].map(s=><button key={s} className="p-2 bg-white/5 border border-white/10 rounded-lg text-left leading-tight">{s}</button>)}</div>
+            <button className="w-full h-11 bg-emerald-500 text-black rounded-full font-semibold text-[13px]">Generate Template — 5 Credits</button>
+          </>}
+
+          {(tab==='multi'||tab==='texture') && <div className="text-[12px] text-white/30 py-10 text-center">Same as Meshy — Multi-Image (3-4 angles) and Text to Texture modes. Build after main tabs live.</div>}
         </div>
 
-        {/* THIS WHOLE BOX IS NOW CLICKABLE */}
-        <div onClick={openPicker} onDragOver={e=>e.preventDefault()} onDrop={onFile} style={{border:'1.5px dashed #A020F0',borderRadius:'18px',background:'#13111F',padding:'24px',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',textAlign:'center',cursor:'pointer'}}>
-          <input ref={fileRef} type="file" hidden accept="image/*" onChange={onFile} />
-          <div style={{width:'56px',height:'56px',background:'#1e1b33',borderRadius:'12px',display:'grid',placeItems:'center',fontSize:'26px',color:'#A020F0',marginBottom:'14px'}}>☁️</div>
-          <b style={{fontSize:'15px'}}>Drag & drop your image here</b>
-          <span style={{opacity:.5,fontSize:'12px',marginTop:'6px'}}>or browse files to upload</span>
-          <span style={{opacity:.35,fontSize:'10px',marginTop:'18px'}}>Supports PNG, JPG, WEBP • Max 20MB</span>
-          <div style={{marginTop:'14px',background:'#1a1830',border:'1px solid #2a2840',padding:'6px 12px',borderRadius:'20px',fontSize:'10px',opacity:.7}}>Instant preview • Background removal included</div>
-          <div style={{marginTop:'16px',background:'#A020F0',color:'#fff',padding:'10px 20px',borderRadius:'8px',fontSize:'13px',fontWeight:600}}>Browse Files</div>
-          {preview && <img src={preview} alt="preview" style={{width:'90px',borderRadius:'8px',marginTop:'12px',border:'1px solid #2a2840'}}/>}
+        {/* CENTER - VIEWER */}
+        <div className="bg-[#0E0E12] flex flex-col relative">
+          <div className="h-10 border-b border-white/[0.06] flex items-center justify-between px-4 text-[11px] text-white/30"><span>Viewer • PBR • Wireframe • 4K</span><span className="flex gap-2"><span className="px-2 py-1 bg-white/5 rounded">HD</span><span className="px-2 py-1 bg-white/5 rounded">Wire</span></span></div>
+          <div className="flex-1 flex flex-col items-center justify-center gap-6">
+            <div className="text-[80px]">👟</div><p className="text-[12px] text-white/20">Your generated asset appears here • 360° + AR</p>
+            <div className="flex gap-2 text-[10px]">{['GLB','FBX','OBJ','STL','3MF','USDZ','BLEND'].map(f=><span key={f} className="px-2.5 py-1 bg-white/5 border border-white/10 rounded-full">{f}</span>)}</div>
+          </div>
+          <div className="p-4 border-t border-white/[0.06] grid grid-cols-3 gap-2"><button className="h-9 bg-white/5 border border-white/10 rounded-full text-[12px]">Remesh</button><button className="h-9 bg-white/5 border border-white/10 rounded-full text-[12px]">Rig & Animate</button><button className="h-9 bg-white text-black rounded-full text-[12px] font-semibold">Download All 7</button></div>
         </div>
 
-        <div style={{background:'#13111F',border:'1px solid #201e33',borderRadius:'18px',padding:'12px'}}>
-          <div style={{display:'flex',justifyContent:'space-between',fontSize:'11px',opacity:.5,padding:'6px'}}><span>3D Viewer Preview</span><span>↻ ⛶</span></div>
-          <div style={{background:'radial-gradient(ellipse at center,#2a1a4a,#0f0e1a)',borderRadius:'12px',height:'230px',marginTop:'8px',display:'grid',placeItems:'center',position:'relative',overflow:'hidden'}}>
-            {done && preview? <img src={preview} alt="3d" style={{height:'150px',borderRadius:'8px'}}/> : <div style={{fontSize:'64px'}}>👟</div>}
-            <div style={{position:'absolute',bottom:'10px',left:'10px',background:'rgba(0,0,0,0.6)',padding:'5px 10px',borderRadius:'6px',fontSize:'10px'}}>Model: Sneaker_v01.glb</div>
-          </div>
-          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'8px',marginTop:'12px'}}>
-            <button style={{background:'#1a1830',border:'1px solid #2a2840',padding:'10px',borderRadius:'8px',color:'#fff',cursor:'pointer',fontSize:'12px'}}>Download GLB</button>
-            <button style={{background:'#A020F0',padding:'10px',borderRadius:'8px',color:'#fff',border:'none',cursor:'pointer',fontSize:'12px',fontWeight:700}}>Export SVG</button>
-          </div>
+        {/* RIGHT - PROPERTIES */}
+        <div className="border-l border-white/[0.06] p-5 bg-[#101015] space-y-5">
+          <div><p className="text-[11px] text-white/40 uppercase">Model Info</p><div className="mt-2 space-y-1.5 text-[11px] text-white/60"><div className="flex justify-between"><span>Polygons</span><span>30,240</span></div><div className="flex justify-between"><span>Watertight</span><span className="text-emerald-400">✓ 97% Print Ready</span></div><div className="flex justify-between"><span>Textures</span><span>PBR 4K</span></div></div></div>
+          <div className="h-px bg-white/5"></div>
+          <div><p className="text-[11px] text-white/40 uppercase">Export</p><div className="mt-3 grid grid-cols-2 gap-2 text-[11px]"><button className="h-9 bg-white/5 rounded-lg">GLB</button><button className="h-9 bg-white/5 rounded-lg">FBX</button><button className="h-9 bg-white/5 rounded-lg">OBJ</button><button className="h-9 bg-white/5 rounded-lg">STL</button></div><button className="w-full mt-3 h-9 bg-white/5 rounded-lg text-[11px]">Download USDZ + BLEND + 3MF</button></div>
+          <div className="h-px bg-white/5"></div>
+          <div className="rounded-xl bg-gradient-to-br from-purple-600/20 to-violet-600/20 border border-purple-500/20 p-3"><p className="text-[11px] font-semibold">Why Pinna3d over Meshy?</p><ul className="text-[10px] text-white/50 mt-2 space-y-1"><li>✓ Same 7 formats + PBR + Rigging</li><li>★ + Vector SVG/EPS/PDF/AI (Meshy no)</li><li>★ + Banner/Template Generator (Meshy no)</li><li>✓ Cheaper: ₹999 vs $20</li></ul></div>
         </div>
       </div>
 
-      <div style={{padding:'24px 36px 50px',maxWidth:'1400px',margin:'0 auto',borderTop:'1px solid #161426'}}>
-        <h2 style={{textAlign:'center',fontSize:'26px',fontWeight:800,margin:'12px 0 6px'}}>Simple, transparent pricing</h2>
-        <p style={{textAlign:'center',opacity:.5,fontSize:'13px',marginBottom:'24px'}}>Start free. Upgrade when you need more.</p>
-        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:'18px'}}>
-          {[
-            {t:'Free',p:'₹0',d:'For individuals trying it out',f:['5 exports per month','3D preview only','Standard resolution','Community support'],btn:'Get Started Free',pop:false},
-            {t:'Pro',p:'₹999',d:'For creators & small teams',f:['200 exports per month','Full 3D + Vector export','HD & 4K exports','Priority ~60s','Commercial license'],btn:'Start Pro Trial',pop:true},
-            {t:'Business',p:'₹2499',d:'For teams & agencies',f:['1000 exports per month','API access + bulk','Team workspaces (5 seats)','Custom vector styles','Priority support'],btn:'Contact Sales',pop:false},
-          ].map(c=>(
-            <div key={c.t} style={{background:'#13111F',border:c.pop?'1.5px solid #A020F0':'1px solid #201e33',borderRadius:'16px',padding:'22px',position:'relative'}}>
-              {c.pop && <div style={{position:'absolute',top:'-11px',left:'50%',transform:'translateX(-50%)',background:'#A020F0',padding:'3px 12px',borderRadius:'20px',fontSize:'11px',fontWeight:700}}>☆ Most Popular</div>}
-              <div style={{textAlign:'center',fontSize:'13px',opacity:.7}}>{c.t}</div>
-              <div style={{textAlign:'center',fontSize:'34px',fontWeight:800,marginTop:'8px'}}>{c.p}<span style={{fontSize:'13px',opacity:.5,fontWeight:400}}> /mo</span></div>
-              <div style={{marginTop:'16px'}}>{c.f.map(fe=><div key={fe} style={{fontSize:'12px',margin:'7px 0',opacity:.8}}>✓ {fe}</div>)}</div>
-              <button style={{marginTop:'20px',width:'100%',background:c.pop?'#A020F0':'transparent',border:c.pop?'none':'1px solid #2a2840',padding:'11px',borderRadius:'10px',color:'#fff',cursor:'pointer'}}>{c.btn}</button>
-            </div>
-          ))}
+      {/* PRICING - MESHY STYLE CREDITS */}
+      <section className="border-t border-white/[0.06] px-6 md:px-10 py-16 bg-[#0A0A0F]">
+        <h2 className="text-center text-2xl font-bold">Credits, not limits</h2><p className="text-center text-[12px] text-white/40 mt-2">Like Meshy — pay for what you use. Retries included.</p>
+        <div className="grid md:grid-cols-3 gap-5 max-w-5xl mx-auto mt-8">
+          <div className="rounded-2xl bg-[#14141B] border border-white/10 p-6"><p className="text-[11px] text-white/40">FREE</p><p className="text-3xl font-bold mt-2">₹0 <span className="text-[12px] font-normal text-white/30">100 credits</span></p><ul className="text-[12px] text-white/60 mt-5 space-y-2"><li>✓ ~5 full 3D models</li><li>✓ 10 downloads/mo</li><li>✓ All 7 formats</li><li>✓ CC BY license</li><li>✓ Vector 50 exports</li></ul><button className="w-full mt-6 h-10 rounded-full border border-white/10 text-[12px]">Start Free</button></div>
+          <div className="rounded-2xl bg-[#1A142B] border border-purple-500/40 p-6 relative"><div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-purple-600 text-[10px] px-3 py-1 rounded-full">Most Popular</div><p className="text-[11px] text-white/40">PRO</p><p className="text-3xl font-bold mt-2">₹999 <span className="text-[12px] font-normal text-white/30">1000 credits</span></p><ul className="text-[12px] text-white/60 mt-5 space-y-2"><li>✓ ~50 models (Text/Image/Multi)</li><li>✓ Unlimited downloads</li><li>✓ Private, commercial license</li><li>✓ 4K PBR + Remesh + Rig</li><li>✓ Vector unlimited</li><li>✓ Template 100 banners</li><li>✓ API access</li></ul><button className="w-full mt-6 h-10 rounded-full bg-white text-black font-semibold text-[12px]">Go Pro — 20 credits = 1 model</button></div>
+          <div className="rounded-2xl bg-[#14141B] border border-white/10 p-6"><p className="text-[11px] text-white/40">BUSINESS</p><p className="text-3xl font-bold mt-2">₹2499 <span className="text-[12px] font-normal text-white/30">4000 credits</span></p><ul className="text-[12px] text-white/60 mt-5 space-y-2"><li>✓ ~200 models</li><li>✓ 10 concurrent tasks</li><li>✓ 60% faster + priority</li><li>✓ Team 5 seats</li><li>✓ Vector + Template unlimited</li><li>✓ Razorpay + GST invoice</li></ul><button className="w-full mt-6 h-10 rounded-full border border-white/10 text-[12px]">Contact Sales</button></div>
         </div>
-      </div>
+        <p className="text-center text-[10px] text-white/20 mt-6">Text to 3D = 20 credits • Image to 3D = 20 • Texture = 5 • Rig = 3 • Vector = 1 • Template = 5 • Credits reset monthly, no rollover</p>
+      </section>
     </div>
   )
 }
