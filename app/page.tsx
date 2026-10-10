@@ -5,6 +5,7 @@ export default function Page(){
   const [preview,setPreview]=useState("")
   const [done,setDone]=useState(false)
   const [tab,setTab]=useState("image3d")
+  const [openMenu,setOpenMenu]=useState<string|null>(null)
   const fileRef = useRef<HTMLInputElement>(null)
 
   const onFile = (e:any)=>{
@@ -18,20 +19,120 @@ export default function Page(){
 
   return (
     <div style={{background:'#0B0A14',color:'#fff',fontFamily:'Inter, system-ui, sans-serif',minHeight:'100vh'}}>
-      <header style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'16px 40px',borderBottom:'1px solid #1e1c32',background:'#0B0A14',position:'sticky',top:0,zIndex:50}}>
+      {/* HEADER - ONLY THIS PART RECTIFIED */}
+      <header style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'10px 24px',borderBottom:'1px solid #1e1c32',background:'#0B0A14',position:'sticky',top:0,zIndex:100}}>
         <div style={{display:'flex',alignItems:'center',gap:'10px'}}>
           <img src="/logo.png" alt="Pinna3d.com" style={{height:'100px',width:'auto',objectFit:'contain'}} />
         </div>
-        <div style={{display:'flex',gap:'24px',alignItems:'center',fontSize:'15px',fontWeight:500}}>
-          <span style={{opacity:.6}}>Features</span>
-          <span style={{color:'#A020F0',fontWeight:600}}>Pricing</span>
-          <span style={{opacity:.6}}>Docs</span>
-          <span style={{opacity:.6}}>Blog</span>
-          <button style={{background:'#2a2840',padding:'10px 18px',borderRadius:'8px',border:'none',color:'#fff',cursor:'pointer',fontSize:'14px',fontWeight:500}}>Sign In</button>
+        <div style={{display:'flex',gap:'18px',alignItems:'center',fontSize:'14px',fontWeight:500,position:'relative'}}>
+
+          {/* BUTTON 1: Photo Studio */}
+          <div onMouseEnter={()=>setOpenMenu("photo")} onMouseLeave={()=>setOpenMenu(null)} style={{position:'relative',padding:'10px 0',cursor:'pointer'}}>
+            <span style={{opacity: openMenu==="photo"? 1 :.7, fontWeight:600}}>Photo Studio ▾</span>
+            {openMenu==="photo" && (
+              <div style={{position:'absolute',top:'100%',left:'-20px',background:'#13111F',border:'1px solid #2a2840',borderRadius:'12px',padding:'16px',width:'320px',boxShadow:'0 20px 60px rgba(0,0,0,.6)'}}>
+                <div style={{fontSize:'11px',opacity:.5,marginBottom:'10px',letterSpacing:'.08em'}}>2D TOOLS [PhotoRoom Clone]</div>
+                <div style={{display:'grid',gap:'10px'}}>
+                  <div><b style={{fontSize:'13px'}}>Remove Background</b><div style={{fontSize:'11px',opacity:.6}}>Instant BG removal</div></div>
+                  <div><b style={{fontSize:'13px'}}>Remove Object</b><div style={{fontSize:'11px',opacity:.6}}>Erase unwanted object</div></div>
+                  <div><b style={{fontSize:'13px'}}>AI Backgrounds</b><div style={{fontSize:'11px',opacity:.6}}>Generate studio background</div></div>
+                  <div><b style={{fontSize:'13px'}}>AI Shadows</b><div style={{fontSize:'11px',opacity:.6}}>Realistic shadows</div></div>
+                  <div><b style={{fontSize:'13px'}}>Image Upscaler</b><div style={{fontSize:'11px',opacity:.6}}>4x HD quality</div></div>
+                  <div><b style={{fontSize:'13px'}}>Collage & Retouch</b><div style={{fontSize:'11px',opacity:.6}}>Batch edit</div></div>
+                  <div><b style={{fontSize:'13px'}}>Banner Maker</b><div style={{fontSize:'11px',opacity:.6}}>Resize for Instagram / Shopify / Amazon / FB</div></div>
+                  <div style={{marginTop:'8px',borderTop:'1px solid #2a2840',paddingTop:'8px',fontSize:'10px',opacity:.4}}>Exports: JPG, PNG, GIF, EPS, SVG, PSD, CDR, AI</div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* BUTTON 2: Vector Studio */}
+          <div onMouseEnter={()=>setOpenMenu("vector")} onMouseLeave={()=>setOpenMenu(null)} style={{position:'relative',padding:'10px 0',cursor:'pointer'}}>
+            <span style={{opacity: openMenu==="vector"? 1 :.7, fontWeight:600}}>Vector Studio ▾</span>
+            {openMenu==="vector" && (
+              <div style={{position:'absolute',top:'100%',left:'-20px',background:'#13111F',border:'1px solid #2a2840',borderRadius:'12px',padding:'16px',width:'300px',boxShadow:'0 20px 60px rgba(0,0,0,.6)'}}>
+                <div style={{fontSize:'11px',opacity:.5,marginBottom:'10px',letterSpacing:'.08em'}}>VECTOR TOOLS [Your USP]</div>
+                <div style={{display:'grid',gap:'10px'}}>
+                  <div><b style={{fontSize:'13px'}}>Image to Vector</b><div style={{fontSize:'11px',opacity:.6}}>JPG/PNG to SVG</div></div>
+                  <div><b style={{fontSize:'13px'}}>Photo to Line Art</b><div style={{fontSize:'11px',opacity:.6}}>Sketch converter</div></div>
+                  <div><b style={{fontSize:'13px'}}>Logo Vectorizer</b><div style={{fontSize:'11px',opacity:.6}}>Make logo infinite scale</div></div>
+                  <div><b style={{fontSize:'13px'}}>Batch Vectorize</b><div style={{fontSize:'11px',opacity:.6}}>100 images at once</div></div>
+                  <div style={{marginTop:'8px',borderTop:'1px solid #2a2840',paddingTop:'8px',fontSize:'10px',opacity:.4}}>Exports: JPG, PNG, GIF, EPS, SVG, PSD, CDR, AI</div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* BUTTON 3: 3D Studio */}
+          <div onMouseEnter={()=>setOpenMenu("3d")} onMouseLeave={()=>setOpenMenu(null)} style={{position:'relative',padding:'10px 0',cursor:'pointer'}}>
+            <span style={{opacity: openMenu==="3d"? 1 :.7, fontWeight:600}}>3D Studio ▾</span>
+            {openMenu==="3d" && (
+              <div style={{position:'absolute',top:'100%',left:'-20px',background:'#13111F',border:'1px solid #2a2840',borderRadius:'12px',padding:'16px',width:'300px',boxShadow:'0 20px 60px rgba(0,0,0,.6)'}}>
+                <div style={{fontSize:'11px',opacity:.5,marginBottom:'10px',letterSpacing:'.08em'}}>3D TOOLS [Meshy Clone]</div>
+                <div style={{display:'grid',gap:'10px'}}>
+                  <div><b style={{fontSize:'13px'}}>Image to 3D</b><div style={{fontSize:'11px',opacity:.6}}>Single photo to 3D model</div></div>
+                  <div><b style={{fontSize:'13px'}}>Multi-Image to 3D</b><div style={{fontSize:'11px',opacity:.6}}>4 angles to perfect 3D</div></div>
+                  <div><b style={{fontSize:'13px'}}>Text to 3D</b><div style={{fontSize:'11px',opacity:.6}}>Prompt to 3D</div></div>
+                  <div><b style={{fontSize:'13px'}}>Text to Texture</b><div style={{fontSize:'11px',opacity:.6}}>AI texture paint</div></div>
+                  <div><b style={{fontSize:'13px'}}>Remesh & Retopo</b><div style={{fontSize:'11px',opacity:.6}}>Clean 3D model</div></div>
+                  <div><b style={{fontSize:'13px'}}>Rig & Animate</b><div style={{fontSize:'11px',opacity:.6}}>Auto rig for games</div></div>
+                  <div style={{marginTop:'8px',borderTop:'1px solid #2a2840',paddingTop:'8px',fontSize:'10px',opacity:.4}}>Exports: GLB, OBJ, FBX, STL, SVG + all 2D</div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* BUTTON 4: Motion Studio */}
+          <div onMouseEnter={()=>setOpenMenu("motion")} onMouseLeave={()=>setOpenMenu(null)} style={{position:'relative',padding:'10px 0',cursor:'pointer'}}>
+            <span style={{opacity: openMenu==="motion"? 1 :.7, fontWeight:600, color:'#A020F0'}}>Motion Studio ▾</span>
+            {openMenu==="motion" && (
+              <div style={{position:'absolute',top:'100%',right:'-100px',background:'#13111F',border:'1px solid #2a2840',borderRadius:'14px',padding:'20px',width:'720px',display:'grid',gridTemplateColumns:'1fr 1fr 1fr 1fr',gap:'18px',boxShadow:'0 20px 60px rgba(0,0,0,.6)'}}>
+                <div>
+                  <div style={{fontSize:'11px',fontWeight:700,opacity:.8,marginBottom:'10px',color:'#A020F0'}}>Create From:</div>
+                  <div style={{fontSize:'12px',display:'grid',gap:'8px',opacity:.8}}><span>• Text to Video</span><span>• Image to Video</span><span>• Script to Video</span><span>• Template to Video</span></div>
+                </div>
+                <div>
+                  <div style={{fontSize:'11px',fontWeight:700,opacity:.8,marginBottom:'10px',color:'#A020F0'}}>Motion Tools:</div>
+                  <div style={{fontSize:'12px',display:'grid',gap:'8px',opacity:.8}}><span>• Logo Animation</span><span>• Text Animation</span><span>• Intro / Outro Maker</span><span>• Lower Thirds</span><span>• Transitions Pack</span><span>• Keyframe Editor</span></div>
+                </div>
+                <div>
+                  <div style={{fontSize:'11px',fontWeight:700,opacity:.8,marginBottom:'10px',color:'#A020F0'}}>Video Types:</div>
+                  <div style={{fontSize:'12px',display:'grid',gap:'8px',opacity:.8}}><span>• Promo Videos</span><span>• Reels / Shorts / TikTok</span><span>• YouTube Intros</span><span>• Ad Videos</span><span>• Explainer Videos</span><span>• Presentation Videos</span></div>
+                </div>
+                <div>
+                  <div style={{fontSize:'11px',fontWeight:700,opacity:.8,marginBottom:'10px',color:'#A020F0'}}>Effects & Assets:</div>
+                  <div style={{fontSize:'12px',display:'grid',gap:'8px',opacity:.8}}><span>• Stock Footage</span><span>• Backgrounds</span><span>• Music & SFX</span><span>• Stickers & Overlays</span><span>• LUTs & Filters</span></div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* BUTTON 6: API */}
+          <div onMouseEnter={()=>setOpenMenu("api")} onMouseLeave={()=>setOpenMenu(null)} style={{position:'relative',padding:'10px 0',cursor:'pointer'}}>
+            <span style={{opacity:.7}}>API ▾</span>
+            {openMenu==="api" && (
+              <div style={{position:'absolute',top:'100%',right:'0px',background:'#13111F',border:'1px solid #2a2840',borderRadius:'12px',padding:'16px',width:'340px',boxShadow:'0 20px 60px rgba(0,0,0,.6)'}}>
+                <div style={{fontSize:'11px',opacity:.5,marginBottom:'10px'}}>FOR DEVELOPERS</div>
+                <div style={{fontSize:'12px',display:'grid',gap:'6px',opacity:.8}}>
+                  <span>• POST /v1/image-to-3d → GLB/FBX/OBJ</span>
+                  <span>• POST /v1/text-to-3d → Prompt to 3D</span>
+                  <span>• POST /v1/multi-image-to-3d → 4 angles</span>
+                  <span>• POST /v1/text-to-texture → PBR 4K</span>
+                  <span>• POST /v1/image-to-vector → SVG</span>
+                  <span>• GET /v1/job/{`{id}`} → Status</span>
+                  <div style={{marginTop:'8px',borderTop:'1px solid #2a2840',paddingTop:'8px',fontSize:'11px'}}>API Keys • SDKs: npm i pinna3d / pip install pinna3d • Webhooks</div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <span style={{color:'#A020F0',fontWeight:600,cursor:'pointer'}}>Pricing</span>
+          <button style={{background:'#2a2840',padding:'10px 18px',borderRadius:'8px',border:'none',color:'#fff',cursor:'pointer',fontSize:'14px',fontWeight:500}}>Login</button>
           <button style={{background:'#A020F0',padding:'10px 20px',borderRadius:'8px',border:'none',color:'#fff',fontWeight:600,cursor:'pointer',fontSize:'14px'}}>Get Started</button>
         </div>
       </header>
 
+      {/* REST OF YOUR CODE - UNTOUCHED */}
       <div style={{display:'flex',gap:'10px',padding:'14px 40px',background:'#0f0e1a',borderBottom:'1px solid #1e1c32',overflowX:'auto'}}>
         <button onClick={()=>setTab("image3d")} style={{padding:'9px 16px',borderRadius:'20px',fontSize:'13px',fontWeight:500,border:tab==="image3d"?'1px solid #A020F0':'1px solid #2a2840',background:tab==="image3d"?'#A020F0':'transparent',color:'#fff',cursor:'pointer'}}>Image to 3D</button>
         <button onClick={()=>setTab("multi")} style={{padding:'9px 16px',borderRadius:'20px',fontSize:'13px',fontWeight:500,border:tab==="multi"?'1px solid #A020F0':'1px solid #2a2840',background:tab==="multi"?'#A020F0':'transparent',color:'#fff',cursor:'pointer'}}>Multi-Image to 3D</button>
