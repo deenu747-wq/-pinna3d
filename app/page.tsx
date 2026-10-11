@@ -50,16 +50,16 @@ export default function Page(){
         <div onClick={openPicker} onDragOver={e=>e.preventDefault()} onDrop={onFile} style={{border:'2.5px dashed rgba(160,32,240,0.6)',borderRadius:'15px',background:'rgba(15,13,28,0.95)',padding:'18px 14px',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',textAlign:'center',cursor:'pointer',minHeight:'320px',height:'320px'}}>
           <input ref={fileRef} type="file" hidden accept="image/*" onChange={onFile} />
           <div style={{width:'52px',height:'52px',background:'rgba(160,32,240,0.18)',border:'1px solid rgba(160,32,240,0.35)',borderRadius:'10px',display:'grid',placeItems:'center',marginBottom:'12px'}}><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#A020F0" strokeWidth="2"><path d="M3 15a4 4 0 0 0 4 4h9a4 4 0 0 0 0-8 5 5 0 0 0-9.7-1.5A3 3 0 0 0 3 15z"/></svg></div>
-          <b style={{fontSize:'14px',fontWeight:600}}>Drag & drop your image here</b>
-          <div style={{fontSize:'12px',color:'rgba(255,255,255,0.5)',marginTop:'4px'}}>or browse files to upload</div>
-          <div style={{fontSize:'9px',color:'rgba(255,255,255,0.35)',marginTop:'10px'}}>Supports PNG, JPG, WEBP • Max 20MB • JPG/PNG to 3D or SVG</div>
-          <div style={{marginTop:'10px',background:'rgba(255,255,255,0.05)',border:'1px solid rgba(255,255,255,0.08)',padding:'5px 10px',borderRadius:'5px',fontSize:'10px',color:'rgba(255,255,255,0.6)'}}>Instant preview • Background removal included</div>
+          <b style={{fontSize:'16px',fontWeight:600}}>Drag & drop your image here</b>
+          <div style={{fontSize:'14px',color:'rgba(255,255,255,0.5)',marginTop:'4px'}}>or browse files to upload</div>
+          <div style={{fontSize:'10px',color:'rgba(255,255,255,0.35)',marginTop:'10px'}}>Supports PNG, JPG, WEBP • Max 20MB • JPG/PNG to 3D or SVG</div>
+          <div style={{marginTop:'10px',background:'rgba(255,255,255,0.05)',border:'1px solid rgba(255,255,255,0.08)',padding:'5px 10px',borderRadius:'5px',fontSize:'11px',color:'rgba(255,255,255,0.6)'}}>Instant preview • Background removal included</div>
           {preview && <img src={preview} style={{width:'70px',borderRadius:'6px',marginTop:'8px'}}/>}
         </div>
         <div style={{background:'#15131E',border:'2px solid rgba(255,255,255,0.08)',borderRadius:'15px',padding:'10px',display:'flex',flexDirection:'column',minHeight:'320px',height:'320px'}}>
-          <div style={{display:'flex',justifyContent:'space-between',fontSize:'10px',color:'rgba(255,255,255,0.6)',marginBottom:'6px'}}><span>3D Viewer Preview</span><span>↻ ⛶ •••</span></div>
+          <div style={{display:'flex',justifyContent:'space-between',fontSize:'11px',color:'rgba(255,255,255,0.6)',marginBottom:'6px'}}><span>3D Viewer Preview</span><span>↻ ⛶ •••</span></div>
           <div style={{background:'radial-gradient(ellipse at 50% 20%, rgba(160,32,240,0.35) 0%, rgba(10,8,20,0.9) 70%)',borderRadius:'10px',flex:1,display:'grid',placeItems:'center',overflow:'hidden',position:'relative'}}>{done && preview? <img src={preview} style={{height:'150px'}}/> : <img src="/sneaker.webp" style={{width:'100%',height:'100%',objectFit:'cover',borderRadius:'10px'}}/>}<div style={{position:'absolute',bottom:'6px',left:'6px',background:'rgba(0,0,0,0.6)',padding:'3px 6px',borderRadius:'4px',fontSize:'8px',color:'rgba(255,255,255,0.7)'}}>Model: Sneaker_v01.glb</div></div>
-          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'8px',marginTop:'8px'}}><button style={{background:'#2A2838',border:'1px solid rgba(255,255,255,0.1)',padding:'7px',borderRadius:'6px',color:'#fff',fontSize:'10px'}}>Download GLB</button><button style={{background:'#A020F0',border:'none',padding:'7px',borderRadius:'6px',color:'#fff',fontSize:'10px'}}>Export SVG</button></div>
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'8px',marginTop:'8px'}}><button style={{background:'#2A2838',border:'1px solid rgba(255,255,255,0.1)',padding:'7px',borderRadius:'6px',color:'#fff',fontSize:'11px'}}>Download GLB</button><button style={{background:'#A020F0',border:'none',padding:'7px',borderRadius:'6px',color:'#fff',fontSize:'11px'}}>Export SVG</button></div>
         </div>
       </div>
 
