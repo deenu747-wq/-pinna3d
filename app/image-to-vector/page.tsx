@@ -107,14 +107,13 @@ export default function ImageToVectorPage(){
 .six-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px;max-width:560px}
 .six-box{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09);border-radius:14px;padding:14px 16px}
 .vector-fill{margin-top:18px;max-width:560px;height:280px;background:radial-gradient(130% 130% at 20% 20%, rgba(160,32,240,0.30), transparent 60%), radial-gradient(100% 100% at 80% 80%, rgba(255,122,209,0.22), transparent 60%), rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.10);border-radius:16px;position:relative;overflow:hidden;padding:22px;display:flex;align-items:center;gap:20px}
-.vector-fill.big{font-size:48px;font-weight:800;line-height:0.95;letter-spacing:-0.5px}
-.vector-fill.desc{font-size:15px;line-height:1.6;color:rgba(255,255,255,0.70);margin-top:12px}
 .preview-card{background:#15131E;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:14px;width:100%;box-sizing:border-box;display:flex;flex-direction:column}
 .preview-box{background:#0A0814;background-image:radial-gradient(rgba(255,255,255,0.12) 1px, transparent 1px);background-size:16px 16px;border-radius:10px;width:100%;display:flex;align-items:center;justify-content:center;border:1px solid rgba(160,32,240,0.28);overflow:hidden;position:relative;flex:1}
 .preview-white{width:88%;height:88%;background:#fff;border-radius:10px;display:flex;align-items:center;justify-content:center;padding:10px;box-sizing:border-box;overflow:hidden}
 .preview-white div{width:100%;height:100%;display:flex;align-items:center;justify-content:center}
 .preview-white svg{width:100%!important;height:100%!important}
-@media(max-width:900px){.iv-grid{grid-template-columns:1fr;padding:16px}.six-grid{grid-template-columns:1fr}.vector-fill{height:auto;flex-direction:column;align-items:start}}
+.feat-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;margin-top:32px}
+@media(max-width:900px){.iv-grid{grid-template-columns:1fr;padding:16px}.six-grid{grid-template-columns:1fr}.feat-grid{grid-template-columns:1fr}.vector-fill{height:auto;flex-direction:column;align-items:start}}
       `}</style>
 
       <header style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'12px 40px',borderBottom:'1px solid rgba(255,255,255,0.08)',background:'rgba(10,8,20,0.92)',backdropFilter:'blur(16px)',position:'sticky',top:0,zIndex:50}}>
@@ -157,14 +156,12 @@ export default function ImageToVectorPage(){
                 <circle cx="20" cy="90" r="6" fill="#A020F0"/>
                 <circle cx="60" cy="50" r="6" fill="#fff"/>
                 <circle cx="100" cy="30" r="6" fill="#FF7AD1"/>
-                <path d="M10 100 L 110 100 M10 10 L10 110" stroke="rgba(255,255,255,0.12)" strokeWidth="1"/>
               </svg>
             </div>
             <div>
-              <div className="vector-fill big">∞ Vector<br/><span style={{color:'#A020F0'}}>No Pixels</span></div>
-              <div className="vector-fill desc">Clean bezier curves, not jagged trace.<br/>Increased height + bigger fontsize<br/>as you asked. Uses vector graphics.</div>
+              <div style={{fontSize:'48px',fontWeight:800,lineHeight:0.95}}>∞ Vector<br/><span style={{color:'#A020F0'}}>No Pixels</span></div>
+              <div style={{fontSize:'15px',lineHeight:1.6,color:'rgba(255,255,255,0.70)',marginTop:'12px'}}>Clean bezier curves, not jagged trace.<br/>This vector graphic fills left empty area.</div>
             </div>
-            <div style={{position:'absolute',right:'16px',bottom:'12px',fontSize:'10px',color:'rgba(255,255,255,0.35)'}}>100% Editable SVG</div>
           </div>
         </div>
 
@@ -186,6 +183,18 @@ export default function ImageToVectorPage(){
           </div>
         </div>
       </div>
+
+      {/* ===== FOOTER SECTION YOU ASKED TO ADD ===== */}
+      <div style={{padding:'40px 40px 40px',maxWidth:'1440px',margin:'0 auto',borderTop:'1px solid rgba(255,255,255,0.06)'}}>
+        <h2 style={{textAlign:'center',fontSize:'30px',fontWeight:500}}>Why designers choose our Vector Studio</h2>
+        <div className="feat-grid">
+          <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'16px',padding:'20px'}}><h3 style={{margin:0,fontSize:'16px'}}>{check}True Vector, Not Auto-Trace</h3><p style={{color:'rgba(255,255,255,0.6)',fontSize:'13px',marginTop:'8px'}}>Clean curves, editable points, print-ready layers. No messy auto-trace.</p></div>
+          <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'16px',padding:'20px'}}><h3 style={{margin:0,fontSize:'16px'}}>{check}Photo to Line Art</h3><p style={{color:'rgba(255,255,255,0.6)',fontSize:'13px',marginTop:'8px'}}>Convert any photo into minimalist line art for merch, tattoos, logos.</p></div>
+          <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'16px',padding:'20px'}}><h3 style={{margin:0,fontSize:'16px'}}>{check}Batch 100x + API</h3><p style={{color:'rgba(255,255,255,0.6)',fontSize:'13px',marginTop:'8px'}}>Upload 100 images at once. Perfect for print shops & agencies.</p></div>
+        </div>
+        <div style={{textAlign:'center',marginTop:'30px'}}><a href="/signup" style={{background:'#A020F0',padding:'12px 24px',borderRadius:'10px',color:'#fff',textDecoration:'none',fontWeight:500}}>Start Vectorizing Free — No CC</a></div>
+      </div>
+      <footer style={{borderTop:'1px solid rgba(255,255,255,0.08)',padding:'20px 40px',textAlign:'center',fontSize:'12px',color:'rgba(255,255,255,0.4)'}}>© 2026 Pinna3d.com • Image to Vector Tool</footer>
     </div>
   )
 }
