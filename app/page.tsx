@@ -25,120 +25,130 @@ export default function Page(){
   ]
 
   return (
-    <div style={{background:'#0A0814',color:'#fff',fontFamily:'Inter, ui-sans-serif, system-ui',minHeight:'100vh',WebkitFontSmoothing:'antialiased'}}>
-      {/* HEADER - Screenshot style */}
-      <header style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'16px 40px',background:'#0A0814',borderBottom:'1px solid rgba(255,255,255,0.06)'}}>
-        <div style={{display:'flex',alignItems:'center',gap:'12px'}}>
-          <img src="/logo.png" alt="Pinna3d.com" style={{height:'46px',width:'auto',objectFit:'contain'}} />
-          <span style={{fontSize:'28px',fontWeight:700,letterSpacing:'-0.02em'}}>Pinna3d<span style={{fontSize:'16px',color:'#A020F0',fontWeight:400}}>.com</span></span>
-        </div>
-        <div style={{display:'flex',gap:'24px',alignItems:'center',fontSize:'14px',fontWeight:400,color:'rgba(255,255,255,0.7)'}}>
-          <span>Features</span>
-          <span style={{color:'#A020F0'}}>Pricing</span>
-          <span>Docs</span>
-          <span>Blog</span>
-          <button style={{background:'#2A2838',padding:'8px 16px',borderRadius:'8px',border:'1px solid rgba(255,255,255,0.1)',color:'#fff',fontSize:'13px'}}>Sign In</button>
-          <button style={{background:'#A020F0',padding:'8px 18px',borderRadius:'8px',border:'none',color:'#fff',fontWeight:500,fontSize:'13px'}}>Get Started</button>
+    <div style={{background:'#0A0814',color:'#fff',fontFamily:'Inter, ui-sans-serif, system-ui',minHeight:'100vh',backgroundImage:`radial-gradient(900px 480px at 50% -10%, rgba(160,32,240,0.22), transparent 70%)`,WebkitFontSmoothing:'antialiased',MozOsxFontSmoothing:'grayscale',textRendering:'optimizeLegibility'}}>
+      <header style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'12px 40px',borderBottom:'1px solid rgba(255,255,255,0.08)',background:'rgba(10,8,20,0.92)',backdropFilter:'blur(16px)',position:'sticky',top:0,zIndex:50}}>
+        <img src="/logo.png" alt="Pinna3d.com" style={{height:'46px',width:'auto',objectFit:'contain'}} />
+        <div style={{display:'flex',gap:'26px',alignItems:'center',fontSize:'14px',fontWeight:400}}>
+          <span style={{color:'rgba(255,255,255,0.9)'}}>Features</span>
+          <span style={{color:'#A020F0',fontWeight:500}}>Pricing</span>
+          <span style={{color:'rgba(255,255,255,0.9)'}}>Docs</span>
+          <span style={{color:'rgba(255,255,255,0.9)'}}>Blog</span>
+          <button style={{background:'rgba(255,255,255,0.1)',padding:'10px 18px',borderRadius:'10px',border:'1px solid rgba(255,255,255,0.14)',color:'#fff',fontSize:'14px',fontWeight:400}}>Sign In</button>
+          <button style={{background:'#A020F0',boxShadow:'0 0 24px rgba(160,32,240,0.55)',padding:'10px 20px',borderRadius:'10px',border:'none',color:'#fff',fontWeight:500,fontSize:'14px'}}>Get Started</button>
         </div>
       </header>
 
-      {/* 1. FIRST SECTION - Screenshot formatting / square boxes / borders / but your colors */}
-      <div style={{display:'grid',gridTemplateColumns:'1.1fr 0.85fr 0.85fr',gap:'18px',padding:'36px 40px',background:'#0A0814',maxWidth:'1440px',margin:'0 auto'}}>
+      <div style={{display:'flex',gap:'10px',padding:'14px 40px',background:'rgba(255,255,255,0.02)',borderBottom:'1px solid rgba(255,255,255,0.06)',overflowX:'auto'}}>
+        {["Image to 3D","Multi-Image to 3D","Text to 3D","Text to Texture"].map((t,i)=>{
+          const k=["image3d","multi","text3d","texture"][i]
+          return <button key={k} onClick={()=>setTab(k)} style={{padding:'10px 18px',borderRadius:'22px',fontSize:'13px',fontWeight:400,border:tab===k?'1px solid #A020F0':'1px solid rgba(255,255,255,0.14)',background:tab===k?'#A020F0':'transparent',color:'#fff',cursor:'pointer'}}>{t}</button>
+        })}
+        <button style={{padding:'10px 18px',borderRadius:'22px',fontSize:'13px',fontWeight:400,border:'1px solid rgba(255,255,255,0.14)',background:'transparent',color:'#fff'}}>Template Studio ★ NEW</button>
+        <a href="/image-to-vector" style={{padding:'10px 18px',borderRadius:'22px',fontSize:'13px',fontWeight:500,border:'1px solid rgba(160,32,240,0.5)',background:'rgba(160,32,240,0.14)',color:'#fff',textDecoration:'none'}}>Image to Vector ★ NEW</a>
+      </div>
+
+      <div style={{display:'grid',gridTemplateColumns:'1.1fr 0.9fr 0.9fr',gap:'24px',padding:'44px 40px',maxWidth:'1440px',margin:'0 auto'}}>
         <div>
-          <h1 style={{fontSize:'38px',lineHeight:'1.1',fontWeight:700,letterSpacing:'-0.02em',margin:0,color:'#fff'}}>Every Image to 3D or Vector<br/>in 60 Seconds</h1>
-          <p style={{color:'rgba(255,255,255,0.7)',marginTop:'14px',fontSize:'14px',lineHeight:'1.6',fontWeight:400,maxWidth:'440px'}}>Transform photos into production-ready 3D models & scalable vectors instantly. Built for designers, e-commerce, and creators worldwide.</p>
-          <div style={{display:'flex',gap:'10px',marginTop:'20px'}}>
-            <button style={{background:'#A020F0',padding:'10px 18px',borderRadius:'8px',fontWeight:500,border:'none',color:'#fff',fontSize:'13px',display:'flex',alignItems:'center',gap:'6px'}}>✦ Start Creating — Free</button>
-            <button style={{border:'1px solid rgba(255,255,255,0.14)',background:'transparent',padding:'10px 18px',borderRadius:'8px',color:'#fff',fontSize:'13px',fontWeight:400,display:'flex',alignItems:'center',gap:'6px'}}>◉ Watch Demo</button>
-          </div>
-          <div style={{display:'flex',gap:'8px',marginTop:'18px',flexWrap:'wrap'}}>
-            {["60s Turnaround","100k+ assets generated","No credit card required"].map(t=>(
-              <span key={t} style={{background:'rgba(160,32,240,0.12)',border:'1px solid rgba(160,32,240,0.2)',padding:'4px 10px',borderRadius:'20px',fontSize:'11px',color:'rgba(255,255,255,0.8)'}}>• {t}</span>
-            ))}
+          <h1 style={{fontSize:'52px',lineHeight:'1.04',fontWeight:600,letterSpacing:'-0.03em',margin:0,color:'#fff'}}>Every Image to 3D<br/><span style={{background:'linear-gradient(90deg,#A020F0,#FF7AD1)',WebkitBackgroundClip:'text',color:'transparent'}}>in 60 Seconds</span></h1>
+          <p style={{color:'rgba(255,255,255,0.85)',marginTop:'16px',fontSize:'17px',lineHeight:'1.65',fontWeight:400}}>Upload any photo → get studio-ready 3D, vector & video. Trusted by 100k+ sellers worldwide.</p>
+          <div style={{display:'flex',gap:'12px',marginTop:'26px'}}>
+            <button style={{background:'#A020F0',boxShadow:'0 0 28px rgba(160,32,240,0.5)',padding:'14px 24px',borderRadius:'12px',fontWeight:500,border:'none',color:'#fff',fontSize:'14px'}}>✦ Start Creating — Free</button>
+            <button style={{border:'1px solid rgba(255,255,255,0.18)',background:'rgba(255,255,255,0.06)',padding:'14px 24px',borderRadius:'12px',color:'#fff',fontSize:'14px',fontWeight:400}}>◉ Watch Demo</button>
           </div>
         </div>
 
-        {/* Square dashed box - screenshot style */}
-        <div onClick={openPicker} onDragOver={e=>e.preventDefault()} onDrop={onFile} style={{border:'1.5px dashed #A020F0',borderRadius:'12px',background:'rgba(255,255,255,0.03)',padding:'18px',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',textAlign:'center',cursor:'pointer'}}>
+        {/* SECOND CIRCLE - Width of dots increased - 3px dotted same as screenshot */}
+        <div onClick={openPicker} onDragOver={e=>e.preventDefault()} onDrop={onFile} style={{border:'3px dotted rgba(168,85,247,0.9)',borderRadius:'18px',background:'rgba(255,255,255,0.04)',padding:'26px',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',textAlign:'center',cursor:'pointer'}}>
           <input ref={fileRef} type="file" hidden accept="image/*" onChange={onFile} />
-          <div style={{width:'64px',height:'64px',background:'rgba(160,32,240,0.12)',border:'1px solid rgba(160,32,240,0.3)',borderRadius:'12px',display:'grid',placeItems:'center',fontSize:'28px',marginBottom:'12px',color:'#A020F0'}}>☁️</div>
-          <b style={{fontSize:'15px',fontWeight:600,color:'#fff'}}>Drag & drop your image here</b>
-          <div style={{fontSize:'12px',color:'rgba(255,255,255,0.6)',marginTop:'4px'}}>or browse files to upload</div>
-          <div style={{fontSize:'10px',color:'rgba(255,255,255,0.45)',marginTop:'12px'}}>Supports PNG, JPG, WEBP • Max 20MB • JPG/PNG to 3D or SVG</div>
-          <div style={{marginTop:'14px',border:'1px solid rgba(255,255,255,0.1)',background:'rgba(255,255,255,0.05)',padding:'6px 12px',borderRadius:'6px',fontSize:'10px',color:'rgba(255,255,255,0.7)'}}>Instant preview • Background removal included</div>
-          {preview && <img src={preview} alt="preview" style={{width:'90px',borderRadius:'8px',marginTop:'12px'}}/>}
+          <div style={{width:'66px',height:'66px',background:'rgba(160,32,240,0.18)',borderRadius:'14px',display:'grid',placeItems:'center',fontSize:'30px',marginBottom:'14px'}}>☁️</div>
+          <b style={{fontSize:'16px',fontWeight:500,color:'#fff'}}>Drag & drop your image here</b>
+          <div style={{marginTop:'18px',background:'#A020F0',color:'#fff',padding:'12px 26px',borderRadius:'10px',fontSize:'13px',fontWeight:400}}>Browse Files</div>
+          {preview && <img src={preview} alt="preview" style={{width:'110px',borderRadius:'10px',marginTop:'14px'}}/>}
         </div>
 
-        {/* Square 3D Viewer - screenshot style */}
-        <div style={{background:'#15131E',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'12px',padding:'12px'}}>
-          <div style={{display:'flex',justifyContent:'space-between',fontSize:'12px',color:'rgba(255,255,255,0.6)',padding:'4px 4px 10px'}}>3D Viewer Preview <span>↻ ⛶ •••</span></div>
-          <div style={{background:'radial-gradient(ellipse at center,rgba(160,32,240,0.25),transparent 70%)',borderRadius:'8px',height:'200px',display:'grid',placeItems:'center',overflow:'hidden',border:'1px solid rgba(255,255,255,0.06)'}}>
-            {done && preview? <img src={preview} alt="3d" style={{height:'160px'}}/> : <img src="/sneaker.webp" alt="Sneaker" style={{width:'100%',height:'100%',objectFit:'cover',borderRadius:'8px'}}/>}
+        {/* THIRD CIRCLE - As it is + enhanced shoe */}
+        <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:'18px',padding:'14px'}}>
+          <div style={{display:'flex',justifyContent:'space-between',fontSize:'12px',color:'rgba(255,255,255,0.75)',padding:'6px',fontWeight:400}}><span>3D Viewer Preview</span><span>↻ ⛶</span></div>
+          <div style={{background:'radial-gradient(ellipse at center,rgba(160,32,240,0.24),transparent 70%)',borderRadius:'12px',height:'250px',display:'grid',placeItems:'center',overflow:'hidden'}}>
+            {done && preview? <img src={preview} alt="3d" style={{height:'170px'}}/> : <img src="/sneaker.webp" alt="Sneaker 3D" style={{width:'100%',height:'220px',objectFit:'cover',borderRadius:'12px'}}/>}
           </div>
-          <div style={{fontSize:'11px',color:'rgba(255,255,255,0.5)',marginTop:'8px',padding:'0 4px'}}>Model: Sneaker_v01.glb</div>
-          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'8px',marginTop:'10px'}}>
-            <button style={{background:'transparent',border:'1px solid rgba(255,255,255,0.12)',padding:'8px',borderRadius:'6px',color:'#fff',fontSize:'12px'}}>Download GLB</button>
-            <button style={{background:'#A020F0',border:'none',padding:'8px',borderRadius:'6px',color:'#fff',fontSize:'12px'}}>Export SVG</button>
+          <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginTop:'10px'}}>
+            <span style={{fontSize:'11px',color:'rgba(255,255,255,0.55)',fontWeight:400}}>Model: Sneaker_v01.glb</span>
+          </div>
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'8px',marginTop:'8px'}}>
+            <button style={{background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.12)',padding:'8px',borderRadius:'8px',color:'#fff',fontSize:'12px',fontWeight:400}}>Download GLB</button>
+            <button style={{background:'#A020F0',border:'none',padding:'8px',borderRadius:'8px',color:'#fff',fontSize:'12px',fontWeight:400}}>Export SVG</button>
           </div>
         </div>
       </div>
 
-      {/* 2. SECOND SECTION - 4 Studios but in square boxes like screenshot pricing */}
-      <div style={{padding:'36px 40px',background:'#0F0E18',borderTop:'1px solid rgba(255,255,255,0.06)',borderBottom:'1px solid rgba(255,255,255,0.06)'}}>
-        <div style={{textAlign:'center',maxWidth:'800px',margin:'0 auto 28px'}}>
-          <div style={{display:'inline-flex',background:'rgba(160,32,240,0.15)',border:'1px solid rgba(160,32,240,0.3)',padding:'5px 12px',borderRadius:'20px',fontSize:'11px',letterSpacing:'.1em',color:'#D6A5FF'}}>FOUR STUDIOS • ONE PLATFORM</div>
-          <h2 style={{fontSize:'30px',fontWeight:600,margin:'12px 0 8px',color:'#fff'}}>Everything you need to create</h2>
-          <p style={{color:'rgba(255,255,255,0.6)',fontSize:'14px',margin:0}}>Photo, Vector, 3D and Motion — built for creators worldwide.</p>
+      <div style={{padding:'40px 40px 20px',maxWidth:'1440px',margin:'0 auto',borderTop:'1px solid rgba(255,255,255,0.06)'}}>
+        <div style={{textAlign:'center',maxWidth:'820px',margin:'0 auto'}}>
+          <div style={{display:'inline-flex',background:'rgba(160,32,240,0.15)',border:'1px solid rgba(160,32,240,0.32)',padding:'6px 12px',borderRadius:'20px',fontSize:'11px',letterSpacing:'.12em',color:'#D6A5FF',fontWeight:500}}>FOUR STUDIOS • ONE PLATFORM</div>
+          <h2 style={{fontSize:'32px',fontWeight:500,letterSpacing:'-0.02em',margin:'14px 0 10px',lineHeight:1.2,color:'#fff'}}>Everything you need to create,<br/>in one place</h2>
+          <p style={{color:'rgba(255,255,255,0.82)',fontSize:'16px',lineHeight:'1.6',margin:0,fontWeight:400}}>Photo, Vector, 3D and Motion — built for creators worldwide. One click export to any format.</p>
         </div>
-        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr 1fr',gap:'16px',maxWidth:'1440px',margin:'0 auto'}}>
-          {[
-            {icon:'📸',title:'Photo Studio',desc:'Your Shopify photos, studio-ready.',bullets:["Remove Background","Remove Object","AI Backgrounds","Upscaler + Banner"],formats:'JPG, PNG, EPS, SVG, PSD, AI'},
-            {icon:'✒️',title:'Vector Studio',desc:'Blurry logo → sharp SVG.',bullets:["Image to Vector","Photo to Line Art","Logo Vectorizer","Batch 100x"],formats:'JPG, PNG, EPS, SVG, PSD, CDR, AI',pop:true},
-            {icon:'🧊',title:'3D Studio',desc:'Photo → production 3D.',bullets:["Image to 3D – 60 sec","Multi-Image to 3D","Text to 3D & Texture","Remesh, Rig & Animate"],formats:'GLB, OBJ, FBX, STL, USDZ, BLEND'},
-            {icon:'🎬',title:'Motion Studio',desc:'Static → viral Reels.',bullets:["Text/Image to Video","Logo & Text Animation","Reels, Promo, Ads","Stock, Music, LUTs"],formats:'MP4, MOV, GIF, AE, 9:16'},
-          ].map(s=>(
-            <div key={s.title} style={{background:'#15131E',border:s.pop?'1.5px solid #A020F0':'1px solid rgba(255,255,255,0.08)',borderRadius:'12px',padding:'20px',position:'relative'}}>
-              {s.pop && <div style={{position:'absolute',top:'10px',right:'10px',background:'#A020F0',padding:'3px 8px',borderRadius:'12px',fontSize:'10px'}}>YOUR USP ★</div>}
-              <div style={{width:'40px',height:'40px',background:s.pop?'rgba(160,32,240,0.2)':'#2A2838',borderRadius:'8px',display:'grid',placeItems:'center',fontSize:'20px'}}>{s.icon}</div>
-              <h3 style={{fontSize:'16px',fontWeight:500,margin:'12px 0 6px',color:'#fff'}}>{s.title}</h3>
-              <p style={{fontSize:'12px',color:'rgba(255,255,255,0.6)',margin:0,lineHeight:'1.4'}}>{s.desc}</p>
-              <div style={{marginTop:'12px',display:'grid',gap:'6px',fontSize:'12px',color:'rgba(255,255,255,0.85)'}}>
-                {s.bullets.map(b=><span key={b}><span style={{color:'#A020F0'}}>•</span> {b}</span>)}
-              </div>
-              <div style={{marginTop:'12px',fontSize:'10px',color:'rgba(255,255,255,0.35)',borderTop:'1px solid rgba(255,255,255,0.06)',paddingTop:'8px'}}>{s.formats}</div>
-            </div>
-          ))}
+
+        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr 1fr',gap:'18px',marginTop:'32px'}}>
+          <div style={{background:'linear-gradient(180deg, rgba(160,32,240,0.15) 0%, rgba(255,255,255,0.04) 100%)',border:'1px solid rgba(255,255,255,0.12)',borderRadius:'18px',padding:'22px'}}>
+            <div style={{width:'46px',height:'46px',background:'#A020F0',borderRadius:'11px',display:'grid',placeItems:'center',fontSize:'24px'}}>📸</div>
+            <h3 style={{fontSize:'18px',fontWeight:500,margin:'16px 0 8px',color:'#fff'}}>Photo Studio</h3>
+            <p style={{fontSize:'15px',color:'rgba(255,255,255,0.85)',lineHeight:'1.55',margin:0,fontWeight:400}}>Your Shopify photos, studio-ready in 1 sec.</p>
+            <div style={{marginTop:'14px',display:'grid',gap:'8px',fontSize:'15px',color:'rgba(255,255,255,0.92)',fontWeight:400}}><span><span style={{color:'#A020F0'}}>•</span> Remove Background</span><span><span style={{color:'#A020F0'}}>•</span> Remove Object</span><span><span style={{color:'#A020F0'}}>•</span> AI Backgrounds & Shadows</span><span><span style={{color:'#A020F0'}}>•</span> Upscaler + Banner Maker</span></div>
+            <div style={{marginTop:'14px',fontSize:'12px',color:'rgba(255,255,255,0.5)',borderTop:'1px solid rgba(255,255,255,0.08)',paddingTop:'10px'}}>JPG, PNG, EPS, SVG, PSD, AI</div>
+          </div>
+          <div style={{background:'linear-gradient(180deg, rgba(160,32,240,0.26) 0%, rgba(255,255,255,0.04) 100%)',border:'1.6px solid #A020F0',borderRadius:'18px',padding:'22px',position:'relative'}}>
+            <div style={{position:'absolute',top:'12px',right:'12px',background:'#A020F0',padding:'4px 10px',borderRadius:'20px',fontSize:'10px',fontWeight:500}}>YOUR USP ★</div>
+            <div style={{width:'46px',height:'46px',background:'rgba(255,255,255,0.07)',border:'1px solid #A020F0',borderRadius:'11px',display:'grid',placeItems:'center',fontSize:'24px'}}>✒️</div>
+            <h3 style={{fontSize:'18px',fontWeight:500,margin:'16px 0 8px',color:'#fff'}}>Vector Studio</h3>
+            <p style={{fontSize:'15px',color:'rgba(255,255,255,0.85)',lineHeight:'1.55',margin:0,fontWeight:400}}>Blurry logo → sharp print-ready SVG.</p>
+            <div style={{marginTop:'14px',display:'grid',gap:'8px',fontSize:'15px',color:'rgba(255,255,255,0.92)',fontWeight:400}}><span><span style={{color:'#A020F0'}}>•</span> Image to Vector</span><span><span style={{color:'#A020F0'}}>•</span> Photo to Line Art</span><span><span style={{color:'#A020F0'}}>•</span> Logo Vectorizer</span><span><span style={{color:'#A020F0'}}>•</span> Batch 100x</span></div>
+            <div style={{marginTop:'14px',fontSize:'12px',color:'rgba(255,255,255,0.5)',borderTop:'1px solid rgba(255,255,255,0.08)',paddingTop:'10px'}}>JPG, PNG, EPS, SVG, PSD, CDR, AI</div>
+          </div>
+          <div style={{background:'linear-gradient(180deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.04) 100%)',border:'1px solid rgba(255,255,255,0.12)',borderRadius:'18px',padding:'22px'}}>
+            <div style={{width:'46px',height:'46px',background:'rgba(255,255,255,0.09)',borderRadius:'11px',display:'grid',placeItems:'center',fontSize:'24px'}}>🧊</div>
+            <h3 style={{fontSize:'18px',fontWeight:500,margin:'16px 0 8px',color:'#fff'}}>3D Studio</h3>
+            <p style={{fontSize:'15px',color:'rgba(255,255,255,0.85)',lineHeight:'1.55',margin:0,fontWeight:400}}>Photo → production 3D for Shopify & games.</p>
+            <div style={{marginTop:'14px',display:'grid',gap:'8px',fontSize:'15px',color:'rgba(255,255,255,0.92)',fontWeight:400}}><span><span style={{color:'#A020F0'}}>•</span> Image to 3D – 60 sec</span><span><span style={{color:'#A020F0'}}>•</span> Multi-Image to 3D</span><span><span style={{color:'#A020F0'}}>•</span> Text to 3D & Texture</span><span><span style={{color:'#A020F0'}}>•</span> Remesh, Rig & Animate</span></div>
+            <div style={{marginTop:'14px',fontSize:'12px',color:'rgba(255,255,255,0.5)',borderTop:'1px solid rgba(255,255,255,0.08)',paddingTop:'10px'}}>GLB, OBJ, FBX, STL, USDZ, BLEND</div>
+          </div>
+          <div style={{background:'linear-gradient(180deg, rgba(160,32,240,0.15) 0%, rgba(255,255,255,0.04) 100%)',border:'1px solid rgba(255,255,255,0.12)',borderRadius:'18px',padding:'22px'}}>
+            <div style={{width:'46px',height:'46px',background:'#A020F0',borderRadius:'11px',display:'grid',placeItems:'center',fontSize:'24px'}}>🎬</div>
+            <h3 style={{fontSize:'18px',fontWeight:500,margin:'16px 0 8px',color:'#fff'}}>Motion Studio</h3>
+            <p style={{fontSize:'15px',color:'rgba(255,255,255,0.85)',lineHeight:'1.55',margin:0,fontWeight:400}}>Static → viral Reels, ads, intros.</p>
+            <div style={{marginTop:'14px',display:'grid',gap:'8px',fontSize:'15px',color:'rgba(255,255,255,0.92)',fontWeight:400}}><span><span style={{color:'#A020F0'}}>•</span> Text/Image to Video</span><span><span style={{color:'#A020F0'}}>•</span> Logo & Text Animation</span><span><span style={{color:'#A020F0'}}>•</span> Reels, Promo, Ads</span><span><span style={{color:'#A020F0'}}>•</span> Stock, Music, LUTs</span></div>
+            <div style={{marginTop:'14px',fontSize:'12px',color:'rgba(255,255,255,0.5)',borderTop:'1px solid rgba(255,255,255,0.08)',paddingTop:'10px'}}>MP4, MOV, GIF, AE, 9:16</div>
+          </div>
         </div>
       </div>
 
-      {/* 3. BOTTOM - Your current 4 plans */}
-      <div style={{padding:'48px 40px 70px',maxWidth:'1440px',margin:'0 auto',background:'#0A0814'}}>
+      <div style={{padding:'52px 40px 80px',maxWidth:'1440px',margin:'0 auto',borderTop:'1px solid rgba(255,255,255,0.06)',marginTop:'24px'}}>
         <div style={{textAlign:'center'}}>
-          <h2 style={{fontSize:'28px',fontWeight:600,margin:'0',color:'#fff'}}>Simple, transparent pricing</h2>
-          <p style={{color:'rgba(255,255,255,0.6)',fontSize:'14px',marginTop:'8px'}}>Start free. Upgrade when you need more.</p>
-          <div style={{display:'inline-flex',background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:'24px',padding:'4px',marginTop:'18px'}}>
-            <button onClick={()=>setBilling("monthly")} style={{padding:'8px 18px',borderRadius:'18px',border:'none',background:billing==="monthly"?'#fff':'transparent',color:billing==="monthly"?'#000':'rgba(255,255,255,0.7)',fontWeight:500,fontSize:'12px',cursor:'pointer'}}>Monthly</button>
-            <button onClick={()=>setBilling("yearly")} style={{padding:'8px 18px',borderRadius:'18px',border:'none',background:billing==="yearly"?'#fff':'transparent',color:billing==="yearly"?'#000':'rgba(255,255,255,0.7)',fontWeight:500,fontSize:'12px',cursor:'pointer'}}>Yearly <span style={{background:'#A020F0',color:'#fff',padding:'2px 6px',borderRadius:'10px',fontSize:'10px',marginLeft:'4px'}}>-20%</span></button>
+          <h2 style={{fontSize:'32px',fontWeight:500,letterSpacing:'-0.02em',margin:'0',color:'#fff'}}>Start free. Pay only for<br/>what you <span style={{color:'#A020F0'}}>actually create.</span></h2>
+          <p style={{color:'rgba(255,255,255,0.82)',fontSize:'16px',marginTop:'10px',fontWeight:400}}>Free trial includes all studios. No CC required.</p>
+          <div style={{display:'inline-flex',background:'rgba(255,255,255,0.07)',border:'1px solid rgba(255,255,255,0.14)',borderRadius:'32px',padding:'5px',marginTop:'20px'}}>
+            <button onClick={()=>setBilling("monthly")} style={{padding:'10px 22px',borderRadius:'22px',border:'none',background:billing==="monthly"?'#fff':'transparent',color:billing==="monthly"?'#000':'rgba(255,255,255,0.85)',fontWeight:500,fontSize:'13px',cursor:'pointer'}}>Monthly</button>
+            <button onClick={()=>setBilling("yearly")} style={{padding:'10px 22px',borderRadius:'22px',border:'none',background:billing==="yearly"?'#fff':'transparent',color:billing==="yearly"?'#000':'rgba(255,255,255,0.85)',fontWeight:500,fontSize:'13px',cursor:'pointer'}}>Yearly <span style={{background:'#A020F0',color:'#fff',padding:'3px 8px',borderRadius:'12px',fontSize:'10px',marginLeft:'6px'}}>-20%</span></button>
           </div>
         </div>
 
-        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr 1fr',gap:'16px',marginTop:'28px'}}>
+        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr 1fr',gap:'18px',marginTop:'32px'}}>
           {plans.map((p)=>{
             const isPopular = p.name==="Creator"
             const display = billing==="monthly"? p.m : p.y
             const yearlyTotal = p.m*12*0.8
             return (
-              <div key={p.name} style={{background:isPopular?'#1A162E':'#15131E',border:isPopular?'1.5px solid #A020F0':'1px solid rgba(255,255,255,0.08)',borderRadius:'12px',padding:'22px',position:'relative',boxShadow:isPopular?'0 0 30px rgba(160,32,240,0.2)':'none'}}>
-                <div style={{position:'absolute',top:'-10px',left:'50%',transform:'translateX(-50%)',background:p.name==="Free Trial"?'#fff':isPopular?'#A020F0':'rgba(255,255,255,0.12)',color:p.name==="Free Trial"?'#000':'#fff',padding:'4px 12px',borderRadius:'12px',fontSize:'10px',fontWeight:500,whiteSpace:'nowrap'}}>{p.badge}</div>
-                <div style={{fontSize:'28px',fontWeight:600,marginTop:'10px',color:'#fff'}}>₹{display}<span style={{fontSize:'13px',fontWeight:400,color:'rgba(255,255,255,0.5)'}}> /mo</span></div>
-                <div style={{fontSize:'12px',color:'rgba(255,255,255,0.6)',marginTop:'6px',lineHeight:1.4,minHeight:'34px'}}>
-                  {p.name==="Free Trial"? "Free forever • 100 credits • No CC" : billing==="monthly"? `Billed monthly • ${p.credits}` : <>₹{display}/mo • ₹{Math.round(yearlyTotal).toLocaleString('en-IN')}/yr<br/><span style={{color:'#A6FF9A'}}>Save 20% • {p.credits}</span></>}
+              <div key={p.name} style={{background:isPopular?'linear-gradient(180deg, rgba(160,32,240,0.24) 0%, rgba(255,255,255,0.05) 100%)':'rgba(255,255,255,0.05)',border:isPopular?'1.8px solid #A020F0':'1px solid rgba(255,255,255,0.12)',borderRadius:'18px',padding:'24px',position:'relative',boxShadow:isPopular?'0 0 50px rgba(160,32,240,0.22)':'none'}}>
+                <div style={{position:'absolute',top:'-13px',left:'50%',transform:'translateX(-50%)',background:p.name==="Free Trial"?'#fff':isPopular?'#A020F0':'rgba(255,255,255,0.12)',color:p.name==="Free Trial"?'#000':'#fff',padding:'5px 14px',borderRadius:'20px',fontSize:'11px',fontWeight:500}}>{p.badge}</div>
+                <div style={{fontSize:'34px',fontWeight:500,marginTop:'12px',color:'#fff',lineHeight:1}}>₹{display}<span style={{fontSize:'14px',fontWeight:400,color:'rgba(255,255,255,0.65)'}}> /mo</span></div>
+                <div style={{fontSize:'14px',color:'rgba(255,255,255,0.78)',marginTop:'8px',lineHeight:1.4,minHeight:'40px',fontWeight:400}}>
+                  {p.name==="Free Trial"? "Free forever • 100 credits • No CC" : billing==="monthly"? `Billed monthly • ${p.credits}` : <>₹{display}/mo • ₹{Math.round(yearlyTotal).toLocaleString('en-IN')}/yr billed<br/><span style={{color:'#A6FF9A'}}>Save 20% • {p.credits}</span></>}
                 </div>
-                <div style={{marginTop:'14px',fontSize:'12px',display:'grid',gap:'7px',color:'rgba(255,255,255,0.8)'}}>
-                  <div style={{color:'#fff',fontWeight:500}}><span style={{color:'#A020F0'}}>•</span> {p.exp}</div>
+                <div style={{marginTop:'18px',fontSize:'15px',display:'grid',gap:'9px',color:'rgba(255,255,255,0.92)',fontWeight:400}}>
+                  <div style={{color:'#fff',fontWeight:500,fontSize:'15px'}}><span style={{color:'#A020F0'}}>•</span> {p.exp}</div>
                   {p.feats.map(f=><div key={f}><span style={{color:'#A020F0'}}>•</span> {f}</div>)}
                 </div>
-                <button style={{marginTop:'18px',width:'100%',background:isPopular?'#A020F0':p.name==="Free Trial"?'transparent':'rgba(255,255,255,0.08)',border:p.name==="Free Trial"?'1px solid rgba(255,255,255,0.1)':isPopular?'none':'1px solid rgba(255,255,255,0.1)',padding:'10px',borderRadius:'8px',color:'#fff',fontWeight:500,cursor:'pointer',fontSize:'12px'}}>{p.cta}</button>
+                <button style={{marginTop:'22px',width:'100%',background:isPopular?'#A020F0':p.name==="Free Trial"?'transparent':'rgba(255,255,255,0.1)',boxShadow:isPopular?'0 0 24px rgba(160,32,240,0.45)':'none',border:p.name==="Free Trial"?'1px solid rgba(255,255,255,0.14)':isPopular?'none':'1px solid rgba(255,255,255,0.14)',padding:'13px',borderRadius:'12px',color:'#fff',fontWeight:500,cursor:'pointer',fontSize:'14px'}}>{p.cta}</button>
               </div>
             )
           })}
