@@ -128,10 +128,10 @@ export default function ImageToVectorPage(){
       <div className="iv-grid">
         <div style={{minWidth:0}}>
           <div style={{display:'inline-flex',background:'rgba(160,32,240,0.15)',border:'1px solid rgba(160,32,240,0.32)',padding:'6px 12px',borderRadius:'20px',fontSize:'11px',color:'#D6A5FF',letterSpacing:'.1em'}}>YOUR USP • MOST POPULAR</div>
-          <h1 style={{fontSize:'48px',lineHeight:'1.05',margin:'16px 0 0'}}>
-            <span style={{fontWeight:600}}>Blurry logo to</span><br/>
-            <span style={{fontWeight:600, background:'linear-gradient(90deg,#A020F0 0%,#FF7AD1 100%)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent'}}>sharp print-ready SVG</span><br/>
-            <span style={{fontWeight:600}}>in 3 seconds</span>
+          <h1 style={{fontSize:'48px',lineHeight:'1.12',margin:'16px 0 0'}}>
+            <span style={{fontWeight:700}}>Blurry logo to</span><br/>
+            <span style={{fontWeight:700, background:'linear-gradient(90deg,#A020F0 0%,#FF7AD1 100%)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent'}}>sharp print-ready SVG</span><br/>
+            <span style={{fontWeight:700}}>in 3 seconds</span>
           </h1>
           <p className="desc-text">World's fastest AI vectorizer. Convert JPG, PNG to SVG, EPS, AI, CDR, PDF. Infinite scale, no quality loss. Built for print shops, designers, and sellers.</p>
 
