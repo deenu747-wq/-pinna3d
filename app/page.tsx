@@ -31,52 +31,35 @@ export default function Page(){
         <a href="/image-to-vector" style={{padding:'10px 18px',borderRadius:'22px',fontSize:'13px',border:'1px solid rgba(160,32,240,0.5)',background:'rgba(160,32,240,0.14)',color:'#fff',textDecoration:'none'}}>Image to Vector ★ NEW</a>
       </div>
 
-      {/* HERO FIXED - AS PER SCREENSHOT GREEN MARKS */}
-      <div style={{display:'grid',gridTemplateColumns:'1.05fr 0.75fr 0.75fr',gap:'18px',padding:'28px 40px',maxWidth:'1440px',margin:'0 auto',alignItems:'stretch'}}>
-        <div style={{display:'flex',flexDirection:'column',justifyContent:'center'}}>
-          <h1 style={{fontSize:'36px',lineHeight:'1.12',fontWeight:700,letterSpacing:'-0.02em',margin:0}}>Every Image to 3D or Vector<br/><span style={{background:'linear-gradient(90deg,#A020F0 0%,#FF7AD1 100%)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent'}}>in 60 Seconds</span></h1>
-          <p style={{color:'rgba(255,255,255,0.62)',marginTop:'14px',fontSize:'13.5px',lineHeight:'1.65',maxWidth:'420px'}}>Transform photos into production-ready 3D models & scalable vectors instantly. Built for designers, e-commerce, and creators Worldwide.</p>
+      {/* HERO ONLY FIXED - gap decreased + left + bottom align */}
+      <div style={{display:'grid',gridTemplateColumns:'1.2fr 0.7fr 0.7fr',gap:'12px',padding:'20px 24px',maxWidth:'1440px',margin:'0 auto',alignItems:'end'}}>
+        <div style={{display:'flex',flexDirection:'column',justifyContent:'center',paddingRight:'10px'}}>
+          <h1 style={{fontSize:'50px',lineHeight:'1.12',fontWeight:700,letterSpacing:'-0.02em',margin:0}}>Every Image to 3D or Vector<br/><span style={{background:'linear-gradient(90deg,#A020F0 0%,#FF7AD1 100%)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent'}}>in 60 Seconds</span></h1>
+          <p style={{color:'rgba(255,255,255,0.62)',marginTop:'14px',fontSize:'14px',lineHeight:'1.65',maxWidth:'500px'}}>Transform photos into production-ready 3D models & scalable vectors instantly. Built for designers, e-commerce, and creators Worldwide.</p>
           <div style={{display:'flex',gap:'10px',marginTop:'20px'}}>
-            <button style={{background:'#A020F0',boxShadow:'0 0 20px rgba(160,32,240,0.35)',padding:'10px 18px',borderRadius:'8px',border:'none',color:'#fff',fontSize:'13px',fontWeight:500,display:'flex',alignItems:'center',gap:'6px'}}><span style={{width:'16px',height:'16px',borderRadius:'50%',background:'rgba(255,255,255,0.2)',display:'grid',placeItems:'center',fontSize:'10px'}}>+</span> Start Creating — Free</button>
-            <button style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.12)',padding:'9px 16px',borderRadius:'8px',color:'#fff',fontSize:'13px',display:'flex',alignItems:'center',gap:'6px'}}><span style={{width:'18px',height:'18px',borderRadius:'50%',border:'1px solid rgba(255,255,255,0.25)',display:'grid',placeItems:'center',fontSize:'8px'}}>▶</span> Watch Demo</button>
+            <button style={{background:'#A020F0',boxShadow:'0 0 20px rgba(160,32,240,0.35)',padding:'10px 18px',borderRadius:'8px',border:'none',color:'#fff',fontSize:'13px',fontWeight:500}}>✦ Start Creating — Free</button>
+            <button style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.12)',padding:'9px 16px',borderRadius:'8px',color:'#fff',fontSize:'13px'}}>▶ Watch Demo</button>
           </div>
-          <div style={{display:'flex',gap:'6px',marginTop:'16px',flexWrap:'wrap'}}>
+          <div style={{display:'flex',gap:'6px',marginTop:'16px',flexWrap:'nowrap'}}>
             <span style={{background:'rgba(160,32,240,0.18)',border:'1px solid rgba(160,32,240,0.25)',padding:'5px 8px',borderRadius:'6px',fontSize:'10px',color:'#D6A5FF',whiteSpace:'nowrap'}}>⚡ 60s Turnaround</span>
-            <span style={{background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.08)',padding:'5px 8px',borderRadius:'6px',fontSize:'10px',color:'rgba(255,255,255,0.7)',whiteSpace:'nowrap'}}>100k+ assets generated</span>
+            <span style={{background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.08)',padding:'5px 8px',borderRadius:'6px',fontSize:'10px',color:'rgba(255,255,255,0.7)',whiteSpace:'nowrap'}}>100k+ assets</span>
             <span style={{background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.08)',padding:'5px 8px',borderRadius:'6px',fontSize:'10px',color:'rgba(255,255,255,0.7)',whiteSpace:'nowrap'}}>No credit card required</span>
             <span style={{background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.08)',padding:'5px 8px',borderRadius:'6px',fontSize:'10px',color:'rgba(255,255,255,0.7)',whiteSpace:'nowrap'}}>📍 Made for Worldwide</span>
           </div>
         </div>
-
-        <div onClick={openPicker} onDragOver={e=>e.preventDefault()} onDrop={onFile} style={{border:'1.5px dashed rgba(160,32,240,0.55)',borderRadius:'14px',background:'rgba(18,16,32,0.95)',padding:'18px 14px',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',textAlign:'center',cursor:'pointer',minHeight:'320px'}}>
+        <div onClick={openPicker} onDragOver={e=>e.preventDefault()} onDrop={onFile} style={{border:'3px dashed rgba(160,32,240,0.6)',borderRadius:'15px',background:'rgba(15,13,28,0.95)',padding:'18px 14px',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',textAlign:'center',cursor:'pointer',minHeight:'320px',height:'320px'}}>
           <input ref={fileRef} type="file" hidden accept="image/*" onChange={onFile} />
-          <div style={{width:'64px',height:'64px',background:'rgba(160,32,240,0.12)',border:'1px solid rgba(160,32,240,0.25)',borderRadius:'12px',display:'grid',placeItems:'center',marginBottom:'14px'}}>
-            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#A020F0" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></svg>
-          </div>
-          <b style={{fontSize:'13px',fontWeight:600}}>Drag & drop your image here</b>
-          <div style={{fontSize:'11px',color:'rgba(255,255,255,0.55)',marginTop:'4px'}}>or browse files to upload</div>
-          <div style={{fontSize:'8.5px',color:'rgba(255,255,255,0.35)',marginTop:'12px',lineHeight:'1.4'}}>Supports PNG, JPG, WEBP • Max 20MB • JPG/PNG to 3D or SVG</div>
-          <div style={{marginTop:'12px',background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.08)',padding:'6px 12px',borderRadius:'6px',fontSize:'9px',color:'rgba(255,255,255,0.6)'}}>Instant preview • Background removal included</div>
+          <div style={{width:'52px',height:'52px',background:'rgba(160,32,240,0.18)',border:'3px solid rgba(160,32,240,0.35)',borderRadius:'15px',display:'grid',placeItems:'center',marginBottom:'12px'}}><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#A020F0" strokeWidth="2"><path d="M3 15a4 4 0 0 0 4 4h9a4 4 0 0 0 0-8 5 5 0 0 0-9.7-1.5A3 3 0 0 0 3 15z"/></svg></div>
+          <b style={{fontSize:'16px',fontWeight:600}}>Drag & drop your image here</b>
+          <div style={{fontSize:'14px',color:'rgba(255,255,255,0.5)',marginTop:'4px'}}>or browse files to upload</div>
+          <div style={{fontSize:'10px',color:'rgba(255,255,255,0.35)',marginTop:'10px'}}>Supports PNG, JPG, WEBP • Max 20MB • JPG/PNG to 3D or SVG</div>
+          <div style={{marginTop:'10px',background:'rgba(255,255,255,0.05)',border:'1px solid rgba(255,255,255,0.08)',padding:'5px 10px',borderRadius:'5px',fontSize:'11px',color:'rgba(255,255,255,0.6)'}}>Instant preview • Background removal included</div>
           {preview && <img src={preview} style={{width:'70px',borderRadius:'6px',marginTop:'8px'}}/>}
         </div>
-
-        <div style={{background:'#15131E',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'14px',padding:'12px',display:'flex',flexDirection:'column',minHeight:'320px'}}>
-          <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',fontSize:'11px',color:'rgba(255,255,255,0.6)',marginBottom:'8px'}}>
-            <span>3D Viewer Preview</span>
-            <div style={{display:'flex',gap:'6px'}}>
-              <span style={{width:'22px',height:'22px',background:'rgba(255,255,255,0.06)',borderRadius:'5px',display:'grid',placeItems:'center',fontSize:'10px',border:'1px solid rgba(255,255,255,0.08)'}}>↻</span>
-              <span style={{width:'22px',height:'22px',background:'rgba(255,255,255,0.06)',borderRadius:'5px',display:'grid',placeItems:'center',fontSize:'10px',border:'1px solid rgba(255,255,255,0.08)'}}>⛶</span>
-              <span style={{width:'22px',height:'22px',background:'rgba(255,255,255,0.06)',borderRadius:'5px',display:'grid',placeItems:'center',fontSize:'10px',border:'1px solid rgba(255,255,255,0.08)'}}>•••</span>
-            </div>
-          </div>
-          <div style={{background:'radial-gradient(ellipse at 50% 30%, rgba(160,32,240,0.4) 0%, rgba(10,8,20,0.9) 70%)',borderRadius:'10px',flex:1,display:'grid',placeItems:'center',overflow:'hidden',position:'relative',border:'1px solid rgba(255,255,255,0.05)'}}>
-            {done && preview? <img src={preview} style={{height:'150px'}}/> : <img src="/sneaker.webp" style={{width:'100%',height:'100%',objectFit:'cover'}}/>}
-            <div style={{position:'absolute',bottom:'8px',left:'8px',background:'rgba(0,0,0,0.6)',padding:'4px 8px',borderRadius:'4px',fontSize:'9px',color:'rgba(255,255,255,0.7)'}}>Model: Sneaker_v01.glb</div>
-          </div>
-          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'8px',marginTop:'10px'}}>
-            <button style={{background:'#2A2838',border:'1px solid rgba(255,255,255,0.1)',padding:'8px',borderRadius:'6px',color:'#fff',fontSize:'11px'}}>Download GLB</button>
-            <button style={{background:'#A020F0',border:'none',padding:'8px',borderRadius:'6px',color:'#fff',fontSize:'11px'}}>Export SVG</button>
-          </div>
+        <div style={{background:'#15131E',border:'2px solid rgba(255,255,255,0.08)',borderRadius:'15px',padding:'10px',display:'flex',flexDirection:'column',minHeight:'320px',height:'320px'}}>
+          <div style={{display:'flex',justifyContent:'space-between',fontSize:'11px',color:'rgba(255,255,255,0.6)',marginBottom:'6px'}}><span>3D Viewer Preview</span><span>↻ ⛶ •••</span></div>
+          <div style={{background:'radial-gradient(ellipse at 50% 20%, rgba(160,32,240,0.35) 0%, rgba(10,8,20,0.9) 70%)',borderRadius:'10px',flex:1,display:'grid',placeItems:'center',overflow:'hidden',position:'relative'}}>{done && preview? <img src={preview} style={{height:'150px'}}/> : <img src="/sneaker.webp" style={{width:'100%',height:'100%',objectFit:'cover',borderRadius:'10px'}}/>}<div style={{position:'absolute',bottom:'6px',left:'6px',background:'rgba(0,0,0,0.6)',padding:'3px 6px',borderRadius:'4px',fontSize:'8px',color:'rgba(255,255,255,0.7)'}}>Model: Sneaker_v01.glb</div></div>
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'8px',marginTop:'8px'}}><button style={{background:'#2A2838',border:'1px solid rgba(255,255,255,0.1)',padding:'7px',borderRadius:'6px',color:'#fff',fontSize:'11px'}}>Download GLB</button><button style={{background:'#A020F0',border:'none',padding:'7px',borderRadius:'6px',color:'#fff',fontSize:'11px'}}>Export SVG</button></div>
         </div>
       </div>
 
