@@ -27,7 +27,7 @@ export default function Page(){
   return (
     <div style={{background:'#0A0814',color:'#fff',fontFamily:'Inter, ui-sans-serif, system-ui',minHeight:'100vh',backgroundImage:`radial-gradient(900px 480px at 50% -10%, rgba(160,32,240,0.22), transparent 70%)`,WebkitFontSmoothing:'antialiased',MozOsxFontSmoothing:'grayscale',textRendering:'optimizeLegibility'}}>
       <header style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'12px 40px',borderBottom:'1px solid rgba(255,255,255,0.08)',background:'rgba(10,8,20,0.92)',backdropFilter:'blur(16px)',position:'sticky',top:0,zIndex:50}}>
-        <img src="/logo.png" alt="Pinna3d.com" style={{height:'100px',width:'auto',objectFit:'contain'}} />
+        <img src="/logo.png" alt="Pinna3d.com" style={{height:'46px',width:'auto',objectFit:'contain'}} />
         <div style={{display:'flex',gap:'26px',alignItems:'center',fontSize:'14px',fontWeight:400}}>
           <span style={{color:'rgba(255,255,255,0.9)'}}>Features</span>
           <span style={{color:'#A020F0',fontWeight:500}}>Pricing</span>
@@ -47,32 +47,50 @@ export default function Page(){
         <a href="/image-to-vector" style={{padding:'10px 18px',borderRadius:'22px',fontSize:'13px',fontWeight:500,border:'1px solid rgba(160,32,240,0.5)',background:'rgba(160,32,240,0.14)',color:'#fff',textDecoration:'none'}}>Image to Vector ★ NEW</a>
       </div>
 
-      <div style={{display:'grid',gridTemplateColumns:'1.1fr 0.9fr 0.9fr',gap:'24px',padding:'44px 40px',maxWidth:'1440px',margin:'0 auto'}}>
-        <div>
-          <h1 style={{fontSize:'52px',lineHeight:'1.04',fontWeight:600,letterSpacing:'-0.03em',margin:0,color:'#fff'}}>Every Image to 3D<br/><span style={{background:'linear-gradient(90deg,#A020F0,#FF7AD1)',WebkitBackgroundClip:'text',color:'transparent'}}>in 60 Seconds</span></h1>
-          <p style={{color:'rgba(255,255,255,0.85)',marginTop:'16px',fontSize:'17px',lineHeight:'1.65',fontWeight:400}}>Upload any photo → get studio-ready 3D, vector & video. Trusted by 100k+ sellers worldwide.</p>
-          <div style={{display:'flex',gap:'12px',marginTop:'26px'}}>
-            <button style={{background:'#A020F0',boxShadow:'0 0 28px rgba(160,32,240,0.5)',padding:'14px 24px',borderRadius:'12px',fontWeight:500,border:'none',color:'#fff',fontSize:'14px'}}>✦ Start Creating — Free</button>
-            <button style={{border:'1px solid rgba(255,255,255,0.18)',background:'rgba(255,255,255,0.06)',padding:'14px 24px',borderRadius:'12px',color:'#fff',fontSize:'14px',fontWeight:400}}>◉ Watch Demo</button>
+      {/* === SECTION 1 UPDATED - Screenshot alignment + Worldwide + Gradient === */}
+      <div style={{display:'grid',gridTemplateColumns:'1.15fr 0.85fr 0.85fr',gap:'22px',padding:'44px 40px',maxWidth:'1440px',margin:'0 auto',alignItems:'stretch'}}>
+        <div style={{display:'flex',flexDirection:'column',justifyContent:'center'}}>
+          <h1 style={{fontSize:'36px',lineHeight:'1.12',fontWeight:700,letterSpacing:'-0.02em',margin:0,color:'#fff'}}>
+            Every Image to 3D or Vector<br/>
+            <span style={{background:'linear-gradient(90deg,#A020F0 0%,#FF7AD1 100%)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent',backgroundClip:'text'}}>in 60 Seconds</span>
+          </h1>
+          <p style={{color:'rgba(255,255,255,0.62)',marginTop:'14px',fontSize:'13.5px',lineHeight:'1.65',fontWeight:400,maxWidth:'420px'}}>
+            Transform photos into production-ready 3D models & scalable vectors instantly. Built for designers, e-commerce, and creators Worldwide.
+          </p>
+          <div style={{display:'flex',gap:'10px',marginTop:'22px',alignItems:'center'}}>
+            <button style={{background:'#A020F0',boxShadow:'0 0 20px rgba(160,32,240,0.35)',padding:'10px 18px',borderRadius:'8px',border:'none',color:'#fff',fontSize:'13px',fontWeight:500,display:'flex',alignItems:'center',gap:'6px'}}>
+              <span>✦</span> Start Creating — Free
+            </button>
+            <button style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.12)',padding:'9px 16px',borderRadius:'8px',color:'#fff',fontSize:'13px',fontWeight:400,display:'flex',alignItems:'center',gap:'8px'}}>
+              <span style={{width:'20px',height:'20px',borderRadius:'50%',border:'1px solid rgba(255,255,255,0.2)',display:'grid',placeItems:'center',fontSize:'10px'}}>▶</span> Watch Demo
+            </button>
+          </div>
+          <div style={{display:'flex',gap:'8px',marginTop:'20px',flexWrap:'wrap',alignItems:'center'}}>
+            <span style={{background:'rgba(160,32,240,0.18)',border:'1px solid rgba(160,32,240,0.25)',padding:'5px 10px',borderRadius:'6px',fontSize:'10.5px',color:'#D6A5FF',fontWeight:500,display:'flex',alignItems:'center',gap:'4px'}}>⚡ 60s Turnaround</span>
+            <span style={{background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.08)',padding:'5px 10px',borderRadius:'6px',fontSize:'10.5px',color:'rgba(255,255,255,0.7)'}}>• 100k+ assets generated</span>
+            <span style={{background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.08)',padding:'5px 10px',borderRadius:'6px',fontSize:'10.5px',color:'rgba(255,255,255,0.7)'}}>• No credit card required</span>
+            <span style={{background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.08)',padding:'5px 10px',borderRadius:'6px',fontSize:'10.5px',color:'rgba(255,255,255,0.7)',display:'flex',alignItems:'center',gap:'4px'}}>📍 Made for Worldwide 🌍</span>
           </div>
         </div>
 
-        {/* SECOND CIRCLE - Width of dots increased - 3px dotted same as screenshot */}
-        <div onClick={openPicker} onDragOver={e=>e.preventDefault()} onDrop={onFile} style={{border:'3px dotted rgba(168,85,247,0.9)',borderRadius:'18px',background:'rgba(255,255,255,0.04)',padding:'26px',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',textAlign:'center',cursor:'pointer'}}>
+        <div onClick={openPicker} onDragOver={e=>e.preventDefault()} onDrop={onFile} style={{border:'1.5px dashed rgba(160,32,240,0.7)',borderRadius:'14px',background:'rgba(15,13,28,0.9)',padding:'22px 18px',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',textAlign:'center',cursor:'pointer',boxShadow:'0 0 30px rgba(160,32,240,0.08) inset'}}>
           <input ref={fileRef} type="file" hidden accept="image/*" onChange={onFile} />
-          <div style={{width:'66px',height:'66px',background:'rgba(160,32,240,0.18)',borderRadius:'14px',display:'grid',placeItems:'center',fontSize:'30px',marginBottom:'14px'}}>☁️</div>
-          <b style={{fontSize:'16px',fontWeight:500,color:'#fff'}}>Drag & drop your image here</b>
-          <div style={{marginTop:'18px',background:'#A020F0',color:'#fff',padding:'12px 26px',borderRadius:'10px',fontSize:'13px',fontWeight:400}}>Browse Files</div>
-          {preview && <img src={preview} alt="preview" style={{width:'110px',borderRadius:'10px',marginTop:'14px'}}/>}
+          <div style={{width:'68px',height:'68px',background:'rgba(160,32,240,0.12)',border:'1px solid rgba(160,32,240,0.25)',borderRadius:'12px',display:'grid',placeItems:'center',marginBottom:'16px',boxShadow:'0 0 20px rgba(160,32,240,0.2)'}}>
+            <span style={{fontSize:'32px'}}>☁️</span>
+          </div>
+          <b style={{fontSize:'15px',fontWeight:600,color:'#fff',letterSpacing:'-0.01em'}}>Drag & drop your image here</b>
+          <div style={{fontSize:'12px',color:'rgba(255,255,255,0.55)',marginTop:'6px'}}>or browse files to upload</div>
+          <div style={{fontSize:'9.5px',color:'rgba(255,255,255,0.4)',marginTop:'14px',letterSpacing:'0.02em'}}>Supports PNG, JPG, WEBP • Max 20MB • JPG/PNG to 3D or SVG</div>
+          <div style={{marginTop:'16px',background:'rgba(255,255,255,0.05)',border:'1px solid rgba(255,255,255,0.08)',padding:'7px 14px',borderRadius:'6px',fontSize:'10px',color:'rgba(255,255,255,0.6)'}}>Instant preview • Background removal included</div>
+          {preview && <img src={preview} alt="preview" style={{width:'90px',borderRadius:'8px',marginTop:'12px'}}/>}
         </div>
 
-        {/* THIRD CIRCLE - As it is + enhanced shoe */}
-        <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:'18px',padding:'14px'}}>
+        <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:'14px',padding:'14px',display:'flex',flexDirection:'column'}}>
           <div style={{display:'flex',justifyContent:'space-between',fontSize:'12px',color:'rgba(255,255,255,0.75)',padding:'6px',fontWeight:400}}><span>3D Viewer Preview</span><span>↻ ⛶</span></div>
-          <div style={{background:'radial-gradient(ellipse at center,rgba(160,32,240,0.24),transparent 70%)',borderRadius:'12px',height:'250px',display:'grid',placeItems:'center',overflow:'hidden'}}>
+          <div style={{background:'radial-gradient(ellipse at center,rgba(160,32,240,0.24),transparent 70%)',borderRadius:'12px',flex:1,minHeight:'210px',display:'grid',placeItems:'center',overflow:'hidden'}}>
             {done && preview? <img src={preview} alt="3d" style={{height:'170px'}}/> : <img src="/sneaker.webp" alt="Sneaker 3D" style={{width:'100%',height:'220px',objectFit:'cover',borderRadius:'12px'}}/>}
           </div>
-          <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginTop:'auto'}}>
+          <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginTop:'10px'}}>
             <span style={{fontSize:'11px',color:'rgba(255,255,255,0.55)',fontWeight:400}}>Model: Sneaker_v01.glb</span>
           </div>
           <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'8px',marginTop:'8px'}}>
@@ -82,6 +100,7 @@ export default function Page(){
         </div>
       </div>
 
+      {/* === OTHER SECTIONS UNCHANGED - AS YOUR BASE CODE === */}
       <div style={{padding:'40px 40px 20px',maxWidth:'1440px',margin:'0 auto',borderTop:'1px solid rgba(255,255,255,0.06)'}}>
         <div style={{textAlign:'center',maxWidth:'820px',margin:'0 auto'}}>
           <div style={{display:'inline-flex',background:'rgba(160,32,240,0.15)',border:'1px solid rgba(160,32,240,0.32)',padding:'6px 12px',borderRadius:'20px',fontSize:'11px',letterSpacing:'.12em',color:'#D6A5FF',fontWeight:500}}>FOUR STUDIOS • ONE PLATFORM</div>
