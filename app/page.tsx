@@ -34,7 +34,7 @@ export default function Page(){
       {/* HERO ONLY FIXED - gap decreased + left + bottom align */}
       <div style={{display:'grid',gridTemplateColumns:'1.2fr 0.7fr 0.7fr',gap:'12px',padding:'20px 24px',maxWidth:'1440px',margin:'0 auto',alignItems:'end'}}>
         <div style={{display:'flex',flexDirection:'column',justifyContent:'center',paddingRight:'10px'}}>
-          <h1 style={{fontSize:'40px',lineHeight:'1.12',fontWeight:700,letterSpacing:'-0.02em',margin:0}}>Every Image to 3D or Vector<br/><span style={{background:'linear-gradient(90deg,#A020F0 0%,#FF7AD1 100%)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent'}}>in 60 Seconds</span></h1>
+          <h1 style={{fontSize:'60px',lineHeight:'1.12',fontWeight:700,letterSpacing:'-0.02em',margin:0}}>Every Image to 3D or Vector<br/><span style={{background:'linear-gradient(90deg,#A020F0 0%,#FF7AD1 100%)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent'}}>in 60 Seconds</span></h1>
           <p style={{color:'rgba(255,255,255,0.62)',marginTop:'14px',fontSize:'14px',lineHeight:'1.65',maxWidth:'420px'}}>Transform photos into production-ready 3D models & scalable vectors instantly. Built for designers, e-commerce, and creators Worldwide.</p>
           <div style={{display:'flex',gap:'10px',marginTop:'20px'}}>
             <button style={{background:'#A020F0',boxShadow:'0 0 20px rgba(160,32,240,0.35)',padding:'10px 18px',borderRadius:'8px',border:'none',color:'#fff',fontSize:'13px',fontWeight:500}}>✦ Start Creating — Free</button>
