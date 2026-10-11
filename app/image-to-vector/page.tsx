@@ -101,18 +101,20 @@ export default function ImageToVectorPage(){
 .box-1-1{width:100%;aspect-ratio:1/1;height:auto;border-radius:16px;box-sizing:border-box;overflow:hidden}
 .upload-box{border:3px dashed rgba(160,32,240,0.6);background:rgba(15,13,28,0.95);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;cursor:pointer;position:relative}
 .upload-box img{width:100%;height:100%;object-fit:contain;padding:10px;background:#fff;border-radius:12px;box-sizing:border-box}
-.desc-text{width:100%;max-width:100%;font-size:15px;line-height:1.7;letter-spacing:0.2px;color:rgba(255,255,255,0.68);margin-top:14px;display:block}
+.desc-text{width:100%;max-width:100%;font-size:15px;line-height:1.8;letter-spacing:0.2px;color:rgba(255,255,255,0.68);margin-top:14px;display:block}
 .pill-row{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
 .pill{padding:8px 14px;border-radius:999px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);font-size:12px;display:inline-flex;align-items:center}
 .six-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px;max-width:560px}
 .six-box{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09);border-radius:14px;padding:14px 16px}
+.vector-fill{margin-top:18px;max-width:560px;height:280px;background:radial-gradient(130% 130% at 20% 20%, rgba(160,32,240,0.30), transparent 60%), radial-gradient(100% 100% at 80% 80%, rgba(255,122,209,0.22), transparent 60%), rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.10);border-radius:16px;position:relative;overflow:hidden;padding:22px;display:flex;align-items:center;gap:20px}
+.vector-fill.big{font-size:48px;font-weight:800;line-height:0.95;letter-spacing:-0.5px}
+.vector-fill.desc{font-size:15px;line-height:1.6;color:rgba(255,255,255,0.70);margin-top:12px}
 .preview-card{background:#15131E;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:14px;width:100%;box-sizing:border-box;display:flex;flex-direction:column}
 .preview-box{background:#0A0814;background-image:radial-gradient(rgba(255,255,255,0.12) 1px, transparent 1px);background-size:16px 16px;border-radius:10px;width:100%;display:flex;align-items:center;justify-content:center;border:1px solid rgba(160,32,240,0.28);overflow:hidden;position:relative;flex:1}
 .preview-white{width:88%;height:88%;background:#fff;border-radius:10px;display:flex;align-items:center;justify-content:center;padding:10px;box-sizing:border-box;overflow:hidden}
 .preview-white div{width:100%;height:100%;display:flex;align-items:center;justify-content:center}
 .preview-white svg{width:100%!important;height:100%!important}
-.feat-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;margin-top:32px}
-@media(max-width:900px){.iv-grid{grid-template-columns:1fr;padding:16px}.six-grid{grid-template-columns:1fr}.feat-grid{grid-template-columns:1fr}}
+@media(max-width:900px){.iv-grid{grid-template-columns:1fr;padding:16px}.six-grid{grid-template-columns:1fr}.vector-fill{height:auto;flex-direction:column;align-items:start}}
       `}</style>
 
       <header style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'12px 40px',borderBottom:'1px solid rgba(255,255,255,0.08)',background:'rgba(10,8,20,0.92)',backdropFilter:'blur(16px)',position:'sticky',top:0,zIndex:50}}>
@@ -146,6 +148,23 @@ export default function ImageToVectorPage(){
             <div className="six-box"><div style={{fontSize:'10px',letterSpacing:'.12em',color:'rgba(255,255,255,0.45)',fontWeight:600}}>QUALITY</div><div style={{fontSize:'13px',fontWeight:600,marginTop:'6px'}}>Print-ready • Infinite Scale</div><div style={{fontSize:'11px',color:'rgba(255,255,255,0.5)',marginTop:'6px'}}>Clean bezier curves</div></div>
             <div className="six-box"><div style={{fontSize:'10px',letterSpacing:'.12em',color:'rgba(255,255,255,0.45)',fontWeight:600}}>SPEED</div><div style={{fontSize:'13px',fontWeight:600,marginTop:'6px'}}>3 Sec Vectorization</div><div style={{fontSize:'11px',color:'rgba(255,255,255,0.5)',marginTop:'6px'}}>100% auto tracing</div></div>
             <div className="six-box"><div style={{fontSize:'10px',letterSpacing:'.12em',color:'rgba(255,255,255,0.45)',fontWeight:600}}>BONUS</div><div style={{fontSize:'13px',fontWeight:600,marginTop:'6px'}}>Batch 100x + API</div><div style={{fontSize:'11px',color:'rgba(255,255,255,0.5)',marginTop:'6px'}}>For shops & agencies</div></div>
+          </div>
+
+          <div className="vector-fill">
+            <div style={{flex:'0 0 auto'}}>
+              <svg width="140" height="140" viewBox="0 0 120 120" fill="none">
+                <path d="M20 90 Q 40 10, 60 50 T 100 30" stroke="#A020F0" strokeWidth="2.5" strokeDasharray="5 7"/>
+                <circle cx="20" cy="90" r="6" fill="#A020F0"/>
+                <circle cx="60" cy="50" r="6" fill="#fff"/>
+                <circle cx="100" cy="30" r="6" fill="#FF7AD1"/>
+                <path d="M10 100 L 110 100 M10 10 L10 110" stroke="rgba(255,255,255,0.12)" strokeWidth="1"/>
+              </svg>
+            </div>
+            <div>
+              <div className="vector-fill big">∞ Vector<br/><span style={{color:'#A020F0'}}>No Pixels</span></div>
+              <div className="vector-fill desc">Clean bezier curves, not jagged trace.<br/>Increased height + bigger fontsize<br/>as you asked. Uses vector graphics.</div>
+            </div>
+            <div style={{position:'absolute',right:'16px',bottom:'12px',fontSize:'10px',color:'rgba(255,255,255,0.35)'}}>100% Editable SVG</div>
           </div>
         </div>
 
