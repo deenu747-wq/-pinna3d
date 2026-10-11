@@ -22,66 +22,94 @@ export default function ImageToVectorPage(){
     })
   }
 
-  const onFile = async (e:any)=>{
+const onFile = async (e:any)=>{
     const f=e.dataTransfer?.files?.[0]||e.target?.files?.[0]
     if(!f) return
-    const url = URL.createObjectURL(f)
-    setPreview(url)
-    setVectorDone(false)
-    setSvgData("")
-    setLoading(true)
+    setLoading(true); setDone(false); setSvgData("")
     await loadTracer()
 
-    const img = new Image()
-    img.crossOrigin="anonymous"
-    img.src = url
+    const img=new Image()
+    img.src=URL.createObjectURL(f)
     await new Promise(r=>img.onload=r)
 
-    const canvas = document.createElement("canvas")
-    const maxW = 900
-    const scale = Math.min(1, maxW / img.width)
-    canvas.width = img.width * scale
-    canvas.height = img.height * scale
-    const ctx = canvas.getContext("2d")!
-    ctx.fillStyle="#FFFFFF"
-    ctx.fillRect(0,0,canvas.width,canvas.height)
-    ctx.drawImage(img,0,0,canvas.width,canvas.height)
-    let imgd = ctx.getImageData(0,0,canvas.width,canvas.height)
-    const d = imgd.data
+    const canvas=document.createElement("canvas")
+    const tmpCanvas=document.createElement("canvas")
+    const tCtx=tmpCanvas.getContext("2d")!
 
-    // Binarize to pure black/white for solid trace
-    for(let i=0;i<d.length;i+=4){
-      const avg=(d[i]+d[i+1]+d[i+2])/3
-      const v=avg<140?0:255
-      d[i]=d[i+1]=d[i+2]=v
-      d[i+3]=255
+    // 1. First draw original
+    tmpCanvas.width=img.width
+    tmpCanvas.height=img.height
+    tCtx.drawImage(img,0,0)
+    let imgd=tCtx.getImageData(0,0,tmpCanvas.width,tmpCanvas.height)
+
+    // Detect B/W icon vs color
+    let total=0, colorPixels=0
+    for(let i=0;i<imgd.data.length;i+=400){
+      const r=imgd.data[i], g=imgd.data[i+1], b=imgd.data[i+2]
+      total++
+      if(Math.abs(r-g)>15 || Math.abs(r-b)>15) colorPixels++
     }
-    ctx.putImageData(imgd,0,0)
+    const isColor = (colorPixels/total) > 0.08
 
-    // Crop bottom 5% to remove watermark
-    const cropH = Math.floor(canvas.height*0.95)
-    const cropped = ctx.getImageData(0,0,canvas.width,cropH)
+    if(!isColor){
+      // 2x UPSCALE for smooth edges - this fixes your screenshot
+      const scaleUp = img.width < 800? 3 : 2
+      canvas.width = img.width * scaleUp
+      canvas.height = img.height * scaleUp
+      const ctx=canvas.getContext("2d")!
+      ctx.imageSmoothingEnabled=true
+      ctx.imageSmoothingQuality="high"
+      ctx.drawImage(img,0,0,canvas.width,canvas.height)
 
-    const options={
-      ltres:0.5, qtres:0.5, pathomit:2,
-      rightangleenhance:false,
-      colorsampling:0, numberofcolors:2,
-      mincolorratio:0, colorquantcycles:1,
-      blurradius:0, blurdelta:0,
-      strokewidth:0, linefilter:false,
-      roundcoords:1,
-      pal:[{r:0,g:0,b:0,a:255},{r:255,g:255,b:255,a:255}]
-    } as any
+      // Sharp binary threshold 0 or 255 = no gray fringes = no jagged
+      let d=ctx.getImageData(0,0,canvas.width,canvas.height)
+      const data=d.data
+      for(let i=0;i<data.length;i+=4){
+        const avg=(data[i]+data[i+1]+data[i+2])/3
+        const v=avg<128?0:255
+        data[i]=data[i+1]=data[i+2]=v
+        data[i+3]=255
+      }
+      ctx.putImageData(d,0,0)
+      imgd=ctx.getImageData(0,0,canvas.width,canvas.height)
 
-    let svgstr = (window as any).ImageTracer.imagedataToSVG(cropped, options)
-    // Remove white background path, keep only black
-    svgstr = svgstr.replace(/<path[^>]*fill="rgb\(255,255,255\)"[^>]*\/>/g,'')
-    svgstr = svgstr.replace(/fill="rgb\(0,0,0\)"/g,'fill="black"')
-    svgstr = svgstr.replace(/fill="[^"]*"/g,(m:string)=> m.includes('255,255,255')? '' : 'fill="black"')
+      const options={
+        ltres:0.8, // lower = more accurate corners, but we use upscale to keep smooth
+        qtres:0.8,
+        pathomit:16, // removes tiny jagged specks
+        rightangleenhance:false,
+        colorsampling:0,
+        numberofcolors:2,
+        mincolorratio:0,
+        blurradius:0,
+        blurdelta:0,
+        strokewidth:0,
+        roundcoords:2,
+        pal:[{r:0,g:0,b:0,a:255},{r:255,g:255,b:255,a:255}]
+      } as any
 
-    setSvgData(svgstr)
-    setVectorDone(true)
-    setLoading(false)
+      let svgstr=(window as any).ImageTracer.imagedataToSVG(imgd, options)
+      svgstr=svgstr.replace(/<path[^>]*fill="rgb\(255,255,255\)"[^>]*\/>/g,'')
+      setSvgData(svgstr)
+    }else{
+      // COLOR - keep original logic, same colors
+      canvas.width=Math.min(1200, img.width)
+      canvas.height=Math.round(canvas.width * img.height / img.width)
+      const ctx=canvas.getContext("2d")!
+      ctx.drawImage(img,0,0,canvas.width,canvas.height)
+      imgd=ctx.getImageData(0,0,canvas.width,canvas.height)
+      const options={
+        ltres:1, qtres:1, pathomit:8,
+        colorsampling:1, numberofcolors:8,
+        mincolorratio:0.02, colorquantcycles:3,
+        blurradius:1, blurdelta:20,
+        roundcoords:2
+      } as any
+      let svgstr=(window as any).ImageTracer.imagedataToSVG(imgd, options)
+      svgstr=svgstr.replace(/<path[^>]*fill="rgb\(255,255,255\)"[^>]*\/>/g,'')
+      setSvgData(svgstr)
+    }
+    setDone(true); setLoading(false)
   }
 
   const downloadFile = ()=>{
