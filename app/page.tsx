@@ -73,7 +73,7 @@ export default function Page(){
             {done && preview? <img src={preview} alt="3d" style={{height:'170px'}}/> : <img src="/sneaker.webp" alt="Sneaker 3D" style={{width:'100%',height:'220px',objectFit:'cover',borderRadius:'12px'}}/>}
           </div>
           <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginTop:'5px'}}>
-            <span style={{fontSize:'12px',color:'rgba(255,255,255,0.55)',fontWeight:400}}>Model: Sneaker_v01.glb</span>
+            <span style={{fontSize:'11px',color:'rgba(255,255,255,0.55)',fontWeight:400}}>Model: Sneaker_v01.glb</span>
           </div>
           <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'8px',marginTop:'8px'}}>
             <button style={{background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.12)',padding:'8px',borderRadius:'8px',color:'#fff',fontSize:'12px',fontWeight:400}}>Download GLB</button>
