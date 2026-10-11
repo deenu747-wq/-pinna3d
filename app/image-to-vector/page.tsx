@@ -22,6 +22,99 @@ export default function ImageToVectorPage(){
     })
   }
 
+  // --- REAL EPS / PDF CONVERTERS ---
+  const parsePaths = (svgStr:string)=>{
+    const vbMatch = svgStr.match(/viewBox="([^"]+)"/)
+    let W=800, H=600
+    if(vbMatch){ const p=vbMatch[1].split(/[\s,]+/).map(Number); W=p[2]; H=p[3] }
+    const pathRegex = /<path[^>]*d="([^"]+)"[^>]*fill="([^"]+)"[^>]*\/?>/g
+    const paths: {d:string, fill:string}[]=[]
+    let m
+    while((m=pathRegex.exec(svgStr))!==null){ paths.push({d:m[1], fill:m[2]}) }
+    if(paths.length===0){
+      const dOnly=/<path[^>]*d="([^"]+)"[^>]*>/g
+      while((m=dOnly.exec(svgStr))!==null){ paths.push({d:m[1], fill:"rgb(0,0,0)"}) }
+    }
+    return {W,H,paths}
+  }
+  const parseColor = (c:string)=>{
+    if(c.startsWith("rgb")){ const n=c.match(/\d+/g)?.map(Number)||[0,0,0]; return {r:n[0]/255,g:n[1]/255,b:n[2]/255,str:`${(n[0]/255).toFixed(3)} ${(n[1]/255).toFixed(3)} ${(n[2]/255).toFixed(3)}`} }
+    if(c==="white"||c==="black"){ return c==="white"?{r:1,g:1,b:1,str:"1 1 1"}:{r:0,g:0,b:0,str:"0 0 0"} }
+    return {r:0,g:0,b:0,str:"0 0 0"}
+  }
+  const svgPathToPS = (d:string, H:number)=>{
+    const tokens=d.match(/[a-zA-Z]|[-+]?\d*\.?\d+(?:e[-+]?\d+)?/g)||[]
+    let i=0,cx=0,cy=0,out="",cmd=""
+    while(i<tokens.length){
+      const t=tokens[i]
+      if(/^[a-zA-Z]$/.test(t)){ cmd=t; i++; }
+      if(cmd==="M"){ const x=+tokens[i++], y=+tokens[i++]; cx=x; cy=y; out+=`${x.toFixed(2)} ${(H-y).toFixed(2)} moveto\n` }
+      else if(cmd==="m"){ const x=+tokens[i++], y=+tokens[i++]; cx+=x; cy+=y; out+=`${cx.toFixed(2)} ${(H-cy).toFixed(2)} moveto\n` }
+      else if(cmd==="L"){ const x=+tokens[i++], y=+tokens[i++]; cx=x; cy=y; out+=`${x.toFixed(2)} ${(H-y).toFixed(2)} lineto\n` }
+      else if(cmd==="l"){ const x=+tokens[i++], y=+tokens[i++]; cx+=x; cy+=y; out+=`${cx.toFixed(2)} ${(H-cy).toFixed(2)} lineto\n` }
+      else if(cmd==="H"){ const x=+tokens[i++]; cx=x; out+=`${x.toFixed(2)} ${(H-cy).toFixed(2)} lineto\n` }
+      else if(cmd==="h"){ const x=+tokens[i++]; cx+=x; out+=`${cx.toFixed(2)} ${(H-cy).toFixed(2)} lineto\n` }
+      else if(cmd==="V"){ const y=+tokens[i++]; cy=y; out+=`${cx.toFixed(2)} ${(H-y).toFixed(2)} lineto\n` }
+      else if(cmd==="v"){ const y=+tokens[i++]; cy+=y; out+=`${cx.toFixed(2)} ${(H-cy).toFixed(2)} lineto\n` }
+      else if(cmd==="C"){ const x1=+tokens[i++], y1=+tokens[i++], x2=+tokens[i++], y2=+tokens[i++], x=+tokens[i++], y=+tokens[i++]; out+=`${x1.toFixed(2)} ${(H-y1).toFixed(2)} ${x2.toFixed(2)} ${(H-y2).toFixed(2)} ${x.toFixed(2)} ${(H-y).toFixed(2)} curveto\n`; cx=x; cy=y }
+      else if(cmd==="c"){ const x1=cx+ +tokens[i++], y1=cy+ +tokens[i++], x2=cx+ +tokens[i++], y2=cy+ +tokens[i++], x=cx+ +tokens[i++], y=cy+ +tokens[i++]; out+=`${x1.toFixed(2)} ${(H-y1).toFixed(2)} ${x2.toFixed(2)} ${(H-y2).toFixed(2)} ${x.toFixed(2)} ${(H-y).toFixed(2)} curveto\n`; cx=x; cy=y }
+      else if(cmd==="Z"||cmd==="z"){ out+="closepath\n"; cmd="" } else { i++ }
+      if(i<tokens.length &&!/^[a-zA-Z]$/.test(tokens[i]) && (cmd==="M"||cmd==="m")) cmd=cmd==="M"?"L":"l"
+    }
+    return out
+  }
+  const svgPathToPDF = (d:string, H:number)=>{
+    const tokens=d.match(/[a-zA-Z]|[-+]?\d*\.?\d+(?:e[-+]?\d+)?/g)||[]
+    let i=0,cx=0,cy=0,out="",cmd=""
+    while(i<tokens.length){
+      const t=tokens[i]
+      if(/^[a-zA-Z]$/.test(t)){ cmd=t; i++; }
+      if(cmd==="M"){ const x=+tokens[i++], y=+tokens[i++]; cx=x; cy=y; out+=`${x.toFixed(2)} ${(H-y).toFixed(2)} m\n` }
+      else if(cmd==="m"){ const x=+tokens[i++], y=+tokens[i++]; cx+=x; cy+=y; out+=`${cx.toFixed(2)} ${(H-cy).toFixed(2)} m\n` }
+      else if(cmd==="L"){ const x=+tokens[i++], y=+tokens[i++]; cx=x; cy=y; out+=`${x.toFixed(2)} ${(H-y).toFixed(2)} l\n` }
+      else if(cmd==="l"){ const x=+tokens[i++], y=+tokens[i++]; cx+=x; cy+=y; out+=`${cx.toFixed(2)} ${(H-cy).toFixed(2)} l\n` }
+      else if(cmd==="H"){ const x=+tokens[i++]; cx=x; out+=`${x.toFixed(2)} ${(H-cy).toFixed(2)} l\n` }
+      else if(cmd==="h"){ const x=+tokens[i++]; cx+=x; out+=`${cx.toFixed(2)} ${(H-cy).toFixed(2)} l\n` }
+      else if(cmd==="V"){ const y=+tokens[i++]; cy=y; out+=`${cx.toFixed(2)} ${(H-y).toFixed(2)} l\n` }
+      else if(cmd==="v"){ const y=+tokens[i++]; cy+=y; out+=`${cx.toFixed(2)} ${(H-cy).toFixed(2)} l\n` }
+      else if(cmd==="C"){ const x1=+tokens[i++], y1=+tokens[i++], x2=+tokens[i++], y2=+tokens[i++], x=+tokens[i++], y=+tokens[i++]; out+=`${x1.toFixed(2)} ${(H-y1).toFixed(2)} ${x2.toFixed(2)} ${(H-y2).toFixed(2)} ${x.toFixed(2)} ${(H-y).toFixed(2)} c\n`; cx=x; cy=y }
+      else if(cmd==="c"){ const x1=cx+ +tokens[i++], y1=cy+ +tokens[i++], x2=cx+ +tokens[i++], y2=cy+ +tokens[i++], x=cx+ +tokens[i++], y=cy+ +tokens[i++]; out+=`${x1.toFixed(2)} ${(H-y1).toFixed(2)} ${x2.toFixed(2)} ${(H-y2).toFixed(2)} ${x.toFixed(2)} ${(H-y).toFixed(2)} c\n`; cx=x; cy=y }
+      else if(cmd==="Z"||cmd==="z"){ out+="h\n"; cmd="" } else { i++ }
+      if(i<tokens.length &&!/^[a-zA-Z]$/.test(tokens[i]) && (cmd==="M"||cmd==="m")) cmd=cmd==="M"?"L":"l"
+    }
+    return out
+  }
+  const svgToEps = (svgStr:string)=>{
+    try{
+      const {W,H,paths}=parsePaths(svgStr)
+      let eps=`%!PS-Adobe-3.0 EPSF-3.0\n%%Creator: Pinna3d\n%%BoundingBox: 0 0 ${Math.round(W)} ${Math.round(H)}\n%%EndComments\ngsave\n`
+      paths.forEach(p=>{ const ps=svgPathToPS(p.d,H); if(ps) eps+=`newpath\n${ps}${parseColor(p.fill).str} setrgbcolor\nfill\n` })
+      eps+=`grestore\nshowpage\n%%EOF`
+      return eps
+    }catch{ return null }
+  }
+  const svgToPdf = (svgStr:string)=>{
+    try{
+      const {W,H,paths}=parsePaths(svgStr)
+      let content=`q\n`
+      paths.forEach(p=>{ const col=parseColor(p.fill); const pdfPath=svgPathToPDF(p.d,H); if(pdfPath) content+=`${col.r.toFixed(3)} ${col.g.toFixed(3)} ${col.b.toFixed(3)} rg\n${pdfPath}f\n` })
+      content+=`Q\n`
+      const len=content.length
+      let pdf=`%PDF-1.4\n`
+      const offsets:number[]=[]
+      const addObj=(s:string)=>{ offsets.push(pdf.length); pdf+=s }
+      addObj(`1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n`)
+      addObj(`2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n`)
+      addObj(`3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${Math.round(W)} ${Math.round(H)}] /Contents 4 0 R >>\nendobj\n`)
+      addObj(`4 0 obj\n<< /Length ${len} >>\nstream\n${content}endstream\nendobj\n`)
+      const xrefPos=pdf.length
+      pdf+=`xref\n0 ${offsets.length+1}\n0000000000 65535 f \n`
+      offsets.forEach(o=>{ pdf+=`${String(o).padStart(10,'0')} 00000 n \n` })
+      pdf+=`trailer\n<< /Size ${offsets.length+1} /Root 1 0 R >>\nstartxref\n${xrefPos}\n%%EOF`
+      return pdf
+    }catch{ return null }
+  }
+
   const onFile = async (e:any)=>{
     const f=e.dataTransfer?.files?.[0]||e.target?.files?.[0]
     if(!f) return
@@ -37,47 +130,79 @@ export default function ImageToVectorPage(){
     img.src = url
     await new Promise(r=>img.onload=r)
 
-    const canvas = document.createElement("canvas")
-    const maxW = 900
-    const scale = Math.min(1, maxW / img.width)
-    canvas.width = img.width * scale
-    canvas.height = img.height * scale
-    const ctx = canvas.getContext("2d")!
-    ctx.fillStyle="#FFFFFF"
-    ctx.fillRect(0,0,canvas.width,canvas.height)
-    ctx.drawImage(img,0,0,canvas.width,canvas.height)
-    let imgd = ctx.getImageData(0,0,canvas.width,canvas.height)
-    const d = imgd.data
-
-    // Binarize to pure black/white for solid trace
-    for(let i=0;i<d.length;i+=4){
-      const avg=(d[i]+d[i+1]+d[i+2])/3
-      const v=avg<140?0:255
-      d[i]=d[i+1]=d[i+2]=v
-      d[i+3]=255
+    // --- DETECT COLOR vs B/W ICON ---
+    const tmp = document.createElement("canvas")
+    tmp.width=img.width
+    tmp.height=img.height
+    const tmpCtx=tmp.getContext("2d")!
+    tmpCtx.drawImage(img,0,0)
+    const tmpData=tmpCtx.getImageData(0,0,tmp.width,tmp.height).data
+    let total=0,colorPixels=0
+    for(let i=0;i<tmpData.length;i+=400){
+      const r=tmpData[i], g=tmpData[i+1], b=tmpData[i+2]
+      total++
+      if(Math.abs(r-g)>15 || Math.abs(r-b)>15) colorPixels++
     }
-    ctx.putImageData(imgd,0,0)
+    const isColor = (colorPixels/total) > 0.08
 
-    // Crop bottom 5% to remove watermark
-    const cropH = Math.floor(canvas.height*0.95)
-    const cropped = ctx.getImageData(0,0,canvas.width,cropH)
+    let imgd:any
+    let options:any
+    let svgstr=""
 
-    const options={
-      ltres:0.5, qtres:0.5, pathomit:2,
-      rightangleenhance:false,
-      colorsampling:0, numberofcolors:2,
-      mincolorratio:0, colorquantcycles:1,
-      blurradius:0, blurdelta:0,
-      strokewidth:0, linefilter:false,
-      roundcoords:1,
-      pal:[{r:0,g:0,b:0,a:255},{r:255,g:255,b:255,a:255}]
-    } as any
-
-    let svgstr = (window as any).ImageTracer.imagedataToSVG(cropped, options)
-    // Remove white background path, keep only black
-    svgstr = svgstr.replace(/<path[^>]*fill="rgb\(255,255,255\)"[^>]*\/>/g,'')
-    svgstr = svgstr.replace(/fill="rgb\(0,0,0\)"/g,'fill="black"')
-    svgstr = svgstr.replace(/fill="[^"]*"/g,(m:string)=> m.includes('255,255,255')? '' : 'fill="black"')
+    if(!isColor){
+      // B/W ICON MODE - FIXES YOUR JAGGED TRIPOD
+      const canvas = document.createElement("canvas")
+      const scaleUp = img.width < 800? 3 : 2
+      canvas.width = img.width * scaleUp
+      canvas.height = img.height * scaleUp
+      const ctx = canvas.getContext("2d")!
+      ctx.imageSmoothingEnabled=true
+      ctx.imageSmoothingQuality="high"
+      ctx.fillStyle="#FFFFFF"
+      ctx.fillRect(0,0,canvas.width,canvas.height)
+      ctx.drawImage(img,0,0,canvas.width,canvas.height)
+      let d=ctx.getImageData(0,0,canvas.width,canvas.height)
+      const data=d.data
+      for(let i=0;i<data.length;i+=4){
+        const avg=(data[i]+data[i+1]+data[i+2])/3
+        const v=avg<128?0:255 // hard 128 = no gray fringes = no jagged
+        data[i]=data[i+1]=data[i+2]=v
+        data[i+3]=255
+      }
+      ctx.putImageData(d,0,0)
+      imgd=ctx.getImageData(0,0,canvas.width,canvas.height)
+      options={
+        ltres:0.8, qtres:0.8, pathomit:18,
+        colorsampling:0, numberofcolors:2,
+        mincolorratio:0, blurradius:0, blurdelta:0,
+        strokewidth:0, roundcoords:2,
+        pal:[{r:0,g:0,b:0,a:255},{r:255,g:255,b:255,a:255}]
+      }
+      svgstr = (window as any).ImageTracer.imagedataToSVG(imgd, options)
+      svgstr = svgstr.replace(/<path[^>]*fill="rgb\(255,255,255\)"[^>]*\/>/g,'')
+      svgstr = svgstr.replace(/fill="rgb\(0,0,0\)"/g,'fill="black"')
+    }else{
+      // COLOR MODE - KEEPS ORIGINAL COLORS
+      const canvas = document.createElement("canvas")
+      const maxW = 1200
+      const scale = Math.min(1, maxW / img.width)
+      canvas.width = Math.round(img.width * scale)
+      canvas.height = Math.round(img.height * scale)
+      const ctx = canvas.getContext("2d")!
+      ctx.fillStyle="#FFFFFF"
+      ctx.fillRect(0,0,canvas.width,canvas.height)
+      ctx.drawImage(img,0,0,canvas.width,canvas.height)
+      imgd = ctx.getImageData(0,0,canvas.width,canvas.height)
+      options={
+        ltres:1, qtres:1, pathomit:8,
+        colorsampling:1, numberofcolors:10,
+        mincolorratio:0.02, colorquantcycles:3,
+        blurradius:1, blurdelta:16,
+        roundcoords:2
+      }
+      svgstr = (window as any).ImageTracer.imagedataToSVG(imgd, options)
+      svgstr = svgstr.replace(/<path[^>]*fill="rgb\(255,255,255\)"[^>]*\/>/g,'')
+    }
 
     setSvgData(svgstr)
     setVectorDone(true)
@@ -88,7 +213,25 @@ export default function ImageToVectorPage(){
     if(!svgData) return
     let ext = format.toLowerCase()
     let content = svgData
-    const blob = new Blob([content], {type:"image/svg+xml"})
+    let mime = "image/svg+xml"
+
+    if(format==="EPS"){
+      const eps=svgToEps(svgData)
+      if(eps){ content=eps; mime="application/postscript" }
+    }
+    if(format==="AI"){
+      const eps=svgToEps(svgData)
+      if(eps){ content=eps; mime="application/postscript" }
+    }
+    if(format==="PDF"){
+      const pdf=svgToPdf(svgData)
+      if(pdf){ content=pdf; mime="application/pdf" }
+    }
+    if(format==="SVG"){
+      mime="image/svg+xml"
+    }
+
+    const blob = new Blob([content], {type:mime})
     const a = document.createElement("a")
     a.href = URL.createObjectURL(blob)
     a.download = `pinna3d-vector.${ext}`
@@ -96,13 +239,13 @@ export default function ImageToVectorPage(){
   }
 
   const check=<span style={{color:'#A020F0',fontWeight:700,marginRight:'6px'}}>✓</span>
-  const svgForDarkPreview = svgData.replace(/fill="black"/g,'fill="white"')
+  const svgForDarkPreview = svgData? svgData.replace(/fill="black"/g,'fill="white"').replace(/fill="rgb\(0,0,0\)"/g,'fill="white"') : ""
 
   return(
     <div style={{background:'#0A0814',color:'#fff',fontFamily:'Inter, ui-sans-serif, system-ui',minHeight:'100vh'}}>
       <style>{`
-     .iv-grid{display:grid;grid-template-columns:1.1fr 0.9fr;gap:20px;padding:30px 40px;max-width:1440px;margin:0 auto}
-     .feat-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;margin-top:32px}
+    .iv-grid{display:grid;grid-template-columns:1.1fr 0.9fr;gap:20px;padding:30px 40px;max-width:1440px;margin:0 auto}
+    .feat-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;margin-top:32px}
         @media(max-width:900px){.iv-grid{grid-template-columns:1fr;padding:16px}.feat-grid{grid-template-columns:1fr}}
       `}</style>
 
