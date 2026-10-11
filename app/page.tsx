@@ -19,9 +19,9 @@ export default function Page(){
   return (
     <div style={{background:'#0A0814',color:'#fff',fontFamily:'Inter, ui-sans-serif, system-ui',minHeight:'100vh',backgroundImage:`radial-gradient(900px 480px at 50% -10%, rgba(160,32,240,0.22), transparent 70%)`}}>
       <style>{`
-     .studio-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:32px;max-width:1440px;margin-left:auto;margin-right:auto}
-     .hero-grid{display:grid;grid-template-columns:1.2fr 0.7fr 0.7fr;gap:12px;padding:20px 24px;max-width:1440px;margin:0 auto;align-items:end}
-     .pricing-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:32px}
+    .studio-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:32px;max-width:1440px;margin-left:auto;margin-right:auto}
+    .hero-grid{display:grid;grid-template-columns:1.2fr 0.7fr 0.7fr;gap:12px;padding:20px 24px;max-width:1440px;margin:0 auto;align-items:end}
+    .pricing-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:32px}
         @media(max-width:1200px){.studio-grid{grid-template-columns:repeat(2,1fr)}.hero-grid{grid-template-columns:1fr 1fr}.pricing-grid{grid-template-columns:repeat(2,1fr)}}
         @media(max-width:640px){.studio-grid{grid-template-columns:1fr;padding:0 16px}.hero-grid{grid-template-columns:1fr;padding:16px}.pricing-grid{grid-template-columns:1fr;padding:0 16px}}
       `}</style>
@@ -84,7 +84,6 @@ export default function Page(){
               <div style={{fontSize:'12px',color:'rgba(255,255,255,0.75)',marginTop:'4px'}}>JPG, PNG, WEBP → PNG, JPG</div>
             </div>
           </div>
-
           <div style={{background:'linear-gradient(180deg, rgba(160,32,240,0.26) 0%, rgba(255,255,255,0.04) 100%)',border:'1.6px solid #A020F0',borderRadius:'18px',padding:'22px',position:'relative'}}>
             <div style={{position:'absolute',top:'12px',right:'12px',background:'#A020F0',padding:'4px 10px',borderRadius:'20px',fontSize:'10px'}}>YOUR USP ★</div>
             <div style={{width:'46px',height:'46px',background:'rgba(255,255,255,0.07)',border:'1px solid #A020F0',borderRadius:'11px',display:'grid',placeItems:'center'}}>✒️</div>
@@ -98,7 +97,6 @@ export default function Page(){
               <div style={{fontSize:'12px',color:'#fff',marginTop:'4px',fontWeight:700}}>SVG, EPS, AI, PDF, CDR + PNG</div>
             </div>
           </div>
-
           <div style={{background:'linear-gradient(180deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.04) 100%)',border:'1px solid rgba(255,255,255,0.12)',borderRadius:'18px',padding:'22px'}}>
             <div style={{width:'46px',height:'46px',background:'rgba(255,255,255,0.09)',borderRadius:'11px',display:'grid',placeItems:'center'}}>🧊</div>
             <h3 style={{fontSize:'18px',fontWeight:500,margin:'16px 0 8px'}}>3D Studio</h3>
@@ -106,7 +104,6 @@ export default function Page(){
             <div style={{marginTop:'14px',display:'grid',gap:'8px',fontSize:'15px'}}><div>{check}Image to 3D – 60 sec</div><div>{check}Multi-Image to 3D</div><div>{check}Text to 3D & Texture</div><div>{check}Remesh, Rig & Animate</div></div>
             <div style={{marginTop:'14px',fontSize:'12px',color:'rgba(255,255,255,0.5)',borderTop:'1px solid rgba(255,255,255,0.08)',paddingTop:'10px'}}>GLB, OBJ, FBX, STL, USDZ, BLEND</div>
           </div>
-
           <div style={{background:'linear-gradient(180deg, rgba(160,32,240,0.15) 0%, rgba(255,255,255,0.04) 100%)',border:'1px solid rgba(255,255,255,0.12)',borderRadius:'18px',padding:'22px'}}>
             <div style={{width:'46px',height:'46px',background:'#A020F0',borderRadius:'11px',display:'grid',placeItems:'center'}}>🎬</div>
             <h3 style={{fontSize:'18px',fontWeight:500,margin:'16px 0 8px'}}>Motion Studio</h3>
@@ -123,6 +120,23 @@ export default function Page(){
           {plans.map((p)=>{const isPopular=p.name==="Creator"; const display=billing==="monthly"?p.m:p.y; const yearlyTotal=p.m*12*0.8; return(<div key={p.name} style={{background:isPopular?'linear-gradient(180deg, rgba(160,32,240,0.24) 0%, rgba(255,255,255,0.05) 100%)':'rgba(255,255,255,0.05)',border:isPopular?'1.8px solid #A020F0':'1px solid rgba(255,255,255,0.12)',borderRadius:'18px',padding:'24px',position:'relative'}}><div style={{position:'absolute',top:'-13px',left:'50%',transform:'translateX(-50%)',background:p.name==="Free Trial"?'#fff':isPopular?'#A020F0':'rgba(255,255,255,0.12)',color:p.name==="Free Trial"?'#000':'#fff',padding:'5px 14px',borderRadius:'20px',fontSize:'11px'}}>{p.badge}</div><div style={{fontSize:'34px',fontWeight:500,marginTop:'12px'}}>₹{display}<span style={{fontSize:'14px',fontWeight:400,color:'rgba(255,255,255,0.65)'}}> /mo</span></div><div style={{fontSize:'14px',color:'rgba(255,255,255,0.78)',marginTop:'8px',minHeight:'40px'}}>{p.name==="Free Trial"?"Free forever • 100 credits • No CC":billing==="monthly"?`Billed monthly • ${p.credits}`:<>₹{display}/mo • ₹{Math.round(yearlyTotal).toLocaleString('en-IN')}/yr billed<br/><span style={{color:'#A6FF9A'}}>Save 20% • {p.credits}</span></>}</div><div style={{marginTop:'18px',fontSize:'15px',display:'grid',gap:'9px'}}><div style={{fontWeight:500,display:'flex'}}>{check}{p.exp}</div>{p.feats.map(f=><div key={f} style={{display:'flex'}}>{check}{f}</div>)}</div><a href="/signup" style={{display:'block',textAlign:'center',marginTop:'22px',width:'100%',boxSizing:'border-box',background:isPopular?'#A020F0':p.name==="Free Trial"?'transparent':'rgba(255,255,255,0.1)',border:p.name==="Free Trial"?'1px solid rgba(255,255,255,0.14)':isPopular?'none':'1px solid rgba(255,255,255,0.14)',padding:'13px',borderRadius:'12px',color:'#fff',fontWeight:500,textDecoration:'none'}}>{p.cta}</a></div>)})}
         </div>
       </div>
+
+      <footer style={{borderTop:'1px solid rgba(255,255,255,0.08)',padding:'40px 40px 24px',background:'rgba(0,0,0,0.2)'}}>
+        <div style={{maxWidth:'1440px',margin:'0 auto',display:'grid',gridTemplateColumns:'2fr 1fr 1fr 1fr',gap:'24px'}}>
+          <div>
+            <img src="/logo.png" style={{height:'60px'}} alt="Pinna3d"/>
+            <p style={{color:'rgba(255,255,255,0.5)',fontSize:'13px',marginTop:'12px',maxWidth:'320px',lineHeight:'1.6'}}>Every Image to 3D or Vector in 60 Seconds. Photo, Vector, 3D, Motion — one platform for creators worldwide.</p>
+            <div style={{marginTop:'12px',fontSize:'11px',color:'rgba(255,255,255,0.35)'}}>PNG, JPG, WEBP, TIFF → SVG, EPS, AI, PDF, CDR, DXF + PNG Bonus</div>
+          </div>
+          <div><div style={{fontSize:'13px',fontWeight:600,marginBottom:'12px'}}>Studios</div><div style={{display:'grid',gap:'8px',fontSize:'13px',color:'rgba(255,255,255,0.6)'}}><a href="/image-to-vector" style={{color:'#fff',textDecoration:'none'}}>Vector Studio</a><span>Photo Studio</span><span>3D Studio</span><span>Motion Studio</span></div></div>
+          <div><div style={{fontSize:'13px',fontWeight:600,marginBottom:'12px'}}>Company</div><div style={{display:'grid',gap:'8px',fontSize:'13px',color:'rgba(255,255,255,0.6)'}}><span>Pricing</span><span>Docs</span><span>Blog</span><span>Contact</span></div></div>
+          <div><div style={{fontSize:'13px',fontWeight:600,marginBottom:'12px'}}>Legal</div><div style={{display:'grid',gap:'8px',fontSize:'13px',color:'rgba(255,255,255,0.6)'}}><span>Terms</span><span>Privacy</span><span>Refund</span></div></div>
+        </div>
+        <div style={{maxWidth:'1440px',margin:'0 auto',borderTop:'1px solid rgba(255,255,255,0.06)',marginTop:'32px',paddingTop:'16px',display:'flex',justifyContent:'space-between',fontSize:'11px',color:'rgba(255,255,255,0.35)',flexWrap:'wrap',gap:'8px'}}>
+          <span>© 2026 Pinna3d.com • Made for Worldwide</span>
+          <span>All formats: SVG, EPS, AI, PDF, CDR, GLB, FBX, MP4 • JPG, PNG, WEBP → Vector</span>
+        </div>
+      </footer>
     </div>
   )
 }
