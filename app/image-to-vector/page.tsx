@@ -41,20 +41,22 @@ export default function ImageToVectorPage(){
       const svgPathToPS=(d:string, H:number)=>{
         const tokens=d.match(/[a-zA-Z]|[-+]?\d*\.?\d+(?:e[-+]?\d+)?/g)||[]
         let i=0, cx=0, cy=0, out=""
+        const psY=(y:number)=> (H - y).toFixed(2)
+        const psX=(x:number)=> x.toFixed(2)
         let cmd=""
         while(i<tokens.length){
           const t=tokens[i]
           if(/^[a-zA-Z]$/.test(t)){ cmd=t; i++; }
-          if(cmd==="M"){ const x=+tokens[i++], y=+tokens[i++]; cx=x; cy=y; out+=`${x.toFixed(2)} ${(H-y).toFixed(2)} moveto\n` }
-          else if(cmd==="m"){ const x=+tokens[i++], y=+tokens[i++]; cx+=x; cy+=y; out+=`${cx.toFixed(2)} ${(H-cy).toFixed(2)} moveto\n` }
-          else if(cmd==="L"){ const x=+tokens[i++], y=+tokens[i++]; cx=x; cy=y; out+=`${x.toFixed(2)} ${(H-y).toFixed(2)} lineto\n` }
-          else if(cmd==="l"){ const x=+tokens[i++], y=+tokens[i++]; cx+=x; cy+=y; out+=`${cx.toFixed(2)} ${(H-cy).toFixed(2)} lineto\n` }
-          else if(cmd==="H"){ const x=+tokens[i++]; cx=x; out+=`${x.toFixed(2)} ${(H-cy).toFixed(2)} lineto\n` }
-          else if(cmd==="h"){ const x=+tokens[i++]; cx+=x; out+=`${cx.toFixed(2)} ${(H-cy).toFixed(2)} lineto\n` }
-          else if(cmd==="V"){ const y=+tokens[i++]; cy=y; out+=`${cx.toFixed(2)} ${(H-y).toFixed(2)} lineto\n` }
-          else if(cmd==="v"){ const y=+tokens[i++]; cy+=y; out+=`${cx.toFixed(2)} ${(H-cy).toFixed(2)} lineto\n` }
-          else if(cmd==="C"){ const x1=+tokens[i++], y1=+tokens[i++], x2=+tokens[i++], y2=+tokens[i++], x=+tokens[i++], y=+tokens[i++]; out+=`${x1.toFixed(2)} ${(H-y1).toFixed(2)} ${x2.toFixed(2)} ${(H-y2).toFixed(2)} ${x.toFixed(2)} ${(H-y).toFixed(2)} curveto\n`; cx=x; cy=y }
-          else if(cmd==="c"){ const x1=cx+ +tokens[i++], y1=cy+ +tokens[i++], x2=cx+ +tokens[i++], y2=cy+ +tokens[i++], x=cx+ +tokens[i++], y=cy+ +tokens[i++]; out+=`${x1.toFixed(2)} ${(H-y1).toFixed(2)} ${x2.toFixed(2)} ${(H-y2).toFixed(2)} ${x.toFixed(2)} ${(H-y).toFixed(2)} curveto\n`; cx=x; cy=y }
+          if(cmd==="M"){ const x=+tokens[i++], y=+tokens[i++]; cx=x; cy=y; out+=`${psX(x)} ${psY(y)} moveto\n` }
+          else if(cmd==="m"){ const x=+tokens[i++], y=+tokens[i++]; cx+=x; cy+=y; out+=`${psX(cx)} ${psY(cy)} moveto\n` }
+          else if(cmd==="L"){ const x=+tokens[i++], y=+tokens[i++]; cx=x; cy=y; out+=`${psX(x)} ${psY(y)} lineto\n` }
+          else if(cmd==="l"){ const x=+tokens[i++], y=+tokens[i++]; cx+=x; cy+=y; out+=`${psX(cx)} ${psY(cy)} lineto\n` }
+          else if(cmd==="H"){ const x=+tokens[i++]; cx=x; out+=`${psX(x)} ${psY(cy)} lineto\n` }
+          else if(cmd==="h"){ const x=+tokens[i++]; cx+=x; out+=`${psX(cx)} ${psY(cy)} lineto\n` }
+          else if(cmd==="V"){ const y=+tokens[i++]; cy=y; out+=`${psX(cx)} ${psY(y)} lineto\n` }
+          else if(cmd==="v"){ const y=+tokens[i++]; cy+=y; out+=`${psX(cx)} ${psY(cy)} lineto\n` }
+          else if(cmd==="C"){ const x1=+tokens[i++], y1=+tokens[i++], x2=+tokens[i++], y2=+tokens[i++], x=+tokens[i++], y=+tokens[i++]; out+=`${psX(x1)} ${psY(y1)} ${psX(x2)} ${psY(y2)} ${psX(x)} ${psY(y)} curveto\n`; cx=x; cy=y }
+          else if(cmd==="c"){ const x1=cx+ +tokens[i++], y1=cy+ +tokens[i++], x2=cx+ +tokens[i++], y2=cy+ +tokens[i++], x=cx+ +tokens[i++], y=cy+ +tokens[i++]; out+=`${psX(x1)} ${psY(y1)} ${psX(x2)} ${psY(y2)} ${psX(x)} ${psY(y)} curveto\n`; cx=x; cy=y }
           else if(cmd==="Z"||cmd==="z"){ out+="closepath\n"; cmd="" }
           else { i++ }
           if(i<tokens.length &&!/^[a-zA-Z]$/.test(tokens[i]) && (cmd==="M"||cmd==="m")) cmd=cmd==="M"?"L":"l"
@@ -79,14 +81,16 @@ export default function ImageToVectorPage(){
     await new Promise(r=>img.onload=r)
 
     const canvas=document.createElement("canvas")
-    const tmpCanvas=document.createElement("canvas")
-    const tCtx=tmpCanvas.getContext("2d")!
+    const maxW=1200
+    const scale=Math.min(1, maxW/img.width)
+    canvas.width=Math.round(img.width*scale)
+    canvas.height=Math.round(img.height*scale)
+    const ctx=canvas.getContext("2d")!
+    ctx.drawImage(img,0,0,canvas.width,canvas.height)
+    let imgd=ctx.getImageData(0,0,canvas.width,canvas.height)
 
-    tmpCanvas.width=img.width
-    tmpCanvas.height=img.height
-    tCtx.drawImage(img,0,0)
-    let imgd=tCtx.getImageData(0,0,tmpCanvas.width,tmpCanvas.height)
-
+    // --- SMART COLOR DETECTION ---
+    // Check if image is black/white line icon like your tripod
     let total=0, colorPixels=0
     for(let i=0;i<imgd.data.length;i+=400){
       const r=imgd.data[i], g=imgd.data[i+1], b=imgd.data[i+2]
@@ -95,51 +99,45 @@ export default function ImageToVectorPage(){
     }
     const isColor = (colorPixels/total) > 0.08
 
+    let options:any
     if(!isColor){
-      const scaleUp = img.width < 800? 3 : 2
-      canvas.width = img.width * scaleUp
-      canvas.height = img.height * scaleUp
-      const ctx=canvas.getContext("2d")!
-      ctx.imageSmoothingEnabled=true
-      ctx.imageSmoothingQuality="high"
-      ctx.drawImage(img,0,0,canvas.width,canvas.height)
-      let d=ctx.getImageData(0,0,canvas.width,canvas.height)
-      const data=d.data
-      for(let i=0;i<data.length;i+=4){
-        const avg=(data[i]+data[i+1]+data[i+2])/3
-        const v=avg<128?0:255
-        data[i]=data[i+1]=data[i+2]=v
-        data[i+3]=255
+      // B/W LOGO MODE - makes smooth solid vector like your expected image
+      const d=imgd.data
+      for(let i=0;i<d.length;i+=4){
+        const avg=(d[i]+d[i+1]+d[i+2])/3
+        const v=avg<160?0:255
+        d[i]=d[i+1]=d[i+2]=v
+        d[i+3]=255
       }
-      ctx.putImageData(d,0,0)
+      ctx.putImageData(imgd,0,0)
       imgd=ctx.getImageData(0,0,canvas.width,canvas.height)
-      const options={
-        ltres:0.8, qtres:0.8, pathomit:16,
+      options={
+        ltres:1, qtres:1, pathomit:12,
+        rightangleenhance:false,
         colorsampling:0, numberofcolors:2,
-        mincolorratio:0, blurradius:0, blurdelta:0,
-        strokewidth:0, roundcoords:2,
+        mincolorratio:0, colorquantcycles:1,
+        blurradius:0, blurdelta:0,
+        strokewidth:0, linefilter:false,
+        roundcoords:1,
         pal:[{r:0,g:0,b:0,a:255},{r:255,g:255,b:255,a:255}]
-      } as any
-      let svgstr=(window as any).ImageTracer.imagedataToSVG(imgd, options)
-      svgstr=svgstr.replace(/<path[^>]*fill="rgb\(255,255,255\)"[^>]*\/>/g,'')
-      setSvgData(svgstr)
+      }
     }else{
-      canvas.width=Math.min(1200, img.width)
-      canvas.height=Math.round(canvas.width * img.height / img.width)
-      const ctx=canvas.getContext("2d")!
-      ctx.drawImage(img,0,0,canvas.width,canvas.height)
-      imgd=ctx.getImageData(0,0,canvas.width,canvas.height)
-      const options={
+      // COLOR LOGO MODE - preserves original colors
+      options={
         ltres:1, qtres:1, pathomit:8,
+        rightangleenhance:false,
         colorsampling:1, numberofcolors:8,
         mincolorratio:0.02, colorquantcycles:3,
         blurradius:1, blurdelta:20,
+        strokewidth:0, linefilter:false,
         roundcoords:2
-      } as any
-      let svgstr=(window as any).ImageTracer.imagedataToSVG(imgd, options)
-      svgstr=svgstr.replace(/<path[^>]*fill="rgb\(255,255,255\)"[^>]*\/>/g,'')
-      setSvgData(svgstr)
+      }
     }
+
+    let svgstr=(window as any).ImageTracer.imagedataToSVG(imgd, options)
+    svgstr=svgstr.replace(/<path[^>]*fill="rgb\(255,255,255\)"[^>]*\/>/g,'')
+    // Keep same colors in download, but clean up
+    setSvgData(svgstr)
     setDone(true); setLoading(false)
   }
 
