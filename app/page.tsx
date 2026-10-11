@@ -27,7 +27,7 @@ export default function Page(){
   return (
     <div style={{background:'#0A0814',color:'#fff',fontFamily:'Inter, ui-sans-serif, system-ui',minHeight:'100vh',backgroundImage:`radial-gradient(900px 480px at 50% -10%, rgba(160,32,240,0.22), transparent 70%)`,WebkitFontSmoothing:'antialiased',MozOsxFontSmoothing:'grayscale',textRendering:'optimizeLegibility'}}>
       <header style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'12px 40px',borderBottom:'1px solid rgba(255,255,255,0.08)',background:'rgba(10,8,20,0.92)',backdropFilter:'blur(16px)',position:'sticky',top:0,zIndex:50}}>
-        <img src="/logo.png" alt="Pinna3d.com" style={{height:'46px',width:'auto',objectFit:'contain'}} />
+        <img src="/logo.png" alt="Pinna3d.com" style={{height:'100px',width:'auto',objectFit:'contain'}} />
         <div style={{display:'flex',gap:'26px',alignItems:'center',fontSize:'14px',fontWeight:400}}>
           <span style={{color:'rgba(255,255,255,0.9)'}}>Features</span>
           <span style={{color:'#A020F0',fontWeight:500}}>Pricing</span>
