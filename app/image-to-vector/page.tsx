@@ -22,7 +22,6 @@ export default function ImageToVectorPage(){
     })
   }
 
-  // --- REAL EPS / PDF CONVERTERS ---
   const parsePaths = (svgStr:string)=>{
     const vbMatch = svgStr.match(/viewBox="([^"]+)"/)
     let W=800, H=600
@@ -130,7 +129,6 @@ export default function ImageToVectorPage(){
     img.src = url
     await new Promise(r=>img.onload=r)
 
-    // --- DETECT COLOR vs B/W ICON ---
     const tmp = document.createElement("canvas")
     tmp.width=img.width
     tmp.height=img.height
@@ -150,7 +148,6 @@ export default function ImageToVectorPage(){
     let svgstr=""
 
     if(!isColor){
-      // B/W ICON MODE - FIXES YOUR JAGGED TRIPOD
       const canvas = document.createElement("canvas")
       const scaleUp = img.width < 800? 3 : 2
       canvas.width = img.width * scaleUp
@@ -165,7 +162,7 @@ export default function ImageToVectorPage(){
       const data=d.data
       for(let i=0;i<data.length;i+=4){
         const avg=(data[i]+data[i+1]+data[i+2])/3
-        const v=avg<128?0:255 // hard 128 = no gray fringes = no jagged
+        const v=avg<128?0:255
         data[i]=data[i+1]=data[i+2]=v
         data[i+3]=255
       }
@@ -182,7 +179,6 @@ export default function ImageToVectorPage(){
       svgstr = svgstr.replace(/<path[^>]*fill="rgb\(255,255,255\)"[^>]*\/>/g,'')
       svgstr = svgstr.replace(/fill="rgb\(0,0,0\)"/g,'fill="black"')
     }else{
-      // COLOR MODE - KEEPS ORIGINAL COLORS
       const canvas = document.createElement("canvas")
       const maxW = 1200
       const scale = Math.min(1, maxW / img.width)
@@ -214,23 +210,9 @@ export default function ImageToVectorPage(){
     let ext = format.toLowerCase()
     let content = svgData
     let mime = "image/svg+xml"
-
-    if(format==="EPS"){
-      const eps=svgToEps(svgData)
-      if(eps){ content=eps; mime="application/postscript" }
-    }
-    if(format==="AI"){
-      const eps=svgToEps(svgData)
-      if(eps){ content=eps; mime="application/postscript" }
-    }
-    if(format==="PDF"){
-      const pdf=svgToPdf(svgData)
-      if(pdf){ content=pdf; mime="application/pdf" }
-    }
-    if(format==="SVG"){
-      mime="image/svg+xml"
-    }
-
+    if(format==="EPS"){ const eps=svgToEps(svgData); if(eps){ content=eps; mime="application/postscript" } }
+    if(format==="AI"){ const eps=svgToEps(svgData); if(eps){ content=eps; mime="application/postscript" } }
+    if(format==="PDF"){ const pdf=svgToPdf(svgData); if(pdf){ content=pdf; mime="application/pdf" } }
     const blob = new Blob([content], {type:mime})
     const a = document.createElement("a")
     a.href = URL.createObjectURL(blob)
@@ -242,11 +224,16 @@ export default function ImageToVectorPage(){
   const svgForDarkPreview = svgData? svgData.replace(/fill="black"/g,'fill="white"').replace(/fill="rgb\(0,0,0\)"/g,'fill="white"') : ""
 
   return(
-    <div style={{background:'#0A0814',color:'#fff',fontFamily:'Inter, ui-sans-serif, system-ui',minHeight:'100vh'}}>
+    <div style={{background:'#0A0814',color:'#fff',fontFamily:'Inter, ui-sans-serif, system-ui',minHeight:'100vh',overflowX:'hidden'}}>
       <style>{`
-    .iv-grid{display:grid;grid-template-columns:1.1fr 0.9fr;gap:20px;padding:30px 40px;max-width:1440px;margin:0 auto}
-    .feat-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;margin-top:32px}
-        @media(max-width:900px){.iv-grid{grid-template-columns:1fr;padding:16px}.feat-grid{grid-template-columns:1fr}}
+   .iv-grid{display:grid;grid-template-columns:1.1fr 0.9fr;gap:20px;padding:30px 40px;max-width:1440px;margin:0 auto;align-items:start}
+   .upload-box{border:3px dashed rgba(160,32,240,0.6);border-radius:16px;background:rgba(15,13,28,0.95);padding:24px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;cursor:pointer;width:100%;height:360px;aspect-ratio:1/0.95;overflow:hidden;box-sizing:border-box}
+   .preview-card{background:#15131E;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:14px;margin-top:12px;width:100%;box-sizing:border-box;overflow:hidden}
+   .preview-box{background:#0A0814;background-image:radial-gradient(rgba(255,255,255,0.12) 1px, transparent 1px);background-size:16px 16px;border-radius:10px;height:320px;width:100%;display:flex;align-items:center;justify-content:center;margin-top:10px;border:1px solid rgba(160,32,240,0.28);overflow:hidden;padding:10px;box-sizing:border-box;position:relative}
+   .preview-box > div{width:100%;height:100%;display:flex;align-items:center;justify-content:center;overflow:hidden}
+   .preview-box svg{width:auto!important;height:auto!important;max-width:85%!important;max-height:85%!important;object-fit:contain;display:block;margin:auto}
+   .feat-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;margin-top:32px}
+    @media(max-width:900px){.iv-grid{grid-template-columns:1fr;padding:16px}.upload-box{height:300px}.preview-box{height:300px}.feat-grid{grid-template-columns:1fr}}
       `}</style>
 
       <header style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'12px 40px',borderBottom:'1px solid rgba(255,255,255,0.08)',background:'rgba(10,8,20,0.92)',backdropFilter:'blur(16px)',position:'sticky',top:0,zIndex:50}}>
@@ -260,7 +247,7 @@ export default function ImageToVectorPage(){
       </header>
 
       <div className="iv-grid">
-        <div>
+        <div style={{minWidth:0,overflow:'hidden'}}>
           <div style={{display:'inline-flex',background:'rgba(160,32,240,0.15)',border:'1px solid rgba(160,32,240,0.32)',padding:'6px 12px',borderRadius:'20px',fontSize:'11px',color:'#D6A5FF',letterSpacing:'.1em'}}>YOUR USP • MOST POPULAR</div>
           <h1 style={{fontSize:'48px',lineHeight:'1.1',fontWeight:700,margin:'16px 0 0'}}>Blurry logo to<br/><span style={{background:'linear-gradient(90deg,#A020F0 0%,#FF7AD1 100%)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent'}}>sharp print-ready SVG</span><br/>in 3 seconds</h1>
           <p style={{color:'rgba(255,255,255,0.7)',fontSize:'15px',lineHeight:'1.6',marginTop:'14px',maxWidth:'500px'}}>World's fastest AI vectorizer. Convert JPG, PNG to SVG, EPS, AI, CDR, PDF. Infinite scale, no quality loss. Built for print shops, designers, and sellers.</p>
@@ -274,19 +261,19 @@ export default function ImageToVectorPage(){
           </div>
         </div>
 
-        <div>
-          <div onClick={()=>fileRef.current?.click()} onDragOver={e=>e.preventDefault()} onDrop={onFile} style={{border:'3px dashed rgba(160,32,240,0.6)',borderRadius:'16px',background:'rgba(15,13,28,0.95)',padding:'24px',display:'flex',flexDirection:'column',alignItems:'center',textAlign:'center',cursor:'pointer',minHeight:'340px',justifyContent:'center'}}>
+        <div style={{minWidth:0,overflow:'hidden'}}>
+          <div className="upload-box" onClick={()=>fileRef.current?.click()} onDragOver={e=>e.preventDefault()} onDrop={onFile}>
             <input ref={fileRef} type="file" hidden accept="image/*" onChange={onFile}/>
-            <div style={{width:'56px',height:'56px',background:'rgba(160,32,240,0.18)',border:'2px solid rgba(160,32,240,0.4)',borderRadius:'14px',display:'grid',placeItems:'center',marginBottom:'14px'}}>✒️</div>
+            <div style={{width:'56px',height:'56px',background:'rgba(160,32,240,0.18)',border:'2px solid rgba(160,32,240,0.4)',borderRadius:'14px',display:'grid',placeItems:'center',marginBottom:'14px',flexShrink:0}}>✒️</div>
             <b style={{fontSize:'18px'}}>Drop your logo / image here</b>
             <div style={{fontSize:'13px',color:'rgba(255,255,255,0.5)',marginTop:'6px'}}>or browse to upload</div>
             <div style={{fontSize:'11px',color:'rgba(255,255,255,0.35)',marginTop:'12px'}}>PNG, JPG up to 20MB • Auto background removal</div>
           </div>
 
-          <div style={{background:'#15131E',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'16px',padding:'14px',marginTop:'12px'}}>
+          <div className="preview-card">
             <div style={{display:'flex',justifyContent:'space-between',fontSize:'12px',color:'rgba(255,255,255,0.6)'}}><span>Vector Preview {loading && "• Tracing..."}</span><div style={{display:'flex',gap:'6px'}}>{["SVG","EPS","AI","PDF"].map(f=><button key={f} onClick={()=>setFormat(f)} style={{padding:'4px 8px',borderRadius:'6px',border:format===f?'1px solid #A020F0':'1px solid rgba(255,255,255,0.1)',background:format===f?'#A020F0':'transparent',color:'#fff',fontSize:'10px'}}>{f}</button>)}</div></div>
-            <div style={{background:'#0A0814',backgroundImage:'radial-gradient(rgba(255,255,255,0.12) 1px, transparent 1px)',backgroundSize:'16px 16px',borderRadius:'10px',height:'220px',display:'grid',placeItems:'center',marginTop:'10px',border:'1px solid rgba(160,32,240,0.28)',overflow:'hidden',padding:'10px'}}>
-              {vectorDone && svgData? <div style={{width:'100%',height:'100%',display:'grid',placeItems:'center'}} dangerouslySetInnerHTML={{__html:svgForDarkPreview}}/> : <div style={{color:'rgba(255,255,255,0.35)',fontSize:'12px'}}>{loading?"Vectorizing with AI...":"Upload image to see vector"}</div>}
+            <div className="preview-box">
+              {vectorDone && svgData? <div dangerouslySetInnerHTML={{__html:svgForDarkPreview}}/> : <div style={{color:'rgba(255,255,255,0.35)',fontSize:'12px'}}>{loading?"Vectorizing with AI...":"Upload image to see vector"}</div>}
             </div>
             <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'8px',marginTop:'10px'}}>
               <button onClick={()=>{if(svgData){const w=window.open();w?.document.write(svgData)}}} style={{background:'rgba(255,255,255,0.08)',border:'1px solid rgba(255,255,255,0.1)',padding:'10px',borderRadius:'8px',color:'#fff',fontSize:'12px'}}>Preview SVG</button>
