@@ -18,7 +18,7 @@ export default function Page(){
   return (
     <div style={{background:'#0A0814',color:'#fff',fontFamily:'Inter, ui-sans-serif, system-ui',minHeight:'100vh',backgroundImage:`radial-gradient(900px 480px at 50% -10%, rgba(160,32,240,0.22), transparent 70%)`}}>
       <header style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'12px 40px',borderBottom:'1px solid rgba(255,255,255,0.08)',background:'rgba(10,8,20,0.92)',backdropFilter:'blur(16px)',position:'sticky',top:0,zIndex:50}}>
-        <img src="/logo.png" alt="Pinna3d.com" style={{height:'46px',width:'auto',objectFit:'contain'}} />
+        <img src="/logo.png" alt="Pinna3d.com" style={{height:'100px',width:'auto',objectFit:'contain'}} />
         <div style={{display:'flex',gap:'26px',alignItems:'center',fontSize:'14px'}}>
           <span>Features</span><span style={{color:'#A020F0'}}>Pricing</span><span>Docs</span><span>Blog</span>
           <button style={{background:'rgba(255,255,255,0.1)',padding:'10px 18px',borderRadius:'10px',border:'1px solid rgba(255,255,255,0.14)',color:'#fff'}}>Sign In</button>
