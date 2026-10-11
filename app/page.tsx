@@ -39,6 +39,7 @@ export default function Page(){
         {["Image to 3D","Multi-Image to 3D","Text to 3D","Text to Texture"].map((t,i)=>{const k=["image3d","multi","text3d","texture"][i];return <button key={k} onClick={()=>setTab(k)} style={{padding:'10px 18px',borderRadius:'22px',fontSize:'13px',border:tab===k?'1px solid #A020F0':'1px solid rgba(255,255,255,0.14)',background:tab===k?'#A020F0':'transparent',color:'#fff',whiteSpace:'nowrap'}}>{t}</button>})}
         <button style={{padding:'10px 18px',borderRadius:'22px',fontSize:'13px',border:'1px solid rgba(255,255,255,0.14)',background:'transparent',color:'#fff',whiteSpace:'nowrap'}}>Template Studio ★ NEW</button>
         <a href="/image-to-vector" style={{padding:'10px 18px',borderRadius:'22px',fontSize:'13px',border:'1px solid rgba(160,32,240,0.5)',background:'rgba(160,32,240,0.14)',color:'#fff',textDecoration:'none',whiteSpace:'nowrap'}}>Image to Vector ★ NEW</a>
+        <a href="/background-remover" style={{padding:'10px 18px',borderRadius:'22px',fontSize:'13px',border:'1px solid rgba(160,32,240,0.5)',background:'rgba(160,32,240,0.14)',color:'#fff',textDecoration:'none',whiteSpace:'nowrap',display:'inline-flex',alignItems:'center',gap:'4px'}}>Background Remover ★ NEW</a>
       </div>
 
       <div className="hero-grid">
