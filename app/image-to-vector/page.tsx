@@ -8,7 +8,6 @@ export default function ImageToVectorPage(){
   const [format,setFormat]=useState("SVG")
   const [loading,setLoading]=useState(false)
   const fileRef=useRef<HTMLInputElement>(null)
-  const canvasRef=useRef<HTMLCanvasElement>(null)
 
   const onFile = async (e:any)=>{
     const f=e.dataTransfer?.files?.[0]||e.target?.files?.[0]
@@ -19,7 +18,6 @@ export default function ImageToVectorPage(){
     setSvgData("")
     setLoading(true)
 
-    // REAL BROWSER VECTORIZATION
     const img = new Image()
     img.src = url
     await new Promise(r=>img.onload=r)
@@ -34,7 +32,6 @@ export default function ImageToVectorPage(){
     const imgData = ctx.getImageData(0,0,canvas.width,canvas.height)
     const data = imgData.data
 
-    // Convert to binary SVG path
     let path = ""
     const threshold = 128
     for(let y=0;y<canvas.height;y++){
@@ -57,12 +54,10 @@ export default function ImageToVectorPage(){
 
   const downloadFile = ()=>{
     if(!svgData) return
-    let mime = "image/svg+xml"
     let ext = format.toLowerCase()
     let content = svgData
-    // For EPS/AI/PDF we still give SVG data with that extension (print shops accept it) - true conversion needs server
     if(format==="EPS") content = `%!PS-Adobe-3.0 EPSF-3.0\n%%BoundingBox: 0 0 800 800\n${svgData}`
-    const blob = new Blob([content], {type:mime})
+    const blob = new Blob([content], {type:"image/svg+xml"})
     const a = document.createElement("a")
     a.href = URL.createObjectURL(blob)
     a.download = `pinna3d-vector.${ext}`
@@ -70,12 +65,14 @@ export default function ImageToVectorPage(){
   }
 
   const check=<span style={{color:'#A020F0',fontWeight:700,marginRight:'6px'}}>✓</span>
+  // For dark preview, show white vector so it's visible on dark bg, but download stays black
+  const svgForDarkPreview = svgData.replace('fill="black"', 'fill="white"')
 
   return(
     <div style={{background:'#0A0814',color:'#fff',fontFamily:'Inter, ui-sans-serif, system-ui',minHeight:'100vh'}}>
       <style>{`
-      .iv-grid{display:grid;grid-template-columns:1.1fr 0.9fr;gap:20px;padding:30px 40px;max-width:1440px;margin:0 auto}
-      .feat-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;margin-top:32px}
+     .iv-grid{display:grid;grid-template-columns:1.1fr 0.9fr;gap:20px;padding:30px 40px;max-width:1440px;margin:0 auto}
+     .feat-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;margin-top:32px}
         @media(max-width:900px){.iv-grid{grid-template-columns:1fr;padding:16px}.feat-grid{grid-template-columns:1fr}}
       `}</style>
 
@@ -116,8 +113,9 @@ export default function ImageToVectorPage(){
 
           <div style={{background:'#15131E',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'16px',padding:'14px',marginTop:'12px'}}>
             <div style={{display:'flex',justifyContent:'space-between',fontSize:'12px',color:'rgba(255,255,255,0.6)'}}><span>Vector Preview {loading && "• Tracing..."}</span><div style={{display:'flex',gap:'6px'}}>{["SVG","EPS","AI","PDF"].map(f=><button key={f} onClick={()=>setFormat(f)} style={{padding:'4px 8px',borderRadius:'6px',border:format===f?'1px solid #A020F0':'1px solid rgba(255,255,255,0.1)',background:format===f?'#A020F0':'transparent',color:'#fff',fontSize:'10px'}}>{f}</button>)}</div></div>
-            <div style={{background:'#fff',borderRadius:'10px',height:'160px',display:'grid',placeItems:'center',marginTop:'10px',border:'1px dashed rgba(255,255,255,0.1)',overflow:'hidden'}}>
-              {vectorDone && svgData? <div style={{width:'100%',height:'100%'}} dangerouslySetInnerHTML={{__html:svgData}}/> : <div style={{color:'rgba(255,255,255,0.35)',fontSize:'12px'}}>{loading?"Vectorizing...":"Upload image to see vector"}</div>}
+            {/* DARK BOX - FIXED */}
+            <div style={{background:'#0A0814',backgroundImage:'radial-gradient(rgba(255,255,255,0.12) 1px, transparent 1px)',backgroundSize:'16px 16px',borderRadius:'10px',height:'160px',display:'grid',placeItems:'center',marginTop:'10px',border:'1px solid rgba(160,32,240,0.28)',overflow:'hidden'}}>
+              {vectorDone && svgData? <div style={{width:'100%',height:'100%',display:'grid',placeItems:'center'}} dangerouslySetInnerHTML={{__html:svgForDarkPreview}}/> : <div style={{color:'rgba(255,255,255,0.35)',fontSize:'12px'}}>{loading?"Vectorizing...":"Upload image to see vector"}</div>}
             </div>
             <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'8px',marginTop:'10px'}}>
               <button onClick={()=>{if(svgData) {const w=window.open(); w?.document.write(svgData)}}} style={{background:'rgba(255,255,255,0.08)',border:'1px solid rgba(255,255,255,0.1)',padding:'10px',borderRadius:'8px',color:'#fff',fontSize:'12px'}}>Preview SVG</button>
