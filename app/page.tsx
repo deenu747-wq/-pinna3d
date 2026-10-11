@@ -35,7 +35,7 @@ export default function Page(){
       <div style={{display:'grid',gridTemplateColumns:'1.2fr 0.7fr 0.7fr',gap:'12px',padding:'20px 24px',maxWidth:'1440px',margin:'0 auto',alignItems:'end'}}>
         <div style={{display:'flex',flexDirection:'column',justifyContent:'center',paddingRight:'10px'}}>
           <h1 style={{fontSize:'36px',lineHeight:'1.12',fontWeight:700,letterSpacing:'-0.02em',margin:0}}>Every Image to 3D or Vector<br/><span style={{background:'linear-gradient(90deg,#A020F0 0%,#FF7AD1 100%)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent'}}>in 60 Seconds</span></h1>
-          <p style={{color:'rgba(255,255,255,0.62)',marginTop:'14px',fontSize:'13.5px',lineHeight:'1.65',maxWidth:'420px'}}>Transform photos into production-ready 3D models & scalable vectors instantly. Built for designers, e-commerce, and creators Worldwide.</p>
+          <p style={{color:'rgba(255,255,255,0.62)',marginTop:'14px',fontSize:'14px',lineHeight:'1.65',maxWidth:'420px'}}>Transform photos into production-ready 3D models & scalable vectors instantly. Built for designers, e-commerce, and creators Worldwide.</p>
           <div style={{display:'flex',gap:'10px',marginTop:'20px'}}>
             <button style={{background:'#A020F0',boxShadow:'0 0 20px rgba(160,32,240,0.35)',padding:'10px 18px',borderRadius:'8px',border:'none',color:'#fff',fontSize:'13px',fontWeight:500}}>✦ Start Creating — Free</button>
             <button style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.12)',padding:'9px 16px',borderRadius:'8px',color:'#fff',fontSize:'13px'}}>▶ Watch Demo</button>
@@ -47,9 +47,9 @@ export default function Page(){
             <span style={{background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.08)',padding:'5px 8px',borderRadius:'6px',fontSize:'10px',color:'rgba(255,255,255,0.7)',whiteSpace:'nowrap'}}>📍 Made for Worldwide</span>
           </div>
         </div>
-        <div onClick={openPicker} onDragOver={e=>e.preventDefault()} onDrop={onFile} style={{border:'2.5px dashed rgba(160,32,240,0.6)',borderRadius:'15px',background:'rgba(15,13,28,0.95)',padding:'18px 14px',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',textAlign:'center',cursor:'pointer',minHeight:'320px',height:'320px'}}>
+        <div onClick={openPicker} onDragOver={e=>e.preventDefault()} onDrop={onFile} style={{border:'3px dashed rgba(160,32,240,0.6)',borderRadius:'15px',background:'rgba(15,13,28,0.95)',padding:'18px 14px',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',textAlign:'center',cursor:'pointer',minHeight:'320px',height:'320px'}}>
           <input ref={fileRef} type="file" hidden accept="image/*" onChange={onFile} />
-          <div style={{width:'52px',height:'52px',background:'rgba(160,32,240,0.18)',border:'1px solid rgba(160,32,240,0.35)',borderRadius:'10px',display:'grid',placeItems:'center',marginBottom:'12px'}}><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#A020F0" strokeWidth="2"><path d="M3 15a4 4 0 0 0 4 4h9a4 4 0 0 0 0-8 5 5 0 0 0-9.7-1.5A3 3 0 0 0 3 15z"/></svg></div>
+          <div style={{width:'52px',height:'52px',background:'rgba(160,32,240,0.18)',border:'3px solid rgba(160,32,240,0.35)',borderRadius:'15px',display:'grid',placeItems:'center',marginBottom:'12px'}}><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#A020F0" strokeWidth="2"><path d="M3 15a4 4 0 0 0 4 4h9a4 4 0 0 0 0-8 5 5 0 0 0-9.7-1.5A3 3 0 0 0 3 15z"/></svg></div>
           <b style={{fontSize:'16px',fontWeight:600}}>Drag & drop your image here</b>
           <div style={{fontSize:'14px',color:'rgba(255,255,255,0.5)',marginTop:'4px'}}>or browse files to upload</div>
           <div style={{fontSize:'10px',color:'rgba(255,255,255,0.35)',marginTop:'10px'}}>Supports PNG, JPG, WEBP • Max 20MB • JPG/PNG to 3D or SVG</div>
@@ -67,7 +67,7 @@ export default function Page(){
       <div style={{padding:'40px 40px 20px',maxWidth:'1440px',margin:'0 auto',borderTop:'1px solid rgba(255,255,255,0.06)'}}>
         <div style={{textAlign:'center',maxWidth:'820px',margin:'0 auto'}}>
           <div style={{display:'inline-flex',background:'rgba(160,32,240,0.15)',border:'1px solid rgba(160,32,240,0.32)',padding:'6px 12px',borderRadius:'20px',fontSize:'11px',letterSpacing:'.12em',color:'#D6A5FF'}}>FOUR STUDIOS • ONE PLATFORM</div>
-          <h2 style={{fontSize:'32px',fontWeight:500,margin:'14px 0 10px',lineHeight:1.2}}>Everything you need to create,<br/>in one place</h2>
+          <h2 style={{fontSize:'34px',fontWeight:500,margin:'14px 0 10px',lineHeight:1.2}}>Everything you need to create,<br/>in one place</h2>
           <p style={{color:'rgba(255,255,255,0.82)',fontSize:'16px',margin:0}}>Photo, Vector, 3D and Motion — built for creators worldwide. One click export to any format.</p>
         </div>
         <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr 1fr',gap:'18px',marginTop:'32px'}}>
