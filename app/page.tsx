@@ -69,8 +69,8 @@ export default function Page(){
             <div style={{position:'absolute',bottom:'6px',left:'6px',background:'rgba(0,0,0,0.6)',padding:'3px 6px',borderRadius:'4px',fontSize:'9px',color:'rgba(255,255,255,0.7)'}}>Model: Sneaker_v01.glb</div>
           </div>
           <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'8px',marginTop:'10px'}}>
-            <button style={{background:'#2A2838',border:'1px solid rgba(255,255,255,0.1)',padding:'8px',borderRadius:'6px',color:'#fff',fontSize:'11px'}}>Download GLB</button>
-            <button style={{background:'#A020F0',border:'none',padding:'8px',borderRadius:'6px',color:'#fff',fontSize:'11px'}}>Export SVG</button>
+            <button style={{background:'#2A2838',border:'1px solid rgba(255,255,255,0.1)',padding:'8px',borderRadius:'10px',color:'#fff',fontSize:'11px'}}>Download GLB</button>
+            <button style={{background:'#A020F0',border:'none',padding:'8px',borderRadius:'10px',color:'#fff',fontSize:'11px'}}>Export SVG</button>
           </div>
         </div>
       </div>
