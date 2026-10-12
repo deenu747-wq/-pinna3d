@@ -8,71 +8,65 @@ export default function BackgroundRemoverPage(){
   const [loading,setLoading]=useState(false)
   const [status,setStatus]=useState("")
   const fileRef=useRef<HTMLInputElement>(null)
+  const [fileObj,setFileObj]=useState<File|null>(null)
 
 const onFile = async (e:any)=>{
   const f = e.dataTransfer?.files?.[0] || e.target?.files?.[0]
   if(!f) return
+  setFileObj(f)
   const url = URL.createObjectURL(f)
   setPreview(url)
   setDone(false)
   setOutput("")
   setLoading(true)
-  setStatus("Loading BiRefNet AI (first time 30 sec)...")
+  setStatus("Removing background...")
 
+  // METHOD 1: Try your Vercel API (uses HF_TOKEN) - BEST QUALITY
+  try {
+    const fd = new FormData()
+    fd.append('file', f)
+    const res = await fetch('/api/remove-bg', { method: 'POST', body: fd })
+    if(!res.ok) throw new Error('API failed')
+    const blob = await res.blob()
+    const outUrl = URL.createObjectURL(blob)
+    setOutput(outUrl)
+    setDone(true)
+    setStatus("Done - Transparent PNG ready!")
+    setLoading(false)
+    return
+  } catch(err){
+    console.log("API fallback to browser AI", err)
+    setStatus("API busy, using browser AI (30 sec first time)...")
+  }
+
+  // METHOD 2: Fallback to browser AI
   try {
     // @ts-ignore
     const { pipeline, env } = await import(/* webpackIgnore: true */ "https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.7.2/+esm")
     env.allowLocalModels = false
     env.allowRemoteModels = true
 
-    setStatus("AI cutting - removes wood table...")
-    // BEST model for product - BiRefNet style RMBG-2.0
+    setStatus("AI cutting - BiRefNet running...")
     const segmenter = await pipeline('background-removal' as any, 'briaai/RMBG-2.0', {
       // @ts-ignore
       dtype: 'fp32'
     })
 
     const result:any = await segmenter(url)
-    // result is masked image blob / canvas
     let finalUrl = ""
     if (result && result.toCanvas) {
       finalUrl = result.toCanvas().toDataURL("image/png")
-    } else if (Array.isArray(result) && result[0]?.mask) {
-      // fallback mask apply
-      const img = new Image()
-      img.src = url
-      await new Promise(r=>img.onload=r)
-      const c = document.createElement('canvas')
-      c.width = img.width; c.height = img.height
-      const ctx = c.getContext('2d',{willReadFrequently:true})!
-      ctx.drawImage(img,0,0)
-      const imgData = ctx.getImageData(0,0,c.width,c.height)
-      const maskCanvas = result[0].mask.toCanvas()
-      const mCtx = maskCanvas.getContext('2d')!
-      const mData = mCtx.getImageData(0,0,maskCanvas.width,maskCanvas.height).data
-      for(let i=0;i<imgData.data.length;i+=4){
-        const mi = Math.floor((i/4 / imgData.data.length) * mData.length) * 4
-        let a = mData[mi]
-        if(a>200) a=255
-        else if(a<30) a=0
-        else a=Math.round((a-30)/170*255)
-        imgData.data[i+3]=a
-      }
-      ctx.putImageData(imgData,0,0)
-      finalUrl = c.toDataURL("image/png")
     } else {
-      // if pipeline returns blob url directly
       finalUrl = URL.createObjectURL(result)
     }
 
     setOutput(finalUrl)
     setDone(true)
-    setStatus("Done - Wood table removed, clean transparent!")
+    setStatus("Done - Transparent PNG ready!")
 
   } catch(err:any){
     console.error(err)
     setStatus("Failed, trying backup AI...")
-    // BACKUP: imgly birefnet medium - still works no token
     try {
       // @ts-ignore
       const imgly:any = await import(/* webpackIgnore: true */ "https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.6.0/+esm")
@@ -104,7 +98,7 @@ const onFile = async (e:any)=>{
 .six-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px;max-width:560px}
 .six-box{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09);border-radius:14px;padding:14px 16px}
 .preview-card{background:#15131E;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:14px;width:100%;box-sizing:border-box;display:flex;flex-direction:column}
-.preview-box{background:#0A0814;background-image:radial-gradient(rgba(255,255,255,0.12) 1px, transparent 1px);background-size:16px 16px;border-radius:10px;width:100%;display:flex;align-items:center;justify-content:center;border:1px solid rgba(160,32,240,0.28);overflow:hidden;position:relative;flex:1}
+.preview-box{border-radius:10px;width:100%;display:flex;align-items:center;justify-content:center;border:1px solid rgba(160,32,240,0.28);overflow:hidden;position:relative;flex:1; background-color: #15131E; background-image: linear-gradient(45deg, #2a2a2a 25%, transparent 25%), linear-gradient(-45deg, #2a2a2a 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #2a2a2a 75%), linear-gradient(-45deg, transparent 75%, #2a2a2a 75%); background-size: 20px 20px; background-position: 0 0, 0 10px, 10px -10px, -10px 0px; }
 .feat-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;margin-top:32px}
 @media(max-width:900px){.iv-grid{grid-template-columns:1fr;padding:16px}.six-grid{grid-template-columns:1fr}.feat-grid{grid-template-columns:1fr}}
       `}</style>
@@ -120,28 +114,24 @@ const onFile = async (e:any)=>{
 
       <div className="iv-grid">
         <div style={{minWidth:0}}>
-          <div style={{display:'inline-flex',background:'rgba(160,32,240,0.15)',border:'1px solid rgba(160,32,240,0.32)',padding:'6px 12px',borderRadius:'20px',fontSize:'11px',color:'#D6A5FF',letterSpacing:'.1em'}}>REAL AI • NO PACKAGE ERROR</div>
+          <div style={{display:'inline-flex',background:'rgba(160,32,240,0.15)',border:'1px solid rgba(160,32,240,0.32)',padding:'6px 12px',borderRadius:'20px',fontSize:'11px',color:'#D6A5FF',letterSpacing:'.1em'}}>REAL AI • TRANSPARENT PROOF</div>
           <h1 style={{fontSize:'48px',lineHeight:'1.12',margin:'16px 0 0'}}>
             <span style={{fontWeight:700}}>Remove background to</span><br/>
             <span style={{fontWeight:700, background:'linear-gradient(90deg,#A020F0 0%,#FF7AD1 100%)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent'}}>transparent PNG</span><br/>
             <span style={{fontWeight:700}}>in 2 seconds</span>
           </h1>
-          <p className="desc-text">Real AI MODNet — removes beige, table, plants. Your bag photo will now work. No npm error, loads from CDN like ImageTracer.</p>
+          <p className="desc-text">Real AI RMBG-1.4 via API — checkerboard = proof of transparency. No white background.</p>
           <div className="pill-row">
-            <span className="pill">{check} Real AI • Any Background</span>
-            <span className="pill">{check} Zero Error • CDN Load</span>
+            <span className="pill">{check} Real Transparency • Checkerboard</span>
+            <span className="pill">{check} PNG 32-bit Alpha</span>
           </div>
           <div className="six-grid">
             <div className="six-box"><div style={{fontSize:'10px',letterSpacing:'.12em',color:'rgba(255,255,255,0.45)',fontWeight:600}}>INPUT FORMATS</div><div style={{fontSize:'13px',fontWeight:600,marginTop:'6px'}}>JPG, PNG, WEBP, BMP</div><div style={{fontSize:'11px',color:'#B88CFF',marginTop:'6px'}}>Up to 20MB each</div></div>
-            <div className="six-box"><div style={{fontSize:'10px',letterSpacing:'.12em',color:'rgba(255,255,255,0.45)',fontWeight:600}}>OUTPUT FORMATS</div><div style={{fontSize:'13px',fontWeight:600,marginTop:'6px'}}>PNG Transparent 32-bit</div><div style={{fontSize:'11px',color:'#B88CFF',marginTop:'6px'}}>Alpha preserved</div></div>
+            <div className="six-box"><div style={{fontSize:'10px',letterSpacing:'.12em',color:'rgba(255,255,255,0.45)',fontWeight:600}}>OUTPUT FORMATS</div><div style={{fontSize:'13px',fontWeight:600,marginTop:'6px'}}>PNG Transparent 32-bit</div><div style={{fontSize:'11px',color:'#B88CFF',marginTop:'6px'}}>Checkerboard = transparent</div></div>
             <div className="six-box"><div style={{fontSize:'10px',letterSpacing:'.12em',color:'rgba(255,255,255,0.45)',fontWeight:600}}>TRUSTED</div><div style={{fontSize:'13px',fontWeight:600,marginTop:'6px'}}>12k+ Designers • 4.9/5</div><div style={{fontSize:'11px',color:'rgba(255,255,255,0.5)',marginTop:'6px'}}>E-commerce ready</div></div>
             <div className="six-box"><div style={{fontSize:'10px',letterSpacing:'.12em',color:'rgba(255,255,255,0.45)',fontWeight:600}}>QUALITY</div><div style={{fontSize:'13px',fontWeight:600,marginTop:'6px'}}>Clean Edges • No Halo</div><div style={{fontSize:'11px',color:'rgba(255,255,255,0.5)',marginTop:'6px'}}>HD output</div></div>
             <div className="six-box"><div style={{fontSize:'10px',letterSpacing:'.12em',color:'rgba(255,255,255,0.45)',fontWeight:600}}>SPEED</div><div style={{fontSize:'13px',fontWeight:600,marginTop:'6px'}}>2 Sec Removal</div><div style={{fontSize:'11px',color:'rgba(255,255,255,0.5)',marginTop:'6px'}}>100% auto</div></div>
             <div className="six-box"><div style={{fontSize:'10px',letterSpacing:'.12em',color:'rgba(255,255,255,0.45)',fontWeight:600}}>BONUS</div><div style={{fontSize:'13px',fontWeight:600,marginTop:'6px'}}>Free Unlimited</div><div style={{fontSize:'11px',color:'rgba(255,255,255,0.5)',marginTop:'6px'}}>No watermark</div></div>
-          </div>
-          <div style={{marginTop:'18px',maxWidth:'560px',height:'280px',background:'radial-gradient(130% 130% at 20% 20%, rgba(160,32,240,0.30), transparent 60%), radial-gradient(100% 100% at 80% 80%, rgba(255,122,209,0.22), transparent 60%), rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.10)',borderRadius:'16px',position:'relative',overflow:'hidden',padding:'22px',display:'flex',alignItems:'center',gap:'20px'}}>
-            <div style={{flex:'0 0 auto'}}><svg width="140" height="140" viewBox="0 0 120 120" fill="none"><circle cx="60" cy="60" r="46" stroke="#A020F0" strokeWidth="2" strokeDasharray="6 8"/><circle cx="60" cy="60" r="18" fill="#A020F0"/><path d="M38 60 L52 74 L84 42" stroke="#fff" strokeWidth="3" fill="none"/></svg></div>
-            <div><div style={{fontSize:'48px',fontWeight:800,lineHeight:0.95}}>∞ Transparent<br/><span style={{color:'#A020F0'}}>No Background</span></div><div style={{fontSize:'15px',lineHeight:1.6,color:'rgba(255,255,255,0.70)',marginTop:'12px'}}>Clean alpha edge, no white halo.<br/>Ready for Shopify, Amazon, prints.</div></div>
           </div>
         </div>
 
@@ -152,28 +142,17 @@ const onFile = async (e:any)=>{
           </div>
 
           <div className="box-1-1 preview-card">
-            <div style={{display:'flex',justifyContent:'space-between',fontSize:'12px',color:'rgba(255,255,255,0.6)'}}><span>Transparent Preview</span><span style={{fontSize:'10px',color:'#B88CFF'}}>{loading?status:"PNG 32"}</span></div>
-            <div className="preview-box" style={{marginTop:'12px'}}>
-              {loading? <div style={{color:'#fff',fontSize:'12px',textAlign:'center'}}>{status}<br/><span style={{fontSize:'10px',color:'#888'}}>First time loads AI model</span></div> : done && output? <div style={{width:'88%',height:'88%',background:'#fff',borderRadius:'10px',display:'flex',alignItems:'center',justifyContent:'center',padding:'10px'}}><img src={output} style={{maxWidth:'100%',maxHeight:'100%',objectFit:'contain'}}/></div> : <div style={{color:'rgba(255,255,255,0.35)',fontSize:'12px',textAlign:'center'}}>Upload image<br/>to see transparent</div>}
+            <div style={{display:'flex',justifyContent:'space-between',fontSize:'12px',color:'rgba(255,255,255,0.6)'}}><span>Transparent Preview {done && "(checkerboard = transparent)"}</span><span style={{fontSize:'10px',color:'#B88CFF'}}>{loading?status:"PNG 32"}</span></div>
+            <div className="preview-box" style={{marginTop:'12px', minHeight:'300px'}}>
+              {loading? <div style={{color:'#fff',fontSize:'12px',textAlign:'center',zIndex:2}}>{status}<br/><span style={{fontSize:'10px',color:'#888'}}>First time 20 sec</span></div> : done && output? <img src={output} style={{maxWidth:'90%',maxHeight:'90%',objectFit:'contain', position:'relative', zIndex:2, filter:'drop-shadow(0 0 20px rgba(0,0,0,0.5))'}}/> : <div style={{color:'rgba(255,255,255,0.6)',fontSize:'12px',textAlign:'center',zIndex:2}}>Upload image<br/>to see transparent<br/><span style={{fontSize:'10px'}}>Checkerboard background = transparent proof</span></div>}
             </div>
             <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'8px',marginTop:'12px'}}>
-              <button onClick={()=>{if(output){const w=window.open();w?.document.write(`<img src="${output}" style="max-width:100%"/>`)}}} style={{background:'rgba(255,255,255,0.08)',border:'1px solid rgba(255,255,255,0.1)',padding:'10px',borderRadius:'8px',color:'#fff',fontSize:'12px'}}>Preview PNG</button>
-              <button onClick={downloadFile} style={{background:done?'#A020F0':'#333',padding:'10px',borderRadius:'8px',color:'#fff',fontSize:'12px',border:'none',cursor:done?'pointer':'not-allowed'}}>Download PNG</button>
+              <button onClick={()=>{if(output){const w=window.open();w?.document.write(`<body style="margin:0;background:repeating-conic-gradient(#2a2a2a 0% 25%, #1a1a1a 0% 50%) 0 0 / 20px 20px"><img src="${output}" style="max-width:100vw;max-height:100vh;display:block;margin:auto"/></body>`)}}} style={{background:'rgba(255,255,255,0.08)',border:'1px solid rgba(255,255,255,0.1)',padding:'10px',borderRadius:'8px',color:'#fff',fontSize:'12px'}}>Preview on Checker</button>
+              <button onClick={downloadFile} style={{background:done?'#A020F0':'#333',padding:'10px',borderRadius:'8px',color:'#fff',fontSize:'12px',border:'none',cursor:done?'pointer':'not-allowed'}}>Download Transparent PNG</button>
             </div>
           </div>
         </div>
       </div>
-
-      <div style={{padding:'40px 40px 40px',maxWidth:'1440px',margin:'0 auto',borderTop:'1px solid rgba(255,255,255,0.06)'}}>
-        <h2 style={{textAlign:'center',fontSize:'30px',fontWeight:500}}>Why designers choose Background Remover</h2>
-        <div className="feat-grid">
-          <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'16px',padding:'20px'}}><h3 style={{margin:0,fontSize:'16px'}}>{check}True AI, Not White Filter</h3><p style={{color:'rgba(255,255,255,0.6)',fontSize:'13px',marginTop:'8px'}}>Works on any background, even complex.</p></div>
-          <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'16px',padding:'20px'}}><h3 style={{margin:0,fontSize:'16px'}}>{check}100% Private & Fast</h3><p style={{color:'rgba(255,255,255,0.6)',fontSize:'13px',marginTop:'8px'}}>Runs in your browser, no server upload.</p></div>
-          <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'16px',padding:'20px'}}><h3 style={{margin:0,fontSize:'16px'}}>{check}E-commerce Ready</h3><p style={{color:'rgba(255,255,255,0.6)',fontSize:'13px',marginTop:'8px'}}>Perfect for Shopify, Amazon, Etsy listings.</p></div>
-        </div>
-        <div style={{textAlign:'center',marginTop:'30px'}}><a href="/signup" style={{background:'#A020F0',padding:'12px 24px',borderRadius:'10px',color:'#fff',textDecoration:'none',fontWeight:500}}>Start Removing Free — No CC</a></div>
-      </div>
-      <footer style={{borderTop:'1px solid rgba(255,255,255,0.08)',padding:'20px 40px',textAlign:'center',fontSize:'12px',color:'rgba(255,255,255,0.4)'}}>© 2026 Pinna3d.com • Background Remover Tool</footer>
     </div>
   )
 }
