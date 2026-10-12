@@ -14,7 +14,8 @@ export default function BackgroundRemoverPage(){
   const [mainMode,setMainMode]=useState<MainMode>("transparent")
   const [bgType,setBgType]=useState<BgType>("color")
   const [bgColor,setBgColor]=useState("#ffffff")
-  const [bgImage,setBgImage]=useState("") // custom uploaded bg url
+  const [hue,setHue]=useState(0)
+  const [bgImage,setBgImage]=useState("")
   const [bgTemplate,setBgTemplate]=useState("studio")
 
   const fileRef=useRef<HTMLInputElement>(null)
@@ -29,7 +30,7 @@ export default function BackgroundRemoverPage(){
     neon: "linear-gradient(135deg, #A020F0 0%, #FF7AD1 100%)",
   }
 
-  const colors = ["#ffffff","#000000","#A020F0","#FF7AD1","#FFD93D","#00D1FF","#1ED760","#FF4D4D","#f5f5f0","#e8e8e8"]
+  const presetColors = ["#ffffff","#000000","#A020F0","#FF7AD1","#FFD93D","#00D1FF","#1ED760","#FF4D4D","#f5f5f0","#e8e8e8","#2a2a2a","#ff8a00","#00ff88","#7000ff"]
 
   const checkerStyle = {
     backgroundColor: '#1a1a1a',
@@ -37,6 +38,15 @@ export default function BackgroundRemoverPage(){
     backgroundSize: '20px 20px',
     backgroundPosition: '0 0, 0 10px, 10px -10px, -10px 0px'
   } as const
+
+  const hslToHex = (h:number,s=100,l=50)=>{
+    s/=100; l/=100;
+    const k = (n:number)=>(n+h/30)%12;
+    const a = s*Math.min(l,1-l);
+    const f = (n:number)=>l-a*Math.max(-1,Math.min(k(n)-3,Math.min(9-k(n),1)));
+    const toHex = (x:number)=>Math.round(x*255).toString(16).padStart(2,'0');
+    return `#${toHex(f(0))}${toHex(f(8))}${toHex(f(4))}`;
+  }
 
   const buildFinal = async () => {
     if(!output) return
@@ -48,52 +58,32 @@ export default function BackgroundRemoverPage(){
     canvas.width = img.naturalWidth || 1024
     canvas.height = img.naturalHeight || 1024
     const ctx = canvas.getContext('2d')!
-
-    if(mainMode === "transparent"){
-      // nothing, keep alpha
-    } else {
+    if(mainMode!== "transparent"){
       if(bgType === "color"){
         ctx.fillStyle = bgColor
         ctx.fillRect(0,0,canvas.width,canvas.height)
       } else if(bgType === "template"){
-        // draw gradient template
-        const gradCanvas = document.createElement('canvas')
-        gradCanvas.width = canvas.width
-        gradCanvas.height = canvas.height
-        // simple: fill with color from template name
-        if(bgTemplate === "studio") ctx.fillStyle = "#eef2f7"
-        if(bgTemplate === "sunset") ctx.fillStyle = "#ffd6e0"
-        if(bgTemplate === "luxury") ctx.fillStyle = "#1a1740"
-        if(bgTemplate === "forest") ctx.fillStyle = "#d4e8d5"
-        if(bgTemplate === "peach") ctx.fillStyle = "#ffe9d6"
-        if(bgTemplate === "neon") ctx.fillStyle = "#f3d9ff"
-        if(bgTemplate!== "studio") {
-          // for simplicity, we use solid + will look pro in export
-        }
+        ctx.fillStyle = bgColor // keep simple, preview shows gradient
+        if(bgTemplate==="studio") ctx.fillStyle="#eef2f7"
+        if(bgTemplate==="sunset") ctx.fillStyle="#ffd6e0"
+        if(bgTemplate==="luxury") ctx.fillStyle="#1a1740"
+        if(bgTemplate==="forest") ctx.fillStyle="#d4e8d5"
+        if(bgTemplate==="peach") ctx.fillStyle="#ffe9d6"
+        if(bgTemplate==="neon") ctx.fillStyle="#f3d9ff"
         ctx.fillRect(0,0,canvas.width,canvas.height)
-        // overlay gradient as image would need more complex, using solid for now
-        if(templates[bgTemplate]){
-          // fake gradient with solid for canvas export - preview shows gradient via CSS
-          // keep solid to avoid complexity
-        }
       } else if(bgType === "image" && bgImage){
         const bgImg = new Image()
         bgImg.crossOrigin="anonymous"
         bgImg.src = bgImage
         await new Promise(r => { bgImg.onload = r as any; bgImg.onerror = r as any })
-        // cover
         const scale = Math.max(canvas.width / bgImg.width, canvas.height / bgImg.height)
         const w = bgImg.width * scale
         const h = bgImg.height * scale
-        const x = (canvas.width - w)/2
-        const y = (canvas.height - h)/2
-        ctx.drawImage(bgImg, x, y, w, h)
+        ctx.drawImage(bgImg, (canvas.width-w)/2, (canvas.height-h)/2, w, h)
       }
     }
-
-    ctx.drawImage(img,0,0, canvas.width, canvas.height)
-    const url = canvas.toDataURL(img.src.includes('jpg')? "image/jpeg" : "image/png", 0.92)
-    setFinalUrl(url)
+    ctx.drawImage(img,0,0,canvas.width,canvas.height)
+    setFinalUrl(canvas.toDataURL("image/png",0.92))
   }
 
   useEffect(()=>{ if(done) buildFinal() }, [mainMode, bgType, bgColor, bgImage, bgTemplate, done, output])
@@ -101,56 +91,37 @@ export default function BackgroundRemoverPage(){
   const onFile = async (e:any)=>{
     const f = e.dataTransfer?.files?.[0] || e.target?.files?.[0]
     if(!f) return
-    const url = URL.createObjectURL(f)
-    setPreview(url)
-    setDone(false)
-    setOutput("")
-    setFinalUrl("")
-    setLoading(true)
-    setStatus("Cutting background...")
-    try {
-      const fd = new FormData()
-      fd.append('file', f)
-      const res = await fetch('/api/remove-bg', { method: 'POST', body: fd })
-      if(!res.ok){
-        const j = await res.json().catch(()=>({error:'API failed'}))
-        throw new Error(j.error || 'API failed')
-      }
-      const blob = await res.blob()
-      const outUrl = URL.createObjectURL(blob)
-      setOutput(outUrl)
-      setDone(true)
-      setStatus("Ready")
-    } catch(err:any){
-      setStatus("Error: "+err.message)
-    }
+    setPreview(URL.createObjectURL(f))
+    setDone(false); setOutput(""); setFinalUrl(""); setLoading(true); setStatus("Cutting background...")
+    try{
+      const fd=new FormData(); fd.append('file',f)
+      const res=await fetch('/api/remove-bg',{method:'POST',body:fd})
+      if(!res.ok) throw new Error('API failed')
+      const blob=await res.blob()
+      setOutput(URL.createObjectURL(blob)); setDone(true); setStatus("Ready")
+    }catch(err:any){ setStatus("Error: "+err.message) }
     setLoading(false)
   }
 
   const onBgFile = (e:any)=>{
-    const f = e.target.files?.[0]
-    if(!f) return
-    setBgImage(URL.createObjectURL(f))
-    setBgType("image")
-    setMainMode("withBg")
+    const f=e.target.files?.[0]; if(!f) return
+    setBgImage(URL.createObjectURL(f)); setBgType("image"); setMainMode("withBg")
   }
 
   const downloadFile=()=>{
-    const url = finalUrl || output
-    if(!url) return
-    const a=document.createElement("a")
-    a.href=url
-    a.download = mainMode==="transparent"? "pinna3d-transparent.png" : `pinna3d-${bgType}-${bgColor.replace('#','')}.png`
+    const url=finalUrl||output; if(!url) return
+    const a=document.createElement("a"); a.href=url
+    a.download=mainMode==="transparent"? "pinna3d-transparent.png" : `pinna3d-${bgColor.replace('#','')}.png`
     a.click()
   }
 
-  const getPreviewBg = () => {
-    if(!done) return { background: '#0A0814', backgroundImage: 'radial-gradient(rgba(255,255,255,0.08) 1px, transparent 1px)', backgroundSize: '18px 18px' }
-    if(mainMode === "transparent") return checkerStyle
-    if(bgType === "color") return { background: bgColor } as const
-    if(bgType === "template") return { background: templates[bgTemplate] } as const
-    if(bgType === "image" && bgImage) return { backgroundImage: `url(${bgImage})`, backgroundSize: 'cover', backgroundPosition: 'center' } as const
-    return { background: '#fff' } as const
+  const getPreviewBg=()=>{
+    if(!done) return { background:'#0A0814', backgroundImage:'radial-gradient(rgba(255,255,255,0.08) 1px, transparent 1px)', backgroundSize:'18px 18px' }
+    if(mainMode==="transparent") return checkerStyle
+    if(bgType==="color") return { background:bgColor } as const
+    if(bgType==="template") return { background:templates[bgTemplate] } as const
+    if(bgType==="image" && bgImage) return { backgroundImage:`url(${bgImage})`, backgroundSize:'cover', backgroundPosition:'center' } as const
+    return { background:'#fff' } as const
   }
 
   const check=<span style={{color:'#A020F0',fontWeight:700,marginRight:'6px'}}>✓</span>
@@ -163,17 +134,22 @@ export default function BackgroundRemoverPage(){
 .six-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;max-width:560px}
 .six-box{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09);border-radius:14px;padding:14px 16px;min-height:84px;display:flex;flex-direction:column;justify-content:center}
 .box-1-1{width:82%;aspect-ratio:1/1;border-radius:16px;box-sizing:border-box;overflow:hidden;flex-shrink:0;margin-left:auto}
-.upload-box{border:2px dashed rgba(160,32,240,0.55);background:rgba(15,13,28,0.95);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;cursor:pointer;position:relative;transition:border-color 0.2s}
-.upload-box:hover{border-color:#A020F0}
+.upload-box{border:2px dashed rgba(160,32,240,0.55);background:rgba(15,13,28,0.95);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;cursor:pointer;position:relative}
 .upload-box img{width:100%;height:100%;object-fit:contain;padding:10px;background:rgba(15,13,28,0.95);border-radius:12px;box-sizing:border-box}
-.preview-card{background:#15131E;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:14px;width:82%;aspect-ratio:1/1;box-sizing:border-box;display:flex;flex-direction:column;flex-shrink:0;margin-left:auto}
+.preview-card{background:#15131E;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:14px;width:82%;box-sizing:border-box;display:flex;flex-direction:column;flex-shrink:0;margin-left:auto;min-height:520px}
 .preview-box{border-radius:10px;width:100%;display:flex;align-items:center;justify-content:center;border:1px solid rgba(160,32,240,0.22);overflow:hidden;position:relative;flex:1}
 .seg{display:flex;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:4px;gap:4px}
 .seg-btn{flex:1;padding:9px 10px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid transparent;transition:all 0.18s;text-align:center}
 .seg-btn.active{background:#A020F0;color:#fff;box-shadow:0 0 14px rgba(160,32,240,0.45);border-color:#A020F0}
 .seg-btn.idle{background:transparent;color:rgba(255,255,255,0.6)}
-.color-dot{width:28px;height:28px;border-radius:8px;border:2px solid rgba(255,255,255,0.12);cursor:pointer;transition:all 0.15s}
-.color-dot.active{border-color:#fff;box-shadow:0 0 0 2px #A020F0;transform:scale(1.1)}
+.scroll-colors{display:flex;gap:8px;overflow-x:auto;padding:6px 2px 10px;scrollbar-width:thin}
+.scroll-colors::-webkit-scrollbar{height:4px}
+.scroll-colors::-webkit-scrollbar-thumb{background:rgba(160,32,240,0.5);border-radius:99px}
+.color-dot{width:30px;height:30px;min-width:30px;border-radius:8px;border:2px solid rgba(255,255,255,0.14);cursor:pointer;transition:all 0.15s;position:relative}
+.color-dot.active{border-color:#fff;box-shadow:0 0 0 2px #A020F0;transform:scale(1.12)}
+.hue-slider{width:100%;height:14px;border-radius:999px;-webkit-appearance:none;appearance:none;background:linear-gradient(to right, #f00 0%, #ff0 17%, #0f0 33%, #0ff 50%, #00f 67%, #f0f 83%, #f00 100%);outline:none;cursor:pointer;border:1px solid rgba(255,255,255,0.15)}
+.hue-slider::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:#fff;border:2px solid #000;box-shadow:0 2px 8px rgba(0,0,0,0.4);cursor:pointer}
+.hue-slider::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:#fff;border:2px solid #000;cursor:pointer}
 .tpl{height:56px;border-radius:10px;cursor:pointer;border:2px solid transparent;transition:all 0.15s;position:relative;overflow:hidden}
 .tpl.active{border-color:#A020F0;box-shadow:0 0 0 2px rgba(160,32,240,0.3)}
 .tpl span{position:absolute;bottom:4px;left:6px;font-size:9px;font-weight:700;letter-spacing:0.05em;background:rgba(0,0,0,0.55);padding:2px 6px;border-radius:6px;color:#fff}
@@ -199,10 +175,6 @@ export default function BackgroundRemoverPage(){
               <span style={{fontWeight:700}}>Product stays</span> <span style={{fontWeight:700, background:'linear-gradient(90deg,#A020F0 0%,#FF7AD1 100%)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent'}}>perfect.</span>
             </h1>
             <p style={{fontSize:'16px',lineHeight:1.7,color:'rgba(255,255,255,0.62)',marginTop:'14px',maxWidth:'540px'}}>AI that understands fur, lace, glass and soft shadows. Not a white paint bucket — a true alpha matte that survives any background you throw at it.</p>
-            <div style={{display:'flex',gap:'10px',marginTop:'14px',flexWrap:'wrap'}}>
-              <span style={{padding:'8px 14px',borderRadius:'999px',background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.1)',fontSize:'12px'}}>{check} No white fringe</span>
-              <span style={{padding:'8px 14px',borderRadius:'999px',background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.1)',fontSize:'12px'}}>{check} Hair detail kept</span>
-            </div>
           </div>
 
           <div className="six-grid">
@@ -214,10 +186,9 @@ export default function BackgroundRemoverPage(){
             <div className="six-box"><div style={{fontSize:'10px',letterSpacing:'.12em',color:'rgba(255,255,255,0.45)',fontWeight:600}}>COST</div><div style={{fontSize:'13px',fontWeight:700,marginTop:'6px'}}>Free • Unlimited</div><div style={{fontSize:'11px',color:'rgba(255,255,255,0.5)',marginTop:'4px'}}>No watermark</div></div>
           </div>
 
-          {/* BOTTOM ALIGNED BOX */}
           <div style={{marginTop:'6px',maxWidth:'560px',height:'280px',background:'radial-gradient(130% 130% at 20% 20%, rgba(160,32,240,0.28), transparent 60%), radial-gradient(100% 100% at 80% 80%, rgba(255,122,209,0.20), transparent 60%), rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.10)',borderRadius:'16px',padding:'22px',display:'flex',alignItems:'center',gap:'20px'}}>
             <div style={{flex:'0 0 auto'}}><svg width="120" height="120" viewBox="0 0 120 120" fill="none"><circle cx="60" cy="60" r="46" stroke="#A020F0" strokeWidth="2" strokeDasharray="6 8"/><circle cx="60" cy="60" r="18" fill="#A020F0"/><path d="M38 60 L52 74 L84 42" stroke="#fff" strokeWidth="3" fill="none"/></svg></div>
-            <div><div style={{fontSize:'40px',fontWeight:800,lineHeight:0.95}}>∞ Real Alpha.<br/><span style={{color:'#A020F0'}}>Not white filter.</span></div><div style={{fontSize:'13px',lineHeight:1.6,color:'rgba(255,255,255,0.60)',marginTop:'10px'}}>Checkerboard = proof. Drop it on purple, black, neon —<br/>edges stay clean.</div></div>
+            <div><div style={{fontSize:'40px',fontWeight:800,lineHeight:0.95}}>∞ Real Alpha.<br/><span style={{color:'#A020F0'}}>Not white filter.</span></div><div style={{fontSize:'13px',lineHeight:1.6,color:'rgba(255,255,255,0.60)',marginTop:'10px'}}>Checkerboard = proof. Drop it on purple, black, neon — edges stay clean.</div></div>
           </div>
         </div>
 
@@ -227,14 +198,13 @@ export default function BackgroundRemoverPage(){
             {preview? <img src={preview} alt="input"/> : <><div style={{width:'56px',height:'56px',background:'rgba(160,32,240,0.18)',border:'2px solid rgba(160,32,240,0.4)',borderRadius:'14px',display:'grid',placeItems:'center',marginBottom:'14px'}}>✂️</div><b style={{fontSize:'18px',fontWeight:500}}>Drop image to remove BG</b><div style={{fontSize:'13px',color:'rgba(255,255,255,0.5)',marginTop:'6px'}}>or browse to upload</div><div style={{fontSize:'11px',color:'rgba(255,255,255,0.35)',marginTop:'12px'}}>PNG, JPG up to 20MB • Instant</div></>}
           </div>
 
-          <div className="preview-card" style={{height:'auto', aspectRatio:'unset', minHeight:'460px'}}>
-            {/* MAIN MODE */}
+          <div className="preview-card">
             <div className="seg">
               <button className={`seg-btn ${mainMode==="transparent"?"active":"idle"}`} onClick={()=>setMainMode("transparent")}>Without Background</button>
               <button className={`seg-btn ${mainMode==="withBg"?"active":"idle"}`} onClick={()=>setMainMode("withBg")}>With Background</button>
             </div>
 
-            {mainMode === "withBg" && (
+            {mainMode==="withBg" && (
               <div style={{marginTop:'12px',display:'flex',flexDirection:'column',gap:'12px'}}>
                 <div style={{display:'flex',gap:'6px'}}>
                   <button className={`seg-btn ${bgType==="color"?"active":"idle"}`} style={{padding:'6px',fontSize:'11px'}} onClick={()=>setBgType("color")}>Color</button>
@@ -243,18 +213,31 @@ export default function BackgroundRemoverPage(){
                 </div>
 
                 {bgType==="color" && (
-                  <div style={{display:'flex',gap:'8px',flexWrap:'wrap',alignItems:'center'}}>
-                    {colors.map(c=>(
-                      <div key={c} className={`color-dot ${bgColor===c?'active':''}`} style={{background:c}} onClick={()=>setBgColor(c)} />
-                    ))}
-                    <input type="color" value={bgColor} onChange={e=>setBgColor(e.target.value)} style={{width:'28px',height:'28px',borderRadius:'8px',border:'none',padding:0,background:'transparent',cursor:'pointer'}} />
+                  <div style={{display:'flex',flexDirection:'column',gap:'10px'}}>
+                    {/* SCROLLABLE PRESET + SLIDING BAR */}
+                    <div className="scroll-colors">
+                      {presetColors.map(c=>(
+                        <div key={c} className={`color-dot ${bgColor.toLowerCase()===c.toLowerCase()?'active':''}`} style={{background:c}} onClick={()=>setBgColor(c)} />
+                      ))}
+                    </div>
+
+                    <div style={{display:'flex',alignItems:'center',gap:'10px',background:'rgba(255,255,255,0.05)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'10px',padding:'10px'}}>
+                      <div style={{width:'32px',height:'32px',borderRadius:'8px',background:bgColor,border:'1px solid rgba(255,255,255,0.2)',flexShrink:0}} />
+                      <input type="range" min="0" max="360" value={hue} className="hue-slider" style={{flex:1}}
+                        onChange={e=>{
+                          const h=parseInt(e.target.value); setHue(h); setBgColor(hslToHex(h))
+                        }}
+                      />
+                      <input type="color" value={bgColor} onChange={e=>setBgColor(e.target.value)} style={{width:'32px',height:'32px',borderRadius:'8px',border:'none',padding:0,cursor:'pointer',background:'transparent'}} />
+                    </div>
+                    <div style={{fontSize:'10px',color:'rgba(255,255,255,0.45)'}}>Slide to pick any color • {bgColor.toUpperCase()}</div>
                   </div>
                 )}
 
                 {bgType==="template" && (
                   <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:'8px'}}>
                     {Object.entries(templates).map(([k,v])=>(
-                      <div key={k} className={`tpl ${bgTemplate===k?'active':''}`} style={{background:v}} onClick={()=>setBgTemplate(k)}><span>{k.toUpperCase()}</span></div>
+                      <div key={k} className={`tpl ${bgTemplate===k?'active':''}`} style={{background:v}} onClick={()=>{setBgTemplate(k); setBgColor(k==='neon'?'#A020F0': '#ffffff')}}><span>{k.toUpperCase()}</span></div>
                     ))}
                   </div>
                 )}
@@ -282,21 +265,11 @@ export default function BackgroundRemoverPage(){
                 const html = `<html><body style="margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;${bgCss}"><img src="${finalUrl || output}" style="max-width:90vw;max-height:90vh"/></body></html>`;
                 const w=window.open(); w?.document.write(html);
               }} style={{background:'rgba(255,255,255,0.08)',border:'1px solid rgba(255,255,255,0.1)',padding:'10px',borderRadius:'8px',color:'#fff',fontSize:'12px',cursor:'pointer'}}>Preview</button>
-              <button onClick={downloadFile} style={{background:done?'#A020F0':'#333',padding:'10px',borderRadius:'8px',color:'#fff',fontSize:'12px',border:'none',cursor:done?'pointer':'not-allowed'}}>Download {mainMode==="transparent"?"PNG":"Image"}</button>
+              <button onClick={downloadFile} style={{background:done?'#A020F0':'#333',padding:'10px',borderRadius:'8px',color:'#fff',fontSize:'12px',border:'none',cursor:done?'pointer':'not-allowed'}}>Download Image</button>
             </div>
           </div>
         </div>
       </div>
-
-      <div style={{padding:'40px 24px',maxWidth:'1440px',margin:'0 auto',borderTop:'1px solid rgba(255,255,255,0.06)'}}>
-        <h2 style={{textAlign:'center',fontSize:'28px',fontWeight:600}}>Why pros switch to Pinna3d</h2>
-        <div className="feat-grid">
-          <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'16px',padding:'20px'}}><h3 style={{margin:0,fontSize:'15px'}}>{check} Real matte, not paint</h3><p style={{color:'rgba(255,255,255,0.55)',fontSize:'13px',marginTop:'6px'}}>Survives color test. No halo on dark or neon.</p></div>
-          <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'16px',padding:'20px'}}><h3 style={{margin:0,fontSize:'15px'}}>{check} Background engine</h3><p style={{color:'rgba(255,255,255,0.55)',fontSize:'13px',marginTop:'6px'}}>Swap color, template or your own shoot.</p></div>
-          <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'16px',padding:'20px'}}><h3 style={{margin:0,fontSize:'15px'}}>{check} Export anything</h3><p style={{color:'rgba(255,255,255,0.55)',fontSize:'13px',marginTop:'6px'}}>Transparent PNG or White JPG for Amazon.</p></div>
-        </div>
-      </div>
-      <footer style={{borderTop:'1px solid rgba(255,255,255,0.08)',padding:'20px 24px',textAlign:'center',fontSize:'12px',color:'rgba(255,255,255,0.4)'}}>© 2026 Pinna3d.com</footer>
     </div>
   )
 }
