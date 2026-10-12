@@ -12,41 +12,80 @@ export default function BackgroundRemoverPage(){
 const onFile = async (e:any)=>{
   const f = e.dataTransfer?.files?.[0] || e.target?.files?.[0]
   if(!f) return
-
   const url = URL.createObjectURL(f)
   setPreview(url)
   setDone(false)
   setOutput("")
   setLoading(true)
-  setStatus("AI removing with RMBG-1.4...")
+  setStatus("Loading BiRefNet AI (first time 30 sec)...")
 
   try {
-    const fd = new FormData()
-    fd.append("file", f)
+    // @ts-ignore
+    const { pipeline, env } = await import(/* webpackIgnore: true */ "https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.7.2/+esm")
+    env.allowLocalModels = false
+    env.allowRemoteModels = true
 
-    const res = await fetch("/api/remove-bg", {
-      method: "POST",
-      body: fd,
+    setStatus("AI cutting - removes wood table...")
+    // BEST model for product - BiRefNet style RMBG-2.0
+    const segmenter = await pipeline('background-removal' as any, 'briaai/RMBG-2.0', {
+      // @ts-ignore
+      dtype: 'fp32'
     })
 
-    const data = await res.json()
+    const result:any = await segmenter(url)
+    // result is masked image blob / canvas
+    let finalUrl = ""
+    if (result && result.toCanvas) {
+      finalUrl = result.toCanvas().toDataURL("image/png")
+    } else if (Array.isArray(result) && result[0]?.mask) {
+      // fallback mask apply
+      const img = new Image()
+      img.src = url
+      await new Promise(r=>img.onload=r)
+      const c = document.createElement('canvas')
+      c.width = img.width; c.height = img.height
+      const ctx = c.getContext('2d',{willReadFrequently:true})!
+      ctx.drawImage(img,0,0)
+      const imgData = ctx.getImageData(0,0,c.width,c.height)
+      const maskCanvas = result[0].mask.toCanvas()
+      const mCtx = maskCanvas.getContext('2d')!
+      const mData = mCtx.getImageData(0,0,maskCanvas.width,maskCanvas.height).data
+      for(let i=0;i<imgData.data.length;i+=4){
+        const mi = Math.floor((i/4 / imgData.data.length) * mData.length) * 4
+        let a = mData[mi]
+        if(a>200) a=255
+        else if(a<30) a=0
+        else a=Math.round((a-30)/170*255)
+        imgData.data[i+3]=a
+      }
+      ctx.putImageData(imgData,0,0)
+      finalUrl = c.toDataURL("image/png")
+    } else {
+      // if pipeline returns blob url directly
+      finalUrl = URL.createObjectURL(result)
+    }
 
-    if (!res.ok) throw new Error(data.error || "AI failed")
-
-    // data.url is transparent PNG base64
-    setOutput(data.url)
+    setOutput(finalUrl)
     setDone(true)
-    setStatus("Done - Clean transparent background!")
+    setStatus("Done - Wood table removed, clean transparent!")
 
-  } catch (err:any) {
+  } catch(err:any){
     console.error(err)
-    setStatus("Error: " + err.message)
-    alert("Failed: " + err.message + " - Check HF_TOKEN in Vercel")
+    setStatus("Failed, trying backup AI...")
+    // BACKUP: imgly birefnet medium - still works no token
+    try {
+      // @ts-ignore
+      const imgly:any = await import(/* webpackIgnore: true */ "https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.6.0/+esm")
+      const blob:Blob = await imgly.removeBackground(f, { model: 'medium', output:{format:'image/png',quality:1} })
+      setOutput(URL.createObjectURL(blob))
+      setDone(true)
+      setStatus("Done - Backup AI")
+    } catch(e2:any){
+      setStatus("AI Error: "+e2.message)
+    }
   }
-
   setLoading(false)
 }
-
   const downloadFile=()=>{
     if(!output) return; const a=document.createElement("a"); a.href=output; a.download=`pinna3d-transparent.png`; a.click()
   }
