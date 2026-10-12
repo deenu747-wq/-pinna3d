@@ -79,7 +79,7 @@ export default function Page(){
             <div style={{width:'46px',height:'46px',background:'#A020F0',borderRadius:'11px',display:'grid',placeItems:'center'}}>📸</div>
             <h3 style={{fontSize:'18px',fontWeight:500,margin:'16px 0 8px'}}>Photo Studio</h3>
             <p style={{fontSize:'15px',color:'rgba(255,255,255,0.85)',margin:0}}>Your Shopify photos, studio-ready in 1 sec.</p>
-            <div style={{marginTop:'14px',display:'grid',gap:'8px',fontSize:'15px'}}><div>{check}Remove Background</div><div>{check}Remove Object</div><div>{check}AI Backgrounds & Shadows</div><div>{check}Upscaler + Banner Maker</div></div>
+            <div style={{marginTop:'14px',display:'grid',gap:'8px',fontSize:'15px'}}><div>{check}Remove Background</div><div>{check}Enhance Image</div><div>{check}AI Backgrounds & Shadows</div><div>{check}Upscaler + Banner Maker</div></div>
             <div style={{marginTop:'14px',borderTop:'1px solid rgba(255,255,255,0.08)',paddingTop:'10px'}}>
               <div style={{fontSize:'10px',color:'rgba(255,255,255,0.45)',letterSpacing:'.06em'}}>INPUT → OUTPUT</div>
               <div style={{fontSize:'12px',color:'rgba(255,255,255,0.75)',marginTop:'4px'}}>JPG, PNG, WEBP → PNG, JPG</div>
