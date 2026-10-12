@@ -8,75 +8,6 @@ export default function BackgroundRemoverPage(){
   const [loading,setLoading]=useState(false)
   const [status,setStatus]=useState("")
   const fileRef=useRef<HTMLInputElement>(null)
-  const [fileObj,setFileObj]=useState<File|null>(null)
-
-const onFile = async (e:any)=>{
-  const f = e.dataTransfer?.files?.[0] || e.target?.files?.[0]
-  if(!f) return
-  setFileObj(f)
-  const url = URL.createObjectURL(f)
-  setPreview(url)
-  setDone(false)
-  setOutput("")
-  setLoading(true)
-  setStatus("Removing background...")
-
-  try {
-    const fd = new FormData()
-    fd.append('file', f)
-    const res = await fetch('/api/remove-bg', { method: 'POST', body: fd })
-    if(!res.ok) throw new Error('API failed')
-    const blob = await res.blob()
-    const outUrl = URL.createObjectURL(blob)
-    setOutput(outUrl)
-    setDone(true)
-    setStatus("Done - Transparent PNG ready!")
-    setLoading(false)
-    return
-  } catch(err){
-    console.log("API fallback", err)
-    setStatus("API busy, using browser AI...")
-  }
-
-  try {
-    // @ts-ignore
-    const { pipeline, env } = await import(/* webpackIgnore: true */ "https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.7.2/+esm")
-    env.allowLocalModels = false
-    env.allowRemoteModels = true
-    setStatus("AI cutting - BiRefNet running...")
-    const segmenter = await pipeline('background-removal' as any, 'briaai/RMBG-2.0', {
-      // @ts-ignore
-      dtype: 'fp32'
-    })
-    const result:any = await segmenter(url)
-    let finalUrl = ""
-    if (result && result.toCanvas) {
-      finalUrl = result.toCanvas().toDataURL("image/png")
-    } else {
-      finalUrl = URL.createObjectURL(result)
-    }
-    setOutput(finalUrl)
-    setDone(true)
-    setStatus("Done - Transparent PNG ready!")
-  } catch(err:any){
-    console.error(err)
-    try {
-      // @ts-ignore
-      const imgly:any = await import(/* webpackIgnore: true */ "https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.6.0/+esm")
-      const blob:Blob = await imgly.removeBackground(f, { model: 'medium', output:{format:'image/png',quality:1} })
-      setOutput(URL.createObjectURL(blob))
-      setDone(true)
-      setStatus("Done - Backup AI")
-    } catch(e2:any){
-      setStatus("AI Error: "+e2.message)
-    }
-  }
-  setLoading(false)
-}
-  const downloadFile=()=>{
-    if(!output) return; const a=document.createElement("a"); a.href=output; a.download=`pinna3d-transparent.png`; a.click()
-  }
-  const check=<span style={{color:'#A020F0',fontWeight:700,marginRight:'6px'}}>✓</span>
 
   const checkerStyle = {
     backgroundColor: '#1a1a1a',
@@ -84,6 +15,50 @@ const onFile = async (e:any)=>{
     backgroundSize: '20px 20px',
     backgroundPosition: '0 0, 0 10px, 10px -10px, -10px 0px'
   } as const
+
+  const darkBg = {
+    background: 'rgba(15,13,28,0.95)'
+  } as const
+
+  const onFile = async (e:any)=>{
+    const f = e.dataTransfer?.files?.[0] || e.target?.files?.[0]
+    if(!f) return
+    const url = URL.createObjectURL(f)
+    setPreview(url)
+    setDone(false)
+    setOutput("")
+    setLoading(true)
+    setStatus("Removing background...")
+
+    try {
+      const fd = new FormData()
+      fd.append('file', f)
+      const res = await fetch('/api/remove-bg', { method: 'POST', body: fd })
+      if(!res.ok){
+        const j = await res.json().catch(()=>({error:'API failed'}))
+        throw new Error(j.error || 'API failed')
+      }
+      const blob = await res.blob()
+      const outUrl = URL.createObjectURL(blob)
+      setOutput(outUrl)
+      setDone(true)
+      setStatus("Done - Transparent PNG ready!")
+    } catch(err:any){
+      console.error(err)
+      setStatus("Error: "+err.message)
+    }
+    setLoading(false)
+  }
+
+  const downloadFile=()=>{
+    if(!output) return;
+    const a=document.createElement("a");
+    a.href=output;
+    a.download=`pinna3d-transparent.png`;
+    a.click()
+  }
+
+  const check=<span style={{color:'#A020F0',fontWeight:700,marginRight:'6px'}}>✓</span>
 
   return(
     <div style={{background:'#0A0814',color:'#fff',fontFamily:'Inter, ui-sans-serif, system-ui',minHeight:'100vh',overflowX:'hidden'}}>
@@ -131,17 +106,17 @@ const onFile = async (e:any)=>{
         </div>
 
         <div style={{minWidth:0,display:'flex',flexDirection:'column',gap:'16px'}}>
-          {/* INPUT - ALSO CHECKERBOARD NOW */}
-          <div className="box-1-1 upload-box" style={preview? checkerStyle : {}} onClick={()=>fileRef.current?.click()} onDragOver={e=>e.preventDefault()} onDrop={onFile}>
+          {/* FIRST BOX - ALWAYS DARK - DON'T TOUCH */}
+          <div className="box-1-1 upload-box" onClick={()=>fileRef.current?.click()} onDragOver={e=>e.preventDefault()} onDrop={onFile}>
             <input ref={fileRef} type="file" hidden accept="image/*" onChange={onFile}/>
-            {preview? <img src={preview} alt="input" style={{width:'100%',height:'100%',objectFit:'contain',padding:'10px',boxSizing:'border-box'}}/> : <><div style={{width:'56px',height:'56px',background:'rgba(160,32,240,0.18)',border:'2px solid rgba(160,32,240,0.4)',borderRadius:'14px',display:'grid',placeItems:'center',marginBottom:'14px'}}>✂️</div><b style={{fontSize:'18px',fontWeight:500}}>Drop image to remove BG</b><div style={{fontSize:'13px',color:'rgba(255,255,255,0.5)',marginTop:'6px'}}>or browse to upload</div></>}
+            {preview? <img src={preview} alt="input" style={{width:'100%',height:'100%',objectFit:'contain',padding:'10px',boxSizing:'border-box',background:'rgba(15,13,28,0.95)'}}/> : <><div style={{width:'56px',height:'56px',background:'rgba(160,32,240,0.18)',border:'2px solid rgba(160,32,240,0.4)',borderRadius:'14px',display:'grid',placeItems:'center',marginBottom:'14px'}}>✂️</div><b style={{fontSize:'18px',fontWeight:500}}>Drop image to remove BG</b><div style={{fontSize:'13px',color:'rgba(255,255,255,0.5)',marginTop:'6px'}}>or browse to upload</div></>}
           </div>
 
-          {/* OUTPUT - 100% TRANSPARENT PROOF */}
+          {/* SECOND BOX - DARK DEFAULT, CHECKER ONLY AFTER UPLOAD */}
           <div className="box-1-1 preview-card">
             <div style={{display:'flex',justifyContent:'space-between',fontSize:'12px',color:'rgba(255,255,255,0.6)'}}><span>Transparent Preview {done && "✓ Checker = Transparent"}</span><span style={{fontSize:'10px',color:'#B88CFF'}}>{loading?status:"PNG 32"}</span></div>
-            <div className="preview-box" style={{marginTop:'12px', minHeight:'300px',...checkerStyle}}>
-              {loading? <div style={{color:'#fff',fontSize:'13px',textAlign:'center',zIndex:2,background:'rgba(0,0,0,0.6)',padding:'12px 16px',borderRadius:'8px'}}>{status}</div> : done && output? <img src={output} style={{maxWidth:'90%',maxHeight:'90%',objectFit:'contain', position:'relative', zIndex:2, filter:'drop-shadow(0 8px 24px rgba(0,0,0,0.8))'}} alt="transparent result"/> : <div style={{color:'rgba(255,255,255,0.6)',fontSize:'12px',textAlign:'center',zIndex:2,background:'rgba(0,0,0,0.5)',padding:'10px 14px',borderRadius:'8px'}}>Upload image<br/>to see transparent<br/><span style={{fontSize:'10px',color:'#A020F0'}}>Checkerboard = transparent proof</span></div>}
+            <div className="preview-box" style={{marginTop:'12px', minHeight:'300px',...(done && output? checkerStyle : darkBg)}}>
+              {loading? <div style={{color:'#fff',fontSize:'13px',textAlign:'center',zIndex:2,background:'rgba(0,0,0,0.6)',padding:'12px 16px',borderRadius:'8px'}}>{status}</div> : done && output? <img src={output} style={{maxWidth:'90%',maxHeight:'90%',objectFit:'contain', position:'relative', zIndex:2, filter:'drop-shadow(0 8px 24px rgba(0,0,0,0.8))'}} alt="transparent result"/> : <div style={{color:'rgba(255,255,255,0.6)',fontSize:'12px',textAlign:'center',zIndex:2}}>Upload image<br/>to see transparent</div>}
             </div>
             <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'8px',marginTop:'12px'}}>
               <button onClick={()=>{
