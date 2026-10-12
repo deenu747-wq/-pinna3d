@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import sharp from 'sharp'
 
 export const runtime = 'nodejs'
-export const maxDuration = 60
 
 export async function POST(req: NextRequest) {
   try {
@@ -19,13 +17,13 @@ export async function POST(req: NextRequest) {
     })
 
     if (!res.ok) {
-      return NextResponse.json({ error: 'Engine restarting, try in 30 sec' }, { status: 503 })
+      const txt = await res.text()
+      return NextResponse.json({ error: 'Engine busy: ' + txt.slice(0,100) }, { status: 503 })
     }
 
-    const out = Buffer.from(await res.arrayBuffer())
-    const png = await sharp(out).png().toBuffer()
-
-    return new NextResponse(new Uint8Array(png), {
+    const out = await res.arrayBuffer()
+    
+    return new NextResponse(out, {
       headers: { 'Content-Type': 'image/png' },
     })
   } catch (e: any) {
