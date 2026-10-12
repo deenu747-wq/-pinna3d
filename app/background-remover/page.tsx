@@ -9,38 +9,73 @@ export default function BackgroundRemoverPage(){
   const [status,setStatus]=useState("")
   const fileRef=useRef<HTMLInputElement>(null)
 
-  const onFile = async (e:any)=>{
+    const onFile = async (e:any)=>{
     const f=e.dataTransfer?.files?.[0]||e.target?.files?.[0]; if(!f) return
-    const url=URL.createObjectURL(f); setPreview(url); setDone(false); setOutput(""); setLoading(true); setStatus("Removing beige...")
-    try{
-      // STEP 1 - instant beige removal - GUARANTEED to show preview
-      const img=new Image(); img.src=url; await new Promise(r=>{img.onload=r; img.onerror=r})
+    const url=URL.createObjectURL(f); setPreview(url); setDone(false); setOutput(""); setLoading(true); setStatus("Loading real AI 25MB first time...")
+
+    const applyMask = async (imgUrl:string, maskCanvas:HTMLCanvasElement)=>{
+      const img=new Image(); img.src=imgUrl; await new Promise(r=>img.onload=r)
       const c=document.createElement('canvas'); c.width=img.width; c.height=img.height
       const ctx=c.getContext('2d',{willReadFrequently:true})!; ctx.drawImage(img,0,0)
-      const d=ctx.getImageData(0,0,c.width,c.height); const data=d.data
-      // sample background from 4 corners
-      const samples=[[0,0],[c.width-1,0],[0,c.height-1],[c.width-1,c.height-1],[10,10]]
-      let sr=0,sg=0,sb=0, sc=0
-      for(const [x,y] of samples){ const i=(y*c.width+x)*4; sr+=data[i]; sg+=data[i+1]; sb+=data[i+2]; sc++ }
-      sr=Math.round(sr/sc); sg=Math.round(sg/sc); sb=Math.round(sb/sc)
-      for(let i=0;i<data.length;i+=4){
-        const dr=Math.abs(data[i]-sr), dg=Math.abs(data[i+1]-sg), db=Math.abs(data[i+2]-sb)
-        // remove beige/white/light
-        if(dr<45 && dg<45 && db<45) data[i+3]=0
+      const imgData=ctx.getImageData(0,0,c.width,c.height)
+      const mCtx=maskCanvas.getContext('2d',{willReadFrequently:true})!
+      const mData=mCtx.getImageData(0,0,maskCanvas.width,maskCanvas.height).data
+      // use mask brightness as alpha, with clean edge
+      for(let i=0;i<imgData.data.length;i+=4){
+        const mi=Math.floor((i/4 / imgData.data.length) * mData.length)
+        const maskVal=mData[mi] // 0-255
+        // feather + remove halo
+        let a=maskVal
+        if(a>200) a=255
+        else if(a<30) a=0
+        else a=Math.round((a-30)/170*255) // smooth edge
+        imgData.data[i+3]=a
       }
-      ctx.putImageData(d,0,0)
-      const instantUrl=c.toDataURL("image/png")
-      setOutput(instantUrl); setDone(true); setStatus("Beige removed - enhancing with AI...")
+      ctx.putImageData(imgData,0,0); return c.toDataURL("image/png")
+    }
 
-      // STEP 2 - try real AI to improve (if CDN works)
+    try{
+      // MODEL 1 - BEST: @imgly = BiRefNet high quality, no halo
       // @ts-ignore
       const imgly:any = await import(/* webpackIgnore: true */ "https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.4.5/+esm")
-      const blob:Blob = await imgly.removeBackground(f)
-      setOutput(URL.createObjectURL(blob)); setDone(true); setStatus("AI Done!")
-    }catch(err:any){
-      console.error(err)
-      // keep instant result if AI fails - so preview NEVER blank
-      if(!output) setStatus("Done with basic removal")
+      setStatus("AI cutting with BiRefNet...")
+      const blob:Blob = await imgly.removeBackground(f, {
+        model:'isnet_fp16', // best quality small
+        output:{format:'image/png',quality:1}
+      })
+      setOutput(URL.createObjectURL(blob)); setDone(true); setStatus("AI Done - Clean edges")
+    }catch(err1:any){
+      console.log("imgly failed, trying RMBG-1.4", err1)
+      try{
+        setStatus("Trying RMBG-1.4 AI...")
+        // @ts-ignore
+        const { pipeline, env, RawImage } = await import(/* webpackIgnore: true */ "https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.3.3/+esm")
+        env.allowLocalModels=false
+        const segmenter=await pipeline('image-segmentation','briaai/RMBG-1.4')
+        const raw=await RawImage.fromURL(url)
+        const res:any=await segmenter(raw)
+        const mask=res[0]?.mask || res?.mask
+        const canvas=mask.toCanvas()
+        const finalUrl=await applyMask(url, canvas)
+        setOutput(finalUrl); setDone(true); setStatus("RMBG Done")
+      }catch(err2:any){
+        console.error(err2); setStatus("AI failed, using basic")
+        // last resort improved flood - better than before
+        const img=new Image(); img.src=url; await new Promise(r=>img.onload=r)
+        const c=document.createElement('canvas'); c.width=img.width; c.height=img.height
+        const ctx=c.getContext('2d',{willReadFrequently:true})!; ctx.drawImage(img,0,0)
+        const d=ctx.getImageData(0,0,c.width,c.height)
+        const samples=[[0,0],[c.width-1,0],[0,c.height-1],[c.width-1,c.height-1]]
+        let sr=0,sg=0,sb=0
+        samples.forEach(([x,y])=>{const i=(y*c.width+x)*4; sr+=d.data[i]; sg+=d.data[i+1]; sb+=d.data[i+2]})
+        sr/=4; sg/=4; sb/=4
+        for(let i=0;i<d.data.length;i+=4){
+          const dist=Math.sqrt((d.data[i]-sr)**2 + (d.data[i+1]-sg)**2 + (d.data[i+2]-sb)**2)
+          if(dist<50) d.data[i+3]=0
+          else if(dist<80) d.data[i+3]=Math.round((dist-50)/30*255)
+        }
+        ctx.putImageData(d,0,0); setOutput(c.toDataURL("image/png")); setDone(true)
+      }
     }
     setLoading(false)
   }
