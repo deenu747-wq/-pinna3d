@@ -11,42 +11,43 @@ export async function POST(req: Request) {
     if (!file) return NextResponse.json({ error: 'No file' }, { status: 400 })
 
     const token = process.env.HF_TOKEN
-    if (!token) return NextResponse.json({ error: 'Missing HF_TOKEN in Vercel Env Vars' }, { status: 500 })
+    if (!token) return NextResponse.json({ error: 'Add HF_TOKEN in Vercel > Settings > Environment Variables' }, { status: 500 })
 
     const arrayBuffer = await file.arrayBuffer()
-    console.log("File size:", file.size)
 
-    // Use OLD endpoint - it still works, new router blocks RMBG
+    // NEW ROUTER - old api-inference.huggingface.co is dead
     const res = await fetch(
-      "https://api-inference.huggingface.co/models/briaai/RMBG-1.4",
+      "https://router.huggingface.co/models/briaai/RMBG-1.4",
       {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`,
+          'Content-Type': file.type || 'image/jpeg',
         },
         body: arrayBuffer,
-        cache: 'no-store',
-      } as any
+      }
     )
 
     if (!res.ok) {
       const txt = await res.text()
-      console.error("HF Error:", res.status, txt.slice(0,800))
-      return NextResponse.json({ error: `HF ${res.status}: ${txt.slice(0,600)}` }, { status: 500 })
+      console.error("HF Error:", res.status, txt.slice(0,1000))
+      return NextResponse.json({ error: `HF ${res.status}: ${txt.slice(0,500)}` }, { status: 500 })
     }
 
+    // HF returns binary PNG with alpha
     const blob = await res.blob()
-    console.log("Success PNG:", blob.size)
-    
-    return new Response(blob, {
+    const outBuffer = await blob.arrayBuffer()
+
+    return new Response(outBuffer, {
       headers: {
         'Content-Type': 'image/png',
+        'Content-Length': String(outBuffer.byteLength),
         'Cache-Control': 'no-cache',
       },
     })
 
   } catch (e: any) {
-    console.error("ROUTE CRASH:", e.message, e.cause)
-    return NextResponse.json({ error: `fetch failed: ${e.message} cause:${e.cause?.message || 'none'}` }, { status: 500 })
+    console.error("ROUTE CRASH:", e)
+    return NextResponse.json({ error: `Server error: ${e.message}` }, { status: 500 })
   }
 }
