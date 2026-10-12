@@ -65,7 +65,9 @@ export default function BackgroundRemoverPage(){
     <div style={{background:'#0A0814',color:'#fff',fontFamily:'Inter, ui-sans-serif, system-ui',minHeight:'100vh',overflowX:'hidden'}}>
       <style>{`
 .iv-grid{display:grid;grid-template-columns:1.1fr 0.9fr;gap:28px;padding:28px 40px;max-width:1440px;margin:0 auto;align-items:start}
-.box-1-1{width:100%;aspect-ratio:1/1;height:auto;border-radius:16px;box-sizing:border-box;overflow:hidden}
+.iv-grid > div:last-child{justify-content:space-between}
+.box-1-1{width:100%;height:360px;border-radius:16px;box-sizing:border-box;overflow:hidden;flex-shrink:0}
+@media(max-width:900px){.box-1-1{height:auto;aspect-ratio:1/1}}
 .upload-box{border:3px dashed rgba(160,32,240,0.6);background:rgba(15,13,28,0.95);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;cursor:pointer;position:relative}
 .upload-box img{width:100%;height:100%;object-fit:contain;padding:10px;background:rgba(15,13,28,0.95);border-radius:12px;box-sizing:border-box}
 .desc-text{width:100%;max-width:100%;font-size:15px;line-height:1.8;letter-spacing:0.2px;color:rgba(255,255,255,0.68);margin-top:14px;display:block}
