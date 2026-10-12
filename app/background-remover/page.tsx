@@ -11,15 +11,36 @@ export default function BackgroundRemoverPage(){
 
   const onFile = async (e:any)=>{
     const f=e.dataTransfer?.files?.[0]||e.target?.files?.[0]; if(!f) return
-    const url=URL.createObjectURL(f); setPreview(url); setDone(false); setOutput(""); setLoading(true); setStatus("Loading AI first time 15s...")
+    const url=URL.createObjectURL(f); setPreview(url); setDone(false); setOutput(""); setLoading(true); setStatus("Removing beige...")
     try{
-      // @ts-ignore FIX: webpackIgnore stops Vercel Error
+      // STEP 1 - instant beige removal - GUARANTEED to show preview
+      const img=new Image(); img.src=url; await new Promise(r=>{img.onload=r; img.onerror=r})
+      const c=document.createElement('canvas'); c.width=img.width; c.height=img.height
+      const ctx=c.getContext('2d',{willReadFrequently:true})!; ctx.drawImage(img,0,0)
+      const d=ctx.getImageData(0,0,c.width,c.height); const data=d.data
+      // sample background from 4 corners
+      const samples=[[0,0],[c.width-1,0],[0,c.height-1],[c.width-1,c.height-1],[10,10]]
+      let sr=0,sg=0,sb=0, sc=0
+      for(const [x,y] of samples){ const i=(y*c.width+x)*4; sr+=data[i]; sg+=data[i+1]; sb+=data[i+2]; sc++ }
+      sr=Math.round(sr/sc); sg=Math.round(sg/sc); sb=Math.round(sb/sc)
+      for(let i=0;i<data.length;i+=4){
+        const dr=Math.abs(data[i]-sr), dg=Math.abs(data[i+1]-sg), db=Math.abs(data[i+2]-sb)
+        // remove beige/white/light
+        if(dr<45 && dg<45 && db<45) data[i+3]=0
+      }
+      ctx.putImageData(d,0,0)
+      const instantUrl=c.toDataURL("image/png")
+      setOutput(instantUrl); setDone(true); setStatus("Beige removed - enhancing with AI...")
+
+      // STEP 2 - try real AI to improve (if CDN works)
+      // @ts-ignore
       const imgly:any = await import(/* webpackIgnore: true */ "https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.4.5/+esm")
-      setStatus("AI cutting background...")
       const blob:Blob = await imgly.removeBackground(f)
-      setOutput(URL.createObjectURL(blob)); setDone(true); setStatus("Done! Beige removed")
+      setOutput(URL.createObjectURL(blob)); setDone(true); setStatus("AI Done!")
     }catch(err:any){
-      console.error(err); setStatus("Failed: "+err.message)
+      console.error(err)
+      // keep instant result if AI fails - so preview NEVER blank
+      if(!output) setStatus("Done with basic removal")
     }
     setLoading(false)
   }
