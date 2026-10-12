@@ -4,7 +4,7 @@ import { useState, useRef } from "react"
 export default function Page(){
   const [preview,setPreview]=useState("")
   const [output,setOutput]=useState("")
-  const [loading,setLoading]=useState(false)
+  const [log,setLog]=useState("Ready - drop image")
   const [done,setDone]=useState(false)
   const fileRef=useRef<any>(null)
 
@@ -18,43 +18,44 @@ export default function Page(){
   const onFile=async(e:any)=>{
     const f=e.dataTransfer?.files?.[0]||e.target?.files?.[0]
     if(!f)return
-    setPreview(URL.createObjectURL(f))
-    setLoading(true)
+    const url=URL.createObjectURL(f)
+    setPreview(url)
+    setLog("Loading AI model from CDN... (20MB first time, wait 15-20 sec)")
     setDone(false)
-    setOutput("")
     try{
-      // CDN load - webpack will NOT bundle this, so build stays green
+      // WORKING CDN - esm.run bundles onnx correctly
       // @ts-ignore
-      const mod = await import(/* webpackIgnore: true */ "https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.4.0/dist/index.js")
-      const blob = await mod.removeBackground(f, { model: 'small' })
+      const mod = await import(/* webpackIgnore: true */ "https://esm.run/@imgly/background-removal@1.4.0")
+      setLog("Model loaded, removing background...")
+      const blob = await mod.removeBackground(f, {
+        progress: (k:string, c:number, t:number)=> setLog(`${k} ${Math.round(c/t*100)}%`)
+      })
       setOutput(URL.createObjectURL(blob))
       setDone(true)
+      setLog("✓ DONE - Checker = transparent proof")
     }catch(err:any){
       console.error(err)
-      alert("BG failed: "+err.message+"\nTrying fallback...")
+      setLog("ERROR: "+ (err?.message || err) + " - Check console F12")
     }
-    setLoading(false)
   }
 
   return(
     <div style={{minHeight:'100vh',background:'#0A0814',color:'#fff',padding:20,fontFamily:'system-ui'}}>
       <h2 style={{color:'#A020F0',margin:0}}>Pinna3D - Transparent Proof ✓</h2>
-      <p style={{opacity:0.6,fontSize:12,marginTop:4}}>Checker behind shoe = real transparency</p>
+      <div style={{background:'#222',padding:8,borderRadius:6,marginTop:10,fontSize:11,fontFamily:'monospace',whiteSpace:'pre-wrap'}}>{log}</div>
 
       <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:20,maxWidth:900,marginTop:20}}>
-        {/* Input */}
         <div style={{aspectRatio:'1/1',border:'3px dashed #A020F0',borderRadius:16,display:'grid',placeItems:'center',cursor:'pointer',overflow:'hidden'}} onClick={()=>fileRef.current?.click()} onDragOver={e=>e.preventDefault()} onDrop={onFile}>
           <input ref={fileRef} type="file" hidden accept="image/*" onChange={onFile}/>
           {preview? <img src={preview} style={{width:'100%',height:'100%',objectFit:'contain'}}/> : <div style={{textAlign:'center'}}>Drop shoe here<br/><span style={{fontSize:12,opacity:0.5}}>or click</span></div>}
         </div>
 
-        {/* Output with checker proof */}
         <div style={{aspectRatio:'1/1',borderRadius:16,padding:12,display:'flex',flexDirection:'column',background:'#15131E',border:done?'2px solid #00FF88':'1px solid #333'}}>
-          <div style={{fontSize:12,opacity:0.7}}>{loading? "⏳ Removing background..." : done? "✓ Transparent - Checker = Proof" : "Output (transparent)"}</div>
+          <div style={{fontSize:12,opacity:0.7}}>{done?"✓ Transparent":"Output"}</div>
           <div style={{flex:1,marginTop:10,borderRadius:12,display:'grid',placeItems:'center',overflow:'hidden',...(done?checker:{background:'#000'})}}>
-            {done && output? <img src={output} style={{maxWidth:'90%',maxHeight:'90%',filter:'drop-shadow(0 8px 20px rgba(0,0,0,0.6))'}}/> : <span style={{opacity:0.4,fontSize:13}}>{loading?"Processing AI...":"Result will show here"}</span>}
+            {output? <img src={output} style={{maxWidth:'95%',maxHeight:'95%'}}/> : <span style={{opacity:0.4,fontSize:13}}>{preview?"Waiting for AI...":"Result"}</span>}
           </div>
-          {done && output && <button onClick={()=>{const a=document.createElement('a');a.href=output;a.download='shoe-transparent.png';a.click()}} style={{marginTop:10,background:'#A020F0',padding:'12px',borderRadius:8,border:'none',color:'#fff',fontWeight:700,cursor:'pointer'}}>Download Transparent PNG</button>}
+          {done && output && <button onClick={()=>{const a=document.createElement('a');a.href=output;a.download='shoe-transparent.png';a.click()}} style={{marginTop:10,background:'#A020F0',padding:12,borderRadius:8,border:'none',color:'#fff',fontWeight:700,cursor:'pointer'}}>Download PNG</button>}
         </div>
       </div>
     </div>
