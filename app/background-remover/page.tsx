@@ -1,7 +1,7 @@
 "use client"
 import { useState, useRef, useEffect } from "react"
 type MainMode="transparent"|"withBg"; type BgType="color"|"gradient"|"image"; type OutFormat="png"|"jpg"|"webp"
-export default function BgRemoverExactLeft(){
+export default function BgRemoverFixed(){
   const [preview,setPreview]=useState(""); const [output,setOutput]=useState(""); const [finalUrl,setFinalUrl]=useState(""); const [done,setDone]=useState(false); const [loading,setLoading]=useState(false); const [status,setStatus]=useState("")
   const [mainMode,setMainMode]=useState<MainMode>("transparent"); const [bgType,setBgType]=useState<BgType>("color"); const [bgColor,setBgColor]=useState("#ffffff"); const [hue,setHue]=useState(0)
   const [gColor1,setGColor1]=useState("#ffffff"); const [gColor2,setGColor2]=useState("#000000"); const [gAngle,setGAngle]=useState(135); const [bgImage,setBgImage]=useState(""); const [outFormat,setOutFormat]=useState<OutFormat>("png")
@@ -14,7 +14,7 @@ export default function BgRemoverExactLeft(){
   const onFile=async(e:any)=>{const f=e.dataTransfer?.files?.[0]||e.target?.files?.[0]; if(!f)return; setPreview(URL.createObjectURL(f)); setDone(false); setOutput(""); setFinalUrl(""); setLoading(true); setStatus("Removing background..."); try{const fd=new FormData(); fd.append('file',f); const r=await fetch('/api/remove-bg',{method:'POST',body:fd}); const blob=await r.blob(); setOutput(URL.createObjectURL(blob)); setDone(true)}catch{setStatus("Failed")}setLoading(false)}
   const onBgFile=(e:any)=>{const f=e.target.files?.[0]; if(!f)return; setBgImage(URL.createObjectURL(f)); setBgType("image"); setMainMode("withBg")}
   const download=()=>{const url=finalUrl||output; if(!url)return; const a=document.createElement("a"); a.href=url; a.download=`pinna3d-${Date.now()}.${outFormat}`; a.click()}
-  const getPreviewBg=()=>{if(!done)return{background:'#0F0D1C',backgroundImage:'radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1px)',backgroundSize:'16px 16px'}; if(mainMode==="transparent")return checker; if(bgType==="color")return{background:bgColor} as const; if(bgType==="gradient")return{background:getGradient()} as const; if(bgType==="image"&&bgImage)return{backgroundImage:`url(${bgImage})`,backgroundSize:'cover',backgroundPosition:'center'} as const; return{background:'#fff'} as const}
+  const getPreviewBg=()=>{if(!done)return{background:'#0F0D1C'}; if(mainMode==="transparent")return checker; if(bgType==="color")return{background:bgColor} as const; if(bgType==="gradient")return{background:getGradient()} as const; if(bgType==="image"&&bgImage)return{backgroundImage:`url(${bgImage})`,backgroundSize:'cover',backgroundPosition:'center'} as const; return{background:'#fff'} as const}
 
   return(
     <div style={{background:'#080612',color:'#fff',fontFamily:'Inter, system-ui',minHeight:'100vh'}}>
@@ -30,20 +30,17 @@ export default function BgRemoverExactLeft(){
 .mini.v{font-size:12.5px;font-weight:700;margin-top:6px;line-height:1.2}
 .mini.s{font-size:11px;color:#A78BFA;margin-top:3px}
 .mini.s2{font-size:11px;color:rgba(255,255,255,0.5);margin-top:3px}
-.bottom{background:linear-gradient(135deg,#1C1435 0%,#2A1B4D 35%,#151023 100%);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:14px}
-.realRow{display:flex;gap:14px;align-items:flex-start}
-.circle{width:56px;height:56px;border-radius:50%;border:1.5px dashed rgba(160,32,240,0.6);display:grid;place-items:center;flex-shrink:0;position:relative}
-.circleInner{width:32px;height:32px;border-radius:50%;background:#A020F0;display:grid;place-items:center;color:#fff;font-size:18px;font-weight:700}
-.realTitle{font-size:22px;font-weight:800;line-height:.95;letter-spacing:-.02em}
-.realDesc{font-size:11.5px;color:rgba(255,255,255,0.6);line-height:1.5;margin-top:6px;max-width:340px}
-.inner2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:2px}
-.ib{background:rgba(0,0,0,0.35);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:9px 10px;display:flex;gap:10px;align-items:center}
-.ib.purple{background:rgba(160,32,240,0.22);border-color:rgba(160,32,240,0.32)}
-.icoBox{width:36px;height:36px;border-radius:7px;display:grid;place-items:center;flex-shrink:0}
-.tags{display:flex;gap:7px;flex-wrap:wrap;margin-top:2px}
-.tag{padding:5px 10px;border-radius:999px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);font-size:10.5px;color:rgba(255,255,255,0.7);display:flex;align-items:center;gap:4px}
-.tag b{color:#A020F0}
-.up{width:100%;aspect-ratio:1/1;border-radius:14px;border:1.6px dashed rgba(160,32,240,0.5);background:rgba(15,13,28,0.96);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer}
+.bottom{background:linear-gradient(135deg,#1C1435 0%,#2A1B4D 38%,#151023 100%);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:18px;position:relative;overflow:hidden}
+.bottom::before{content:'';position:absolute;top:-40px;right:-40px;width:180px;height:180px;background:radial-gradient(circle,rgba(160,32,240,0.28),transparent 70%);pointer-events:none}
+.realRow{display:flex;gap:16px;align-items:flex-start;position:relative;z-index:2}
+.circle{width:58px;height:58px;border-radius:50%;border:1.6px dashed rgba(160,32,240,0.7);display:grid;place-items:center;flex-shrink:0}
+.circleInner{width:34px;height:34px;border-radius:50%;background:#A020F0;display:grid;place-items:center;color:#fff;font-size:18px;font-weight:700;box-shadow:0 0 18px rgba(160,32,240,0.5)}
+.realTitle{font-size:23px;font-weight:800;line-height:.92;letter-spacing:-.02em}
+.realDesc{font-size:12px;color:rgba(255,255,255,0.62);line-height:1.5;margin-top:7px;max-width:360px}
+.tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:2px;position:relative;z-index:2}
+.tag{padding:6px 11px;border-radius:999px;background:rgba(0,0,0,0.32);border:1px solid rgba(255,255,255,0.09);font-size:10.5px;color:rgba(255,255,255,0.75);display:flex;align-items:center;gap:5px}
+.tag b{color:#A020F0;font-size:11px}
+.up{width:100%;aspect-ratio:1/1;border-radius:14px;border:1.6px dashed rgba(160,32,240,0.55);background:rgba(15,13,28,0.96);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all.2s}
 .prev{background:#15131E;border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:10px;width:100%;display:flex;flex-direction:column}
 .prevBox{min-height:360px;border-radius:10px;border:1px solid rgba(160,32,240,0.22);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;background:radial-gradient(rgba(255,255,255,0.04) 1px, transparent 1px);background-size:14px 14px}
 .seg{display:flex;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);border-radius:9px;padding:3px;gap:3px}
@@ -65,7 +62,6 @@ export default function BgRemoverExactLeft(){
       </header>
 
       <div className="iv">
-        {/* LEFT EXACT AS YOUR REFERENCE */}
         <div className="left">
           <div className="badge">FOR SHOPIFY • AMAZON • BRAND DECKS</div>
           <h1 className="h1">Background gone.<br/>Product stays <span style={{color:'#A020F0'}}>perfect.</span></h1>
@@ -88,32 +84,21 @@ export default function BgRemoverExactLeft(){
                 <div className="realDesc">Checkerboard = proof. Drop it on purple, black, neon — edges stay clean.</div>
               </div>
             </div>
-
-            <div className="inner2">
-              <div className="ib">
-                <div className="icoBox" style={{background:'repeating-conic-gradient(#2a2a2a 0% 25%, #444 0% 50%) 0 / 8px 8px',border:'1px solid rgba(255,255,255,0.15)'}}></div>
-                <div><div style={{fontSize:'11px',fontWeight:700}}>Transparent PNG</div><div style={{fontSize:'10px',color:'rgba(255,255,255,0.5)',marginTop:'2px'}}>32-bit alpha</div></div>
-              </div>
-              <div className="ib purple">
-                <div className="icoBox" style={{background:'#fff',borderRadius:'7px'}}></div>
-                <div><div style={{fontSize:'11px',fontWeight:700}}>White / Custom</div><div style={{fontSize:'10px',color:'#D8B4FE',marginTop:'2px'}}>Amazon ready</div></div>
-              </div>
-            </div>
-
             <div className="tags">
               <div className="tag"><b>✓</b> Hair preserved</div>
               <div className="tag"><b>✓</b> No fringe</div>
               <div className="tag"><b>✓</b> 4K export</div>
+              <div className="tag"><b>✓</b> 32-bit alpha</div>
+              <div className="tag"><b>✓</b> Amazon ready</div>
             </div>
           </div>
         </div>
 
-        {/* RIGHT - GAP REDUCED TO 14px */}
         <div style={{display:'flex',flexDirection:'column',gap:'10px'}}>
           <div className="up" onClick={()=>fileRef.current?.click()} onDragOver={e=>e.preventDefault()} onDrop={onFile}>
             <input ref={fileRef} type="file" hidden accept="image/*" onChange={onFile}/>
             {preview? <img src={preview} style={{width:'100%',height:'100%',objectFit:'contain',padding:'8px',borderRadius:'14px'}}/> : <>
-              <div style={{width:'44px',height:'44px',borderRadius:'10px',background:'rgba(160,32,240,0.18)',border:'1.5px solid rgba(160,32,240,0.35)',display:'grid',placeItems:'center',marginBottom:'10px',fontSize:'16px'}}>✂️</div>
+              <div style={{width:'44px',height:'44px',borderRadius:'10px',background:'rgba(160,32,240,0.18)',border:'1.5px solid rgba(160,32,240,0.35)',display:'grid',placeItems:'center',marginBottom:'10px'}}>✂️</div>
               <b style={{fontSize:'14px'}}>Drop image to remove BG</b>
               <span style={{fontSize:'11px',color:'rgba(255,255,255,0.5)',marginTop:'4px'}}>or browse to upload</span>
             </>}
@@ -125,7 +110,7 @@ export default function BgRemoverExactLeft(){
               <div style={{display:'flex',gap:'5px'}}><button className={`fmt ${outFormat==="png"?"on":""}`} onClick={()=>setOutFormat("png")}>PNG</button><button className={`fmt ${outFormat==="jpg"?"on":""}`} onClick={()=>setOutFormat("jpg")}>JPG</button><button className={`fmt ${outFormat==="webp"?"on":""}`} onClick={()=>setOutFormat("webp")}>WEBP</button></div>
             </div>
             <div className="prevBox" style={getPreviewBg() as any}>
-              {loading? <div style={{background:'rgba(0,0,0,0.6)',padding:'8px 12px',borderRadius:'8px',fontSize:'11px',zIndex:2}}>{status}</div> : done && (finalUrl||output)? <img src={finalUrl||output} style={{maxWidth:'88%',maxHeight:'88%',objectFit:'contain',zIndex:2}}/> : <div style={{textAlign:'center',color:'rgba(255,255,255,0.4)',fontSize:'11px',zIndex:2,lineHeight:1.5}}>Upload image<br/>to see result</div>}
+              {loading? <div style={{background:'rgba(0,0,0,0.6)',padding:'8px 12px',borderRadius:'8px',fontSize:'11px',zIndex:2}}>{status}</div> : done && (finalUrl||output)? <img src={finalUrl||output} style={{maxWidth:'88%',maxHeight:'88%',objectFit:'contain',zIndex:2}}/> : <div style={{textAlign:'center',color:'rgba(255,255,255,0.4)',fontSize:'11px',zIndex:2}}>Upload image<br/>to see result</div>}
             </div>
             <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'8px',marginTop:'10px'}}>
               <button style={{background:'rgba(255,255,255,0.08)',border:'1px solid rgba(255,255,255,0.1)',padding:'10px',borderRadius:'9px',color:'#fff',fontSize:'11px'}}>Preview</button>
@@ -142,7 +127,6 @@ export default function BgRemoverExactLeft(){
         </div>
       </div>
 
-      {/* FOOTER LOCKED AS IT IS */}
       <div style={{padding:'40px 24px',maxWidth:'1440px',margin:'0 auto',borderTop:'1px solid rgba(255,255,255,0.06)'}}>
         <h2 style={{textAlign:'center',fontSize:'28px',fontWeight:600}}>Why designers choose Background Remover</h2>
         <div className="feat">
