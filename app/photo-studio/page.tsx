@@ -1,51 +1,29 @@
-"use client"
-import { useState, useRef } from "react"
-
-export default function PhotoStudioPage(){
-  const [preview,setPreview]=useState("")
-  const fileRef=useRef<HTMLInputElement>(null)
-  const onFile=(e:any)=>{
-    const f=e.dataTransfer?.files?.[0]||e.target?.files?.[0]
-    if(!f) return
-    setPreview(URL.createObjectURL(f))
-  }
-
+export default function PhotoStudioPage() {
   return (
-    <div className="min-h-screen bg-[#09090F] text-white" style={{fontFamily:'Geist, Inter, sans-serif'}}>
-      {/* HEADER - Same as your homepage premium */}
-      <header className="sticky top-0 z-50 bg-[#09090F]/80 backdrop-blur border-b border-white/[0.06]">
-        <div className="max-w-7xl mx-auto px-6 h-[68px] flex items-center justify-between">
-          <div className="font-extrabold text-[20px]">◆ pinna3d.com</div>
-          <div className="flex gap-2">
-            <button className="px-4 py-2 rounded-full bg-white/[0.06] border border-white/10 text-[13px]">Sign In</button>
-            <button className="px-4 py-2 rounded-full bg-[#A020F0] text-[13px]">Get Started</button>
-          </div>
+    <div style={{background:'#0A0814',color:'#fff',fontFamily:'Inter, system-ui',minHeight:'100vh'}}>
+
+      {/* HEADER - 100% LOCKED - DON'T CHANGE */}
+      <header style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'12px 40px',borderBottom:'1px solid rgba(255,255,255,0.08)',background:'rgba(10,8,20,0.92)',backdropFilter:'blur(16px)',position:'sticky',top:0,zIndex:50}}>
+        <a href="/"><img src="/logo.png" alt="Pinna3d.com" style={{height:'80px',width:'auto'}}/></a>
+        <div style={{display:'flex',gap:'20px',alignItems:'center',fontSize:'14px'}}>
+          <a href="/" style={{color:'rgba(255,255,255,0.6)',textDecoration:'none'}}>Home</a>
+          <span style={{color:'#A020F0'}}>Photo Studio</span>
+          <a href="/signin" style={{background:'rgba(255,255,255,0.1)',padding:'10px 18px',borderRadius:'10px',border:'1px solid rgba(255,255,255,0.14)',color:'#fff',textDecoration:'none'}}>Sign In</a>
+          <a href="/signup" style={{background:'#A020F0',padding:'10px 20px',borderRadius:'10px',color:'#fff',textDecoration:'none'}}>Get Started</a>
         </div>
       </header>
 
-      {/* HERO - USING YOUR IMAGE DESIGN */}
-      <section className="max-w-7xl mx-auto px-6 pt-6">
-        <div className="rounded-[24px] overflow-hidden border border-white/[0.06] bg-[#0F0A1E]">
-          <img src="/studios/photo-studio-hero.png" className="w-full h-auto object-cover" alt="Photo Studio" />
-        </div>
+      {/* STUDIO CONTENT - CHANGE HERE ONLY */}
+      <div style={{padding:'60px 40px',textAlign:'center'}}>
+        <h1 style={{fontSize:'48px'}}>Photo Studio - Coming Soon</h1>
+        <p style={{color:'rgba(255,255,255,0.6)'}}>Content will go here</p>
+      </div>
 
-        {/* Tool Area Below Hero - Same Homepage Drag & Drop Style */}
-        <div className="mt-6 grid lg:grid-cols-[1.2fr_0.8fr] gap-6">
-          <div onDragOver={e=>e.preventDefault()} onDrop={onFile} onClick={()=>fileRef.current?.click()}
-               className="rounded-[20px] border-2 border-dashed border-[#A020F0]/40 bg-[#15151F] min-h-[360px] flex flex-col items-center justify-center cursor-pointer">
-            <p className="text-[14px] font-semibold">Drag & drop photo here — studio in 1 sec</p>
-            <p className="text-[11px] text-white/30 mt-1">Same premium UI as homepage</p>
-            <input ref={fileRef} type="file" hidden onChange={onFile} />
-            {preview && <img src={preview} className="mt-4 h-24 rounded-lg" />}
-          </div>
-          <div className="rounded-[20px] bg-[#15151F] border border-white/[0.06] p-4">
-            <p className="text-[11px] text-white/30">PREVIEW</p>
-            <div className="mt-2 h-[260px] rounded-xl bg-[#09090F] flex items-center justify-center">
-              {preview? <img src={preview} className="h-full object-contain" /> : <span className="text-white/20 text-xs">No image</span>}
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* FOOTER - 100% LOCKED STRUCTURE - DON'T CHANGE LAYOUT */}
+      <footer style={{borderTop:'1px solid rgba(255,255,255,0.08)',padding:'20px 40px',textAlign:'center',fontSize:'12px',color:'rgba(255,255,255,0.4)'}}>
+        © 2026 Pinna3d.com • Photo Studio
+      </footer>
+
     </div>
   )
 }
