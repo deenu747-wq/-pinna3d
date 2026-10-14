@@ -4,17 +4,16 @@ import { useState, useRef } from "react"
 export default function Page(){
   const [preview,setPreview]=useState("")
   const [done,setDone]=useState(false)
-  const [tab,setTab]=useState("image3d")
   const [billing,setBilling]=useState<"monthly"|"yearly">("monthly")
   const [studioOpen,setStudioOpen]=useState(false)
+  const [activeStudio,setActiveStudio]=useState("all")
   const fileRef = useRef<HTMLInputElement>(null)
   const sliderRef = useRef<HTMLDivElement>(null)
   const onFile = (e:any)=>{ const f=e.dataTransfer?.files?.[0]||e.target?.files?.[0]; if(!f) return; setPreview(URL.createObjectURL(f)); setDone(false); setTimeout(()=>setDone(true),1000) }
   const openPicker = () => fileRef.current?.click()
   const scrollSlider = (dir:"left"|"right")=>{
     if(!sliderRef.current) return
-    const amount = 360
-    sliderRef.current.scrollBy({left: dir==="left"? -amount : amount, behavior:'smooth'})
+    sliderRef.current.scrollBy({left: dir==="left"? -400 : 400, behavior:'smooth'})
   }
   const plans = [
     {name:"Free Trial", m:0, y:0, badge:"FREE TRIAL", cta:"Get Started Free", credits:"100 credits", exp:"5 exports FREE", feats:["Photo Studio – 5 exports","Vector preview only","Standard quality","No CC required"]},
@@ -24,59 +23,67 @@ export default function Page(){
   ]
   const check = <span style={{color:'#A020F0',fontWeight:700,marginRight:'6px'}}>✓</span>
 
+  const studioTabs = [
+    {id:"all", label:"All Studios"},
+    {id:"photo", label:"Photo Studio", slug:"/photo-studio"},
+    {id:"vector", label:"Vector Studio", slug:"/vector-studio"},
+    {id:"3d", label:"3D Studio", slug:"/3d-studio"},
+    {id:"motion", label:"Motion Studio", slug:"/motion-studio"},
+    {id:"mockup", label:"Mockup Studio", slug:"/mockup-studio"},
+    {id:"template", label:"Template Maker", slug:"/template-maker"},
+  ]
+
   const studios = [
-    {slug:"/photo-studio", icon:"📸", title:"Photo Studio", desc:"Your Shopify photos, studio-ready in 1 sec.", feats:["Remove Background","Enhance Image","AI Backgrounds & Shadows","Upscaler + Banner Maker"], footer:"JPG, PNG, WEBP → PNG, JPG", style:{background:'linear-gradient(180deg, rgba(160,32,240,0.15) 0%, rgba(255,255,255,0.04) 100%)',border:'1px solid rgba(255,255,255,0.12)'}},
-    {slug:"/vector-studio", icon:"✒️", title:"Vector Studio", desc:"Blurry logo → sharp print-ready SVG.", feats:["Image to Vector","Photo to Line Art","Logo Vectorizer","Batch 100x"], footer:"SVG, EPS, AI, PDF, CDR + PNG", isUSP:true, style:{background:'linear-gradient(180deg, rgba(160,32,240,0.26) 0%, rgba(255,255,255,0.04) 100%)',border:'1.6px solid #A020F0'}},
-    {slug:"/3d-studio", icon:"🧊", title:"3D Studio", desc:"Photo → production 3D for Shopify & games.", feats:["Image to 3D – 60 sec","Multi-Image to 3D","Text to 3D & Texture","Remesh, Rig & Animate"], footer:"GLB, OBJ, FBX, STL, USDZ, BLEND", style:{background:'linear-gradient(180deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.04) 100%)',border:'1px solid rgba(255,255,255,0.12)'}},
-    {slug:"/motion-studio", icon:"🎬", title:"Motion Studio", desc:"Static → viral Reels, ads, intros.", feats:["Text/Image to Video","Logo & Text Animation","Reels, Promo, Ads","Stock, Music, LUTs"], footer:"MP4, MOV, GIF, AE, 9:16", style:{background:'linear-gradient(180deg, rgba(160,32,240,0.15) 0%, rgba(255,255,255,0.04) 100%)',border:'1px solid rgba(255,255,255,0.12)'}},
-    {slug:"/mockup-studio", icon:"📦", title:"Mockup Studio", desc:"Product → realistic mockups in 1 click.", feats:["Device Mockups","Packaging & Box","Apparel & Print","Branding Mockups"], footer:"PNG, JPG, PSD, SMART", style:{background:'linear-gradient(180deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.04) 100%)',border:'1px solid rgba(255,255,255,0.12)'}},
-    {slug:"/template-maker", icon:"🎨", title:"Template Maker", desc:"Ideas → ready templates in seconds.", feats:["Social Media Kits","Presentations","Posters & Flyers","Docs & Resume"], footer:"PSD, AI, PPT, PDF + PNG", style:{background:'linear-gradient(180deg, rgba(160,32,240,0.15) 0%, rgba(255,255,255,0.04) 100%)',border:'1px solid rgba(255,255,255,0.12)'}},
+    {slug:"/photo-studio", key:"photo", icon:"📸", title:"Photo Studio", desc:"Turn your photos into stunning visuals.", grad:"linear-gradient(135deg,#0f0c29,#302b63,#24243e)", accent:"#A78BFA", feats:["Edit","Enhance","Filter","Transform"]},
+    {slug:"/vector-studio", key:"vector", icon:"✒️", title:"Vector Studio", desc:"Create crisp, scalable vector graphics.", grad:"linear-gradient(135deg,#001a12,#0a3d2e,#134e3a)", accent:"#34D399", feats:["Logos","Icons","Illustrations","Scalable"]},
+    {slug:"/3d-studio", key:"3d", icon:"🧊", title:"3D Studio", desc:"Bring your ideas to life with stunning 3D.", grad:"linear-gradient(135deg,#0f172a,#1e3a8a,#1e40af)", accent:"#60A5FA", feats:["3D Models","Characters","Scenes","High Quality"]},
+    {slug:"/motion-studio", key:"motion", icon:"🎬", title:"Motion Studio", desc:"Create dynamic videos and animations.", grad:"linear-gradient(135deg,#1a0f00,#7c2d12,#9a3412)", accent:"#FB923C", feats:["Animation","Transitions","Effects","Export"]},
+    {slug:"/mockup-studio", key:"mockup", icon:"🖥️", title:"Mockup Studio", desc:"Showcase your designs in realistic mockups.", grad:"linear-gradient(135deg,#1a0a2e,#4c1d95,#5b21b6)", accent:"#A78BFA", feats:["Devices","Packaging","Apparel","Branding"]},
+    {slug:"/template-maker", key:"template", icon:"📄", title:"Template Maker", desc:"Design beautiful layouts and templates.", grad:"linear-gradient(135deg,#0a192f,#0e3a5e,#155e75)", accent:"#38BDF8", feats:["Social Media","Presentations","Posters","Documents"]},
   ]
 
   return (
     <div style={{background:'#0A0814',color:'#fff',fontFamily:'Inter, ui-sans-serif, system-ui',minHeight:'100vh',backgroundImage:`radial-gradient(900px 480px at 50% -10%, rgba(160,32,240,0.22), transparent 70%)`}}>
       <style>{`
-   .studio-slider-wrap{position:relative;max-width:1440px;margin:32px auto 0}
-   .studio-slider{display:flex;gap:18px;overflow-x:auto;scroll-snap-type:x mandatory;padding:0 48px 10px;scrollbar-width:none}
-   .studio-slider::-webkit-scrollbar{display:none}
-   .studio-card{scroll-snap-align:start;min-width:320px;max-width:340px;flex:0 0 320px;border-radius:18px;padding:22px;text-decoration:none;color:#fff;position:relative;transition:transform.2s}
-   .studio-card:hover{transform:translateY(-4px)}
-   .arrow-btn{position:absolute;top:50%;transform:translateY(-50%);width:40px;height:40px;border-radius:50%;background:rgba(10,8,20,0.9);border:1px solid rgba(255,255,255,0.15);color:#fff;display:grid;place-items:center;cursor:pointer;z-index:5;backdrop-filter:blur(10px)}
-   .arrow-btn:hover{background:#A020F0}
-   .hero-grid{display:grid;grid-template-columns:1.2fr 0.7fr 0.7fr;gap:12px;padding:20px 24px;max-width:1440px;margin:0 auto;align-items:end}
-   .pricing-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:32px}
-        @media(max-width:1200px){.hero-grid{grid-template-columns:1fr 1fr}.pricing-grid{grid-template-columns:repeat(2,1fr)}.studio-card{min-width:300px;flex:0 0 300px}}
-        @media(max-width:640px){.hero-grid{grid-template-columns:1fr;padding:16px}.pricing-grid{grid-template-columns:1fr;padding:0 16px}.studio-slider{padding:0 16px}.studio-card{min-width:85vw;flex:0 0 85vw}.arrow-btn{display:none}}
+  .center-tabs{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin:24px auto 32px;padding:8px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:50px;width:fit-content;max-width:95%}
+  .center-tab{padding:10px 18px;border-radius:50px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid transparent;transition:all.2s;white-space:nowrap}
+  .center-tab.active{background:#A020F0;box-shadow:0 0 20px rgba(160,32,240,0.5);border-color:#A020F0;color:#fff}
+  .center-tab.inactive{background:transparent;color:rgba(255,255,255,0.7);border-color:rgba(255,255,255,0.12)}
+  .center-tab.inactive:hover{background:rgba(255,255,255,0.08);color:#fff}
+  .studio-slider-wrap{position:relative;max-width:1440px;margin:0 auto}
+  .studio-slider{display:flex;gap:20px;overflow-x:auto;scroll-snap-type:x mandatory;padding:10px 56px 20px;scrollbar-width:none}
+  .studio-slider::-webkit-scrollbar{display:none}
+  .studio-card-modern{scroll-snap-align:start;min-width:340px;max-width:360px;flex:0 0 340px;border-radius:20px;padding:0;overflow:hidden;border:1px solid rgba(255,255,255,0.1);position:relative;transition:all.3s;text-decoration:none;color:#fff;background:#15131E}
+  .studio-card-modern:hover{transform:translateY(-6px);border-color:rgba(160,32,240,0.5);box-shadow:0 20px 40px rgba(0,0,0,0.4),0 0 30px rgba(160,32,240,0.15)}
+  .card-top{padding:22px 22px 0;height:220px;position:relative;overflow:hidden}
+  .card-bottom{padding:18px 22px 20px;background:rgba(0,0,0,0.3);backdrop-filter:blur(10px)}
+  .arrow-btn{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:44px;border-radius:50%;background:rgba(10,8,20,0.95);border:1px solid rgba(255,255,255,0.2);color:#fff;display:grid;place-items:center;cursor:pointer;z-index:5;backdrop-filter:blur(12px);font-size:20px}
+  .arrow-btn:hover{background:#A020F0;border-color:#A020F0}
+  .hero-grid{display:grid;grid-template-columns:1.2fr 0.7fr 0.7fr;gap:12px;padding:20px 24px;max-width:1440px;margin:0 auto;align-items:end}
+  .pricing-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:32px}
+        @media(max-width:1200px){.hero-grid{grid-template-columns:1fr 1fr}.pricing-grid{grid-template-columns:repeat(2,1fr)}}
+        @media(max-width:640px){.hero-grid{grid-template-columns:1fr;padding:16px}.pricing-grid{grid-template-columns:1fr;padding:0 16px}.studio-slider{padding:10px 16px}.studio-card-modern{min-width:85vw;flex:0 0 85vw}.arrow-btn{display:none}.center-tabs{border-radius:20px;padding:10px}}
       `}</style>
 
       <header style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'12px 24px',borderBottom:'1px solid rgba(255,255,255,0.08)',background:'rgba(10,8,20,0.92)',backdropFilter:'blur(16px)',position:'sticky',top:0,zIndex:50}}>
        <a href="/" style={{marginLeft:'-8px'}}><img src="/logo.png" alt="Pinna3d.com" style={{height:'80px',width:'auto',objectFit:'contain'}} /></a>
         <div style={{display:'flex',gap:'26px',alignItems:'center',fontSize:'14px'}}>
-          {/* STUDIOS DROPDOWN - CHANGED FROM FEATURES */}
           <div style={{position:'relative'}} onMouseEnter={()=>setStudioOpen(true)} onMouseLeave={()=>setStudioOpen(false)}>
             <span style={{color:'rgba(255,255,255,0.9)',cursor:'pointer',display:'flex',alignItems:'center',gap:'4px'}}>Studios ▾</span>
             {studioOpen && (
               <div style={{position:'absolute',top:'28px',left:'-20px',background:'#15131E',border:'1px solid rgba(255,255,255,0.12)',borderRadius:'12px',padding:'8px',minWidth:'220px',boxShadow:'0 10px 30px rgba(0,0,0,0.5)'}}>
                 {studios.map(s=>(
-                  <a key={s.slug} href={s.slug} style={{display:'flex',alignItems:'center',gap:'10px',padding:'10px 12px',borderRadius:'8px',color:'#fff',textDecoration:'none',fontSize:'13px'}} onMouseEnter={e=>e.currentTarget.style.background='rgba(160,32,240,0.15)'} onMouseLeave={e=>e.currentTarget.style.background='transparent'}>
-                    <span>{s.icon}</span>{s.title}
-                  </a>
+                  <a key={s.slug} href={s.slug} style={{display:'flex',alignItems:'center',gap:'10px',padding:'10px 12px',borderRadius:'8px',color:'#fff',textDecoration:'none',fontSize:'13px'}}>{s.icon} {s.title}</a>
                 ))}
               </div>
             )}
           </div>
+          <a href="/about" style={{color:'rgba(255,255,255,0.7)',textDecoration:'none'}}>About</a>
           <span style={{color:'#A020F0'}}>Pricing</span><span style={{color:'rgba(255,255,255,0.7)'}}>Docs</span><span style={{color:'rgba(255,255,255,0.7)'}}>Blog</span>
           <a href="/signin" style={{background:'rgba(255,255,255,0.1)',padding:'10px 18px',borderRadius:'10px',border:'1px solid rgba(255,255,255,0.14)',color:'#fff',textDecoration:'none'}}>Sign In</a>
           <a href="/signup" style={{background:'#A020F0',boxShadow:'0 0 24px rgba(160,32,240,0.55)',padding:'10px 20px',borderRadius:'10px',border:'none',color:'#fff',textDecoration:'none',fontWeight:600}}>Get Started</a>
         </div>
       </header>
-
-      <div style={{display:'flex',gap:'10px',padding:'14px 24px',background:'rgba(255,255,255,0.02)',borderBottom:'1px solid rgba(255,255,255,0.06)',overflowX:'auto'}}>
-        {["Image to 3D","Multi-Image to 3D","Text to 3D","Text to Texture"].map((t,i)=>{const k=["image3d","multi","text3d","texture"][i];return <button key={k} onClick={()=>setTab(k)} style={{padding:'10px 18px',borderRadius:'22px',fontSize:'13px',border:tab===k?'1px solid #A020F0':'1px solid rgba(255,255,255,0.14)',background:tab===k?'#A020F0':'transparent',color:'#fff',whiteSpace:'nowrap'}}>{t}</button>})}
-        <button style={{padding:'10px 18px',borderRadius:'22px',fontSize:'13px',border:'1px solid rgba(255,255,255,0.14)',background:'transparent',color:'#fff',whiteSpace:'nowrap'}}>Template Studio ★ NEW</button>
-        <a href="/vector-studio" style={{padding:'10px 18px',borderRadius:'22px',fontSize:'13px',border:'1px solid rgba(160,32,240,0.5)',background:'rgba(160,32,240,0.14)',color:'#fff',textDecoration:'none',whiteSpace:'nowrap'}}>Image to Vector ★ NEW</a>
-        <a href="/photo-studio" style={{padding:'10px 18px',borderRadius:'22px',fontSize:'13px',border:'1px solid rgba(160,32,240,0.5)',background:'rgba(160,32,240,0.14)',color:'#fff',textDecoration:'none',whiteSpace:'nowrap',display:'inline-flex',alignItems:'center',gap:'4px'}}>Background Remover ★ NEW</a>
-      </div>
 
       <div className="hero-grid">
         <div style={{display:'flex',flexDirection:'column',justifyContent:'center',paddingRight:'10px'}}>
@@ -104,28 +111,47 @@ export default function Page(){
         </div>
       </div>
 
-      <div style={{padding:'40px 40px 40px',maxWidth:'1440px',margin:'0 auto',borderTop:'1px solid rgba(255,255,255,0.06)'}}>
+      <div style={{padding:'50px 40px 40px',maxWidth:'1440px',margin:'0 auto',borderTop:'1px solid rgba(255,255,255,0.06)'}}>
         <div style={{textAlign:'center',maxWidth:'820px',margin:'0 auto'}}>
-          <div style={{display:'inline-flex',background:'rgba(160,32,240,0.15)',border:'1px solid rgba(160,32,240,0.32)',padding:'6px 12px',borderRadius:'20px',fontSize:'11px',letterSpacing:'.12em',color:'#D6A5FF'}}>FOUR STUDIOS • ONE PLATFORM</div>
+          <div style={{display:'inline-flex',background:'rgba(160,32,240,0.15)',border:'1px solid rgba(160,32,240,0.32)',padding:'6px 12px',borderRadius:'20px',fontSize:'11px',letterSpacing:'.12em',color:'#D6A5FF'}}>SIX STUDIOS • ONE PLATFORM</div>
           <h2 style={{fontSize:'34px',fontWeight:500,margin:'14px 0 10px',lineHeight:1.2}}>Everything you need to create,<br/>in one place</h2>
           <p style={{color:'rgba(255,255,255,0.82)',fontSize:'16px',margin:0}}>Photo, Vector, 3D and Motion — built for creators worldwide.</p>
         </div>
 
-        {/* HORIZONTAL SLIDER - 6 STUDIOS - NOT WRAPPING */}
-        <div className="studio-slider-wrap">
+        {/* MARK 3 POSITION - CENTERED STUDIO TABS */}
+        <div className="center-tabs">
+          {studioTabs.map(t=>(
+            <a key={t.id} href={t.slug || "#studios"} onClick={(e)=>{if(!t.slug){e.preventDefault(); setActiveStudio(t.id)}else{setActiveStudio(t.id)}}} className={`center-tab ${activeStudio===t.id? "active":"inactive"}`} style={{textDecoration:'none'}}>{t.label}</a>
+          ))}
+        </div>
+
+        {/* MARK 4 - MODERN UNIQUE SLIDER */}
+        <div className="studio-slider-wrap" id="studios">
           <button className="arrow-btn" style={{left:'6px'}} onClick={()=>scrollSlider("left")}>‹</button>
           <button className="arrow-btn" style={{right:'6px'}} onClick={()=>scrollSlider("right")}>›</button>
           <div ref={sliderRef} className="studio-slider">
-            {studios.map((s)=>(
-              <a key={s.title} href={s.slug} className="studio-card" style={s.style as any}>
-                {s.isUSP && <div style={{position:'absolute',top:'12px',right:'12px',background:'#A020F0',padding:'4px 10px',borderRadius:'20px',fontSize:'10px'}}>YOUR USP ★</div>}
-                <div style={{width:'46px',height:'46px',background:s.title==="Vector Studio"?'rgba(255,255,255,0.07)':s.title==="Photo Studio"||s.title==="Motion Studio"?'#A020F0':'rgba(255,255,255,0.09)',border:s.title==="Vector Studio"?'1px solid #A020F0':'none',borderRadius:'11px',display:'grid',placeItems:'center'}}>{s.icon}</div>
-                <h3 style={{fontSize:'18px',fontWeight:500,margin:'16px 0 8px'}}>{s.title}</h3>
-                <p style={{fontSize:'15px',color:'rgba(255,255,255,0.85)',margin:0}}>{s.desc}</p>
-                <div style={{marginTop:'14px',display:'grid',gap:'8px',fontSize:'15px'}}>{s.feats.map(f=><div key={f}>{check}{f}</div>)}</div>
-                <div style={{marginTop:'14px',borderTop:'1px solid rgba(255,255,255,0.08)',paddingTop:'10px'}}>
-                  <div style={{fontSize:'10px',color:'rgba(255,255,255,0.45)',letterSpacing:'.06em'}}>{s.title.includes("Vector")? "OUTPUT • Vector + Bonus" : "INPUT → OUTPUT"}</div>
-                  <div style={{fontSize:'12px',color:s.title.includes("Vector")?'#fff':'rgba(255,255,255,0.75)',marginTop:'4px',fontWeight:s.title.includes("Vector")?700:400}}>{s.footer}</div>
+            {studios.filter(s=> activeStudio==="all" || activeStudio===s.key).map((s)=>(
+              <a key={s.title} href={s.slug} className="studio-card-modern">
+                <div className="card-top" style={{background:s.grad}}>
+                  <div style={{display:'flex',alignItems:'center',gap:'10px',marginBottom:'12px'}}>
+                    <div style={{width:'38px',height:'38px',background:'rgba(255,255,255,0.12)',border:`1px solid ${s.accent}40`,borderRadius:'10px',display:'grid',placeItems:'center',fontSize:'18px'}}>{s.icon}</div>
+                    <div style={{fontWeight:700,fontSize:'18px'}}><span style={{color:'#fff'}}>{s.title.split(" ")[0]}</span> <span style={{color:s.accent}}>{s.title.split(" ")[1]}</span></div>
+                  </div>
+                  <p style={{fontSize:'13px',color:'rgba(255,255,255,0.75)',lineHeight:1.4,margin:'0 0 16px'}}>{s.desc}</p>
+                  <div style={{display:'grid',gap:'8px'}}>
+                    {s.feats.map(f=>(
+                      <div key={f} style={{display:'flex',alignItems:'center',gap:'8px',fontSize:'12px',color:'rgba(255,255,255,0.85)'}}>
+                        <span style={{width:'22px',height:'22px',background:'rgba(255,255,255,0.08)',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'6px',display:'grid',placeItems:'center',fontSize:'10px'}}>✓</span>{f}
+                      </div>
+                    ))}
+                  </div>
+                  <div style={{position:'absolute',right:'-10px',bottom:'-20px',width:'120px',height:'120px',background:`radial-gradient(circle, ${s.accent}30, transparent 70%)`,filter:'blur(10px)'}}/>
+                </div>
+                <div className="card-bottom">
+                  <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+                    <span style={{fontSize:'11px',color:'rgba(255,255,255,0.5)'}}>TRY NOW →</span>
+                    <span style={{fontSize:'11px',color:s.accent,background:`${s.accent}15`,border:`1px solid ${s.accent}30`,padding:'4px 10px',borderRadius:'20px'}}>OPEN STUDIO</span>
+                  </div>
                 </div>
               </a>
             ))}
@@ -145,15 +171,10 @@ export default function Page(){
           <div>
             <img src="/logo.png" style={{height:'60px'}} alt="Pinna3d"/>
             <p style={{color:'rgba(255,255,255,0.5)',fontSize:'13px',marginTop:'12px',maxWidth:'320px',lineHeight:'1.6'}}>Every Image to 3D or Vector in 60 Seconds. Photo, Vector, 3D, Motion — one platform for creators worldwide.</p>
-            <div style={{marginTop:'12px',fontSize:'11px',color:'rgba(255,255,255,0.35)'}}>PNG, JPG, WEBP, TIFF → SVG, EPS, AI, PDF, CDR, DXF + PNG Bonus</div>
           </div>
           <div><div style={{fontSize:'13px',fontWeight:600,marginBottom:'12px'}}>Studios</div><div style={{display:'grid',gap:'8px',fontSize:'13px',color:'rgba(255,255,255,0.6)'}}><a href="/photo-studio" style={{color:'rgba(255,255,255,0.6)',textDecoration:'none'}}>Photo Studio</a><a href="/vector-studio" style={{color:'#fff',textDecoration:'none'}}>Vector Studio</a><a href="/3d-studio" style={{color:'rgba(255,255,255,0.6)',textDecoration:'none'}}>3D Studio</a><a href="/motion-studio" style={{color:'rgba(255,255,255,0.6)',textDecoration:'none'}}>Motion Studio</a><a href="/mockup-studio" style={{color:'rgba(255,255,255,0.6)',textDecoration:'none'}}>Mockup Studio</a><a href="/template-maker" style={{color:'rgba(255,255,255,0.6)',textDecoration:'none'}}>Template Maker</a></div></div>
-          <div><div style={{fontSize:'13px',fontWeight:600,marginBottom:'12px'}}>Company</div><div style={{display:'grid',gap:'8px',fontSize:'13px',color:'rgba(255,255,255,0.6)'}}><span>Pricing</span><span>Docs</span><span>Blog</span><span>Contact</span></div></div>
+          <div><div style={{fontSize:'13px',fontWeight:600,marginBottom:'12px'}}>Company</div><div style={{display:'grid',gap:'8px',fontSize:'13px',color:'rgba(255,255,255,0.6)'}}><a href="/about" style={{color:'rgba(255,255,255,0.6)',textDecoration:'none'}}>About</a><span>Pricing</span><span>Docs</span><span>Blog</span></div></div>
           <div><div style={{fontSize:'13px',fontWeight:600,marginBottom:'12px'}}>Legal</div><div style={{display:'grid',gap:'8px',fontSize:'13px',color:'rgba(255,255,255,0.6)'}}><span>Terms</span><span>Privacy</span><span>Refund</span></div></div>
-        </div>
-        <div style={{maxWidth:'1440px',margin:'0 auto',borderTop:'1px solid rgba(255,255,255,0.06)',marginTop:'32px',paddingTop:'16px',display:'flex',justifyContent:'space-between',fontSize:'11px',color:'rgba(255,255,255,0.35)',flexWrap:'wrap',gap:'8px'}}>
-          <span>© 2026 Pinna3d.com • Made for Worldwide</span>
-          <span>All formats: SVG, EPS, AI, PDF, CDR, GLB, FBX, MP4 • JPG, PNG, WEBP → Vector</span>
         </div>
       </footer>
     </div>
