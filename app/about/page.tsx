@@ -9,7 +9,7 @@ export default function AboutPage(){
       `}</style>
 
       <header style={{padding:'14px 24px',display:'flex',justifyContent:'space-between',alignItems:'center',borderBottom:'1px solid rgba(255,255,255,0.08)',position:'sticky',top:0,background:'rgba(5,5,16,0.9)',backdropFilter:'blur(16px)',zIndex:10}}>
-        <a href="/"><img src="/logo.png" style={{height:'56px'}} alt="logo"/></a>
+        <a href="/"><img src="/logo.png" style={{height:'100px'}} alt="logo"/></a>
         <a href="/" style={{color:'#A020F0',textDecoration:'none',fontSize:'13px',border:'1px solid rgba(160,32,240,0.3)',padding:'8px 16px',borderRadius:'20px'}}>← Back to Home</a>
       </header>
 
