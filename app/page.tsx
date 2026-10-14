@@ -66,7 +66,7 @@ export default function Page(){
       `}</style>
 
       <header style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'12px 24px',borderBottom:'1px solid rgba(255,255,255,0.08)',background:'rgba(10,8,20,0.92)',backdropFilter:'blur(16px)',position:'sticky',top:0,zIndex:50}}>
-       <a href="/" style={{marginLeft:'-8px'}}><img src="/logo.png" alt="Pinna3d.com" style={{height:'80px',width:'auto',objectFit:'contain'}} /></a>
+       <a href="/" style={{marginLeft:'-8px'}}><img src="/logo.png" alt="Pinna3d.com" style={{height:'100px',width:'auto',objectFit:'contain'}} /></a>
         <div style={{display:'flex',gap:'26px',alignItems:'center',fontSize:'14px'}}>
           <div style={{position:'relative'}} onMouseEnter={()=>setStudioOpen(true)} onMouseLeave={()=>setStudioOpen(false)}>
             <span style={{color:'rgba(255,255,255,0.9)',cursor:'pointer',display:'flex',alignItems:'center',gap:'4px'}}>Studios ▾</span>
